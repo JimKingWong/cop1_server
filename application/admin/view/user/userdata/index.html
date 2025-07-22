@@ -1,0 +1,121 @@
+{if $ids}
+<div class="alert alert-success-light" style="margin-bottom:10px;">
+    <b class="text-red">1. 明细只显示当前用户的数据, 不包含下级, 如需查看下级明细请到左侧菜单!!! </b> <br>
+    <b class="text-red">2. 有关下级数据统计除外 </b> <br>
+</div>
+{/if}
+
+<div class="panel panel-default panel-intro">
+    <div class="panel-heading">
+        <!-- <div class="panel-lead"><em>多表格（Multitable）</em>用于展示在一个页面展示多个表格数据,并且每次切换时刷新</div> -->
+        <ul class="nav nav-tabs">
+            <li class="active {:$auth->check('user/userdata/moneylog')}"><a href="#moneylog" data-toggle="tab">余额明细</a></li>
+            <li class="{:$auth->check('user/userdata/rewardlog')}"><a href="#rewardlog" data-toggle="tab">奖励明细</a></li>
+            <li class="{:$auth->check('user/userdata/recharge')}"><a href="#recharge" data-toggle="tab">充值明细</a></li>
+            <li class="{:$auth->check('user/userdata/withdraw')}"><a href="#withdraw" data-toggle="tab">提现明细</a></li>
+            {if $ids}
+            <li class="{:$auth->check('user/userdata/subuser')}"><a href="#subuser" data-toggle="tab">下级数据</a></li>
+            <li class="{:$auth->check('user/userdata/subuser')}"><a href="#unbind" data-toggle="tab">掉绑后数据</a></li>
+            {/if}
+        </ul>
+    </div>
+    <div class="panel-body">
+        <div id="myTabContent" class="tab-content">
+
+            <div class="tab-pane fade active in" id="moneylog">
+                <div id="toolbar1" class="toolbar">
+                    {:build_toolbar('refresh')}
+                </div>
+                <table id="moneylog_table" class="table table-striped table-bordered table-hover" width="100%">
+                </table>
+            </div>
+
+            <!-- 奖励明细 -->
+            <div class="tab-pane fade" id="rewardlog">
+                <div id="toolbar2" class="toolbar">
+                    {:build_toolbar('refresh')}
+                </div>
+                <table id="rewardlog_table" class="table table-striped table-bordered table-hover" width="100%">
+                </table>
+            </div>
+
+            <!-- 充值明细 -->
+            <div class="tab-pane fade" id="recharge">
+                <div class="alert alert-info-light" style="margin-bottom:10px;">
+                    <b class="text-red">总充值: <span id="total_recharge">0</span></b> 
+                    <b class="text-red" style="margin-left: 20px;">总单数: <span id="total_recharge_num">0</span></b>
+                    <b class="text-red" style="margin-left: 20px;">成功支付单数: <span id="success_recharge">0</span></b>
+
+                    <b class="text-green" style="margin-left: 20px;">今日充值: <span id="today_recharge">0</span></b>
+                    <b class="text-green" style="margin-left: 20px;">今日单数: <span id="today_recharge_num">0</span></b>
+                    <b class="text-green" style="margin-left: 20px;">今日成功支付单数: <span id="today_success_recharge">0</span></b>
+
+                    <b class="text-yellow" style="margin-left: 20px;">昨日充值: <span id="yestoday_recharge">0</span></b>
+                    <b class="text-yellow" style="margin-left: 20px;">昨日单数: <span id="yestoday_recharge_num">0</span></b>
+                    <b class="text-yellow" style="margin-left: 20px;">昨日成功支付单数: <span id="yestoday_success_recharge">0</span></b>
+                </div>
+                <div id="toolbar3" class="toolbar">
+                    {:build_toolbar('refresh')}
+                </div>
+                <table id="recharge_table" class="table table-striped table-bordered table-hover" width="100%">
+                </table>
+            </div>
+
+            <!-- 提现明细 -->
+            <div class="tab-pane fade" id="withdraw">
+                <div class="alert alert-info-light" style="margin-bottom:10px;">
+                    <b class="text-red">总提现: <span id="total_withdraw">0</span></b> 
+                    <b class="text-red" style="margin-left: 20px;">总单数: <span id="total_withdraw_num">0</span></b>
+                    <b class="text-red" style="margin-left: 20px;">成功支付单数: <span id="success_withdraw">0</span></b>
+
+                    <b class="text-green" style="margin-left: 20px;">今日提现: <span id="today_withdraw">0</span></b>
+                    <b class="text-green" style="margin-left: 20px;">今日单数: <span id="today_withdraw_num">0</span></b>
+                    <b class="text-green" style="margin-left: 20px;">今日成功支付单数: <span id="today_success_withdraw">0</span></b>
+
+                    <b class="text-yellow" style="margin-left: 20px;">昨日提现: <span id="yestoday_withdraw">0</span></b>
+                    <b class="text-yellow" style="margin-left: 20px;">昨日单数: <span id="yestoday_withdraw_num">0</span></b>
+                    <b class="text-yellow" style="margin-left: 20px;">昨日成功支付单数: <span id="yestoday_success_withdraw">0</span></b>
+                </div>
+
+                <div id="toolbar4" class="toolbar">
+                    {:build_toolbar('refresh')}
+                </div>
+                <table id="withdraw_table" class="table table-striped table-bordered table-hover" width="100%">
+                </table>
+            </div>
+
+            <!-- 下级数据 -->
+            <div class="tab-pane fade" id="subuser">
+                <div class="alert alert-info-light" style="margin-bottom:10px;">
+                    <b class="text-red">博主工资: <span id="salary">0</span></b> 
+                    <b class="text-red" style="margin-left: 20px;">系统分佣: <span id="commission">0</span></b>
+                    <b class="text-red" style="margin-left: 20px;">博主邀请有效人数: <span id="valid_users">0</span></b>
+                </div>
+
+                <div id="toolbar5" class="toolbar">
+                    {:build_toolbar('refresh')}
+                </div>
+                <table id="subuser_table" class="table table-striped table-bordered table-hover" data-show-export="false" data-show-toggle="false" data-show-columns="false" width="100%">
+                </table>
+                <div id="gamedata">
+                    
+                </div>
+            </div>
+
+            <!-- 掉绑后数据 -->
+            <div class="tab-pane fade" id="unbind">
+                <div class="alert alert-info-light" style="margin-bottom:10px;">
+                    <b class="text-red">博主工资: <span id="unbind_salary">0</span></b> 
+                    <b class="text-red" style="margin-left: 20px;">系统分佣: <span id="unbind_commission">0</span></b>
+                    <b class="text-red" style="margin-left: 20px;">博主邀请有效人数: <span id="unbind_valid_users">0</span></b>
+                </div>
+
+                <div id="toolbar6" class="toolbar">
+                    {:build_toolbar('refresh')}
+                </div>
+                <table id="unbind_table" class="table table-striped table-bordered table-hover" data-show-export="false" data-show-toggle="false" data-show-columns="false" width="100%">
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,13 @@
+<form id="refuse-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('代付方式')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            {foreach $channel as $val}
+            <button type="button" class="btn btn-{$val.color_class} btn-embossed btn-pays" data-channel="{$val.name|strtolower}" data-ids="{$row.id}" style="margin: 20px;">{$val.name}</button>
+            {/foreach}
+        </div>
+    </div>
+    
+    
+</form>

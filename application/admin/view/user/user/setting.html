@@ -1,0 +1,256 @@
+<div class="panel panel-default panel-intro">
+    
+    <div class="panel-heading">
+        {:build_heading(null,FALSE)}
+        <ul class="nav nav-tabs" data-field="status">
+            <li class="active {:$auth->check('user/user/balance')?'':'hide'}"><a href="#tab-balance" data-value="" data-toggle="tab">余额修改</a></li>
+            <li class="{:$auth->check('user/user/box')?'':'hide'}"><a href="#tab-box" data-value="" data-toggle="tab">宝箱黑名单</a></li>
+            <li class="{:$auth->check('user/user/rtp')?'':'hide'}"><a href="#tab-rtp" data-value="" data-toggle="tab">点控设置</a></li>
+            <li class="{:$auth->check('user/user/parent')?'':'hide'}"><a href="#tab-parent" data-value="" data-toggle="tab">换绑</a></li>
+            <li class="{:$auth->check('user/user/unbind')?'':'hide'}"><a href="#tab-unbind" data-value="" data-toggle="tab">掉绑</a></li>
+            <li class="{:$auth->check('user/user/commission')?'':'hide'}"><a href="#tab-commission" data-value="" data-toggle="tab">充值分佣设置</a></li>
+            <li class="{:$auth->check('user/user/open')?'':'hide'}"><a href="#tab-open" data-value="" data-toggle="tab">开通博主账号</a></li>
+            
+        </ul>
+    </div>
+
+
+    <div class="panel-body">
+        <div id="myTabContent" class="tab-content">
+            <!-- 余额修改 -->
+            <div class="tab-pane fade active in" id="tab-balance">
+                <div class="alert alert-info-light" style="margin-bottom:10px;">
+                    <b class="text-red">当前余额: {$row.money}</b> 
+                </div>
+                <div class="widget-body no-padding">
+                    <form id="develop-form" class="develop-form form-horizontal" role="form" data-toggle="validator" method="POST" action="{:url('user.user/setting?type=balance&ids=' . $row['id'])}">
+                        <div class="form-group">
+                            <label for="c-money" class="control-label col-xs-12 col-sm-2">{:__('Money')}:</label>
+                            <div class="col-xs-12 col-sm-4">
+                                <input id="c-money" class="form-control" name="row[money]" type="number" >
+                            </div>
+                        </div>
+                        {if $auth->role < 3}
+                        <div class="form-group">
+                            <label for="c-typing_amount_limit" class="control-label col-xs-12 col-sm-2">{:__('打码量')}:</label>
+                            <div class="col-xs-12 col-sm-4">
+                                <input id="c-typing_amount_limit" class="form-control" name="row[typing_amount_limit]" type="number" >
+                            </div>
+                        </div>
+                        {/if}
+                        <div class="form-group">
+                            <label class="control-label col-xs-12 col-sm-2">{:__('类型')}:</label>
+                            <div class="col-xs-12 col-sm-8">
+                                {:build_radios('row[flag]', $balanceArr)}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-xs-12 col-sm-2"></label>
+                            <div class="col-xs-12 col-sm-8">
+                                <button type="submit" class="btn btn-success btn-embossed ">确定</button>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+            <!-- 宝箱黑名单 -->
+            <div class="tab-pane fade" id="tab-box">
+                <div class="widget-body no-padding">
+                    <form id="develop-form" class="develop-form form-horizontal" role="form" data-toggle="validator" method="POST" action="{:url('user.user/setting?type=box&ids=' . $row['id'])}">
+
+                        <div class="form-group">
+                            <label class="control-label col-xs-12 col-sm-2">{:__('宝箱黑名单')}:</label>
+                            <div class="col-xs-12 col-sm-8">
+                                {:build_radios('row[is_black]', $boxStatus, $row.usersetting.is_black ?? 0)}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-xs-12 col-sm-2"></label>
+                            <div class="col-xs-12 col-sm-8">
+                                <button type="submit" class="btn btn-success btn-embossed ">确定</button>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+            <!-- 点控设置 -->
+            <div class="tab-pane fade " id="tab-rtp">
+                <div class="widget-body no-padding">
+                     <div class="alert alert-info-light" style="margin-bottom:10px;">
+                        <b class="text-red">提示: 直接输入数字即可, 范围:0-9.5, 0时清除个人rtp(值越高中奖率越大,0恢复正常,9体验比较好, 刷子博主RTP建议:5-7,不建议设置太低)</b> 
+                    </div>
+                    <form id="develop-form" class="develop-form form-horizontal" role="form" data-toggle="validator" method="POST" action="{:url('user.user/setting?type=rtp&ids=' . $row['id'])}">
+                        <div class="form-group">
+                            <label for="c-rtp_rate" class="control-label col-xs-12 col-sm-2">{:__('RTP值')}:</label>
+                            <div class="col-xs-6 col-sm-4">
+                                <input id="c-rtp_rate" class="form-control" name="row[rtp_rate]" type="text" value="{$row.usersetting.rtp_rate}">
+                            </div>
+                        </div>
+                   
+                        <div class="form-group">
+                            <label class="control-label col-xs-12 col-sm-2"></label>
+                            <div class="col-xs-12 col-sm-8">
+                                <button type="submit" class="btn btn-success btn-embossed ">确定</button>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+            <!-- 换绑 -->
+            <div class="tab-pane fade" id="tab-parent">
+                <div class="widget-body no-padding">
+                    <form id="develop-form" class="develop-form form-horizontal" role="form" data-toggle="validator" method="POST" action="{:url('user.user/setting?type=parent&ids=' . $row['id'])}">
+
+                        <div class="form-group">
+                            <label for="c-invite_code" class="control-label col-xs-12 col-sm-2">{:__('PID或业务员邀请码')}:</label>
+                            <div class="col-xs-6 col-sm-4">
+                                <input id="c-invite_code" class="form-control" name="row[invite_code]" type="text" value="" placeholder="请输入PID或业务员邀请码">
+                            </div>
+                            <button type="button" class="find btn btn-danger">查询</button>
+                        </div>
+                        <div class="invite">
+
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-xs-12 col-sm-2"></label>
+                            <div class="col-xs-12 col-sm-8">
+                                <button type="submit" class="btn btn-success btn-embossed ">确定</button>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+            <!-- 掉绑 -->
+            <div class="tab-pane fade" id="tab-unbind">
+                <div class="widget-body no-padding">
+                    <form id="develop-form" class="develop-form form-horizontal" role="form" data-toggle="validator" method="POST" action="{:url('user.user/setting?type=unbind&ids=' . $row['id'])}">
+
+                        
+                        <div class="form-group">
+                            <label for="c-unbind_status" class="control-label col-xs-12 col-sm-2">{:__('开关')}:</label>
+                            <div class="col-xs-6 col-sm-4">
+                                <input id="c-unbind_status" class="form-control" name="row[unbind_status]" type="hidden" value="{$row.usersetting.unbind_status}" >
+                                <a href="javascript:;" data-toggle="switcher" class="btn-switcher" data-input-id="c-unbind_status" data-yes="1" data-no="0">
+                                    <i class="fa fa-toggle-on text-success {eq name="$row.usersetting.unbind_status" value="0"}fa-flip-horizontal text-gray{/eq} fa-2x"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="form-group unbind {if $row.usersetting.unbind_status == 0}hide{/if}">
+                            <label for="c-unbind_rate" class="control-label col-xs-12 col-sm-2">{:__('绑定概率')}:</label>
+                            <div class="col-xs-6 col-sm-4">
+                                <input id="c-unbind_rate" class="form-control" name="row[unbind_rate]" type="number" value="{$row.usersetting.unbind_rate}" placeholder="绑定概率" min="0" max="100">
+                                <p class="text-red">默认70%，意味着下级有30人后，会有30%掉绑，写80就有 20%掉绑</p>
+                            </div>
+                        </div>
+                       
+
+                        <div class="form-group">
+                            <label class="control-label col-xs-12 col-sm-2"></label>
+                            <div class="col-xs-12 col-sm-8">
+                                <button type="submit" class="btn btn-success btn-embossed ">确定</button>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+            <!-- 分佣设置 -->
+            <div class="tab-pane fade" id="tab-commission">
+                <div class="widget-body no-padding">
+                    <form id="develop-form" class="develop-form form-horizontal" role="form" data-toggle="validator" method="POST" action="{:url('user.user/setting?type=commission&ids=' . $row['id'])}">
+                        <div class="alert alert-info-light" style="margin-bottom:10px;">
+                            <b class="text-red">温馨提示: 输入0-25的纯数字. 如输入25, 则系统默认计算25%，充值100，返佣25</b> 
+                        </div>
+                        <div class="form-group">
+                            <label for="c-commission_status" class="control-label col-xs-12 col-sm-2">{:__('开关')}:</label>
+                            <div class="col-xs-6 col-sm-4">
+                                <input id="c-commission_status" class="form-control" name="row[commission_status]" type="hidden" value="{$row.usersetting.commission_status}" >
+                                <a href="javascript:;" data-toggle="switcher" class="btn-switcher" data-input-id="c-commission_status" data-yes="1" data-no="0">
+                                    <i class="fa fa-toggle-on text-success {eq name="$row.usersetting.commission_status" value="0"}fa-flip-horizontal text-gray{/eq} fa-2x"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="commission {if $row.usersetting.commission_status == 0}hide{/if}">
+                            <div class="form-group">
+                                <label for="c-commission_rate" class="control-label col-xs-12 col-sm-2">{:__('1级分佣')}:</label>
+                                <div class="col-xs-6 col-sm-4">
+                                    <input id="c-commission_rate" class="form-control" name="row[commission_rate][]" type="number" value="{$commission_rate[0] ?: 0}" placeholder="输入0-25的数字" min="0" max="25">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="c-commission_rate" class="control-label col-xs-12 col-sm-2">{:__('2级分佣')}:</label>
+                                <div class="col-xs-6 col-sm-4">
+                                    <input id="c-commission_rate" class="form-control" name="row[commission_rate][]" type="number" value="{$commission_rate[1] ?? 0}" placeholder="输入0-25的数字" min="0" max="25">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="c-commission_rate" class="control-label col-xs-12 col-sm-2">{:__('3级分佣')}:</label>
+                                <div class="col-xs-6 col-sm-4">
+                                    <input id="c-commission_rate" class="form-control" name="row[commission_rate][]" type="number" value="{$commission_rate[2] ?? 0}" placeholder="输入0-25的数字" min="0" max="25">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="control-label col-xs-12 col-sm-2"></label>
+                            <div class="col-xs-12 col-sm-8">
+                                <button type="submit" class="btn btn-success btn-embossed ">确定</button>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+            <!-- 开通博主账号 -->
+            <div class="tab-pane fade" id="tab-open">
+                <div class="widget-body no-padding">
+                    <form id="develop-form" class="develop-form form-horizontal" role="form" data-toggle="validator" method="POST" action="{:url('user.user/setting?type=open&ids=' . $row['id'])}">
+
+                        <div class="form-group">
+                            <label for="c-is_open_blogger" class="control-label col-xs-12 col-sm-2">{:__('开通博主账号')}:</label>
+                            <div class="col-xs-6 col-sm-4">
+                                <input id="c-is_open_blogger" class="form-control" name="row[is_open_blogger]" type="hidden" value="{$row.usersetting.is_open_blogger}" >
+                                <a href="javascript:;" data-toggle="switcher" class="btn-switcher" data-input-id="c-is_open_blogger" data-yes="1" data-no="0">
+                                    <i class="fa fa-toggle-on text-success {eq name="$row.usersetting.is_open_blogger" value="0"}fa-flip-horizontal text-gray{/eq} fa-2x"></i>
+                                </a>
+                            </div>
+                        </div>
+                        
+
+                        <div class="form-group">
+                            <label class="control-label col-xs-12 col-sm-2"></label>
+                            <div class="col-xs-12 col-sm-8">
+                                <button type="submit" class="btn btn-success btn-embossed ">确定</button>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+
+
+
+
+
+        </div>
+    </div>
+
+
+</div>

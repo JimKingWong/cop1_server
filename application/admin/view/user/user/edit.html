@@ -1,0 +1,80 @@
+<form id="edit-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+    {:token()}
+    <input type="hidden" name="row[id]" value="{$row.id|htmlentities}">
+  
+    <div class="form-group">
+        <label for="c-username" class="control-label col-xs-12 col-sm-2">{:__('Username')}:</label>
+        <div class="col-xs-12 col-sm-4">
+            <input id="c-username" data-rule="required" class="form-control" name="row[username]" type="text" value="{$row.username|htmlentities}" readonly>
+        </div>
+    </div>
+    
+    <div class="form-group">
+        <label for="c-password" class="control-label col-xs-12 col-sm-2">{:__('Password')}:</label>
+        <div class="col-xs-12 col-sm-4">
+            <input id="c-password" data-rule="password" class="form-control" name="row[password]" type="password" value="" placeholder="{:__('Leave password blank if dont want to change')}" autocomplete="new-password" />
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="c-remark" class="control-label col-xs-12 col-sm-2">{:__('备注')}:</label>
+        <div class="col-xs-12 col-sm-4">
+            <input id="c-remark"class="form-control" name="row[remark]" type="text" value="{$row.remark|htmlentities}" >
+        </div>
+    </div>
+   
+    <div class="form-group">
+        <label for="c-level" class="control-label col-xs-12 col-sm-2">{:__('Level')}:</label>
+        <div class="col-xs-12 col-sm-4">
+            <input id="c-level" class="form-control" name="row[level]" type="number" value="{$row.level|htmlentities}" disabled>
+        </div>
+    </div>
+    {if $auth->role < 2}
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('CPF开关')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            {:build_radios('row[cpf_status]', ['0'=>__('任意CPF'), '1'=>__('只能与上次提现相同CPF')], $row['usersetting']['cpf_status'])}
+        </div>
+    </div>
+    {/if}
+    {if $auth->role < 3}
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('支付密码')}:</label>
+        <div class="col-xs-12 col-sm-4">
+            <input id="c-pay_password" class="form-control" name="row[pay_password]" type="text" value="{$row.pay_password|htmlentities}">
+        </div>
+    </div>
+    {/if}
+    
+    
+    {if $row.role == 0 || $auth->role < 3}
+        <div class="form-group">
+            <label class="control-label col-xs-12 col-sm-2">{:__('会员/博主')}:</label>
+            <div class="col-xs-12 col-sm-8">
+                {:build_radios('row[role]', ['0'=>__('会员'), '1'=>__('博主')], $row['role'])}
+            </div>
+        </div>
+    {/if}
+
+     <div class="form-group">
+        <label for="c-is_rob" class="control-label col-xs-12 col-sm-2">游戏开关:</label>
+        <div class="col-xs-12 col-sm-8">
+            {:build_radios('row[game_status]', ['0'=>'禁止游戏', '1'=>'正常游戏'], $row['usersetting']['game_status'])}
+        </div>
+    </div>
+   
+    
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Status')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            {:build_radios('row[status]', ['normal'=>__('Normal'), 'hidden'=>__('Hidden')], $row['status'])}
+        </div>
+    </div>
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-primary btn-embossed disabled">{:__('OK')}</button>
+        </div>
+    </div>
+</form>

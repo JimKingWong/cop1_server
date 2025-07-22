@@ -1,0 +1,201 @@
+
+<div class="alert alert-info-light" style="margin-bottom:10px;width: 40%;">
+    <b class="text-red">温馨提示: 如有增删改, 需清除缓存才能生效</b><br>
+</div>
+<div class="row">
+    <div class="col-md-4 hidden-xs hidden-sm" id="channelbar" style="padding-right:0;">
+        <div class="panel panel-default panel-intro">
+            <div class="panel-heading">
+                <div class="panel-lead">
+                    <em>{:__('Organizational')}</em>
+                </div>
+            </div>
+            <div class="panel-body" style="padding: 5px;width: 20%;">
+                <span class="text-muted"><input type="checkbox" name="" id="checkall"/> <label for="checkall"><small>{:__('Check all')}</small></label></span>
+                <span class="text-muted"><input type="checkbox" name="" id="expandall" checked=""/> <label for="expandall"><small>{:__('Expand all')}</small></label></span>
+                <div id="departmenttree">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-8" id="archivespanel">
+
+        <div class="panel panel-default panel-intro">
+            {:build_heading()}
+
+            <div class="panel-body">
+                <div id="myTabContent" class="tab-content">
+                    <div class="tab-pane fade active in" id="one">
+                        <div class="widget-body no-padding">
+                            <div id="toolbar" class="toolbar">
+                                {:build_toolbar('refresh,add,delete')}
+                                <div class="dropdown btn-group {:$auth->check('department/admin/multi')?'':'hide'}">
+                                    <a class="btn btn-primary btn-more dropdown-toggle btn-disabled disabled" data-toggle="dropdown"><i class="fa fa-cog"></i> {:__('More')}</a>
+                                    <ul class="dropdown-menu text-left" role="menu">
+                                        <li><a class="btn btn-link btn-multi btn-disabled disabled" href="javascript:;" data-params="status=normal"><i class="fa fa-eye"></i> {:__('Set to normal')}</a></li>
+                                        <li><a class="btn btn-link btn-multi btn-disabled disabled" href="javascript:;" data-params="status=hidden"><i class="fa fa-eye-slash"></i> {:__('设置离职')}</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <table id="table" class="table table-striped table-bordered table-hover table-nowrap"
+                                   data-operate-edit="{:$auth->check('department/admin/edit')}"
+                                   data-operate-del="{:$auth->check('department/admin/del')}"
+                                   width="100%">
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script id="departmenttpl" type="text/html">
+    <div class="">
+        <div class="alert alert-warning-light ui-sortable-handle" style="cursor: move;">
+            <b>{:__('Warning')}</b><br>
+            {:__('Move tips')}
+        </div>
+        <!-- /.box-body -->
+        <div class="text-black">
+            <div class="row">
+                <div class="col-sm-12">
+                    <select name="channel" class="form-control">
+                        <option value="0">{:__('Please select channel')}</option>
+                        {$departmentOptions}
+                    </select>
+                </div>
+            </div>
+            <!-- /.row -->
+        </div>
+    </div>
+</script>
+<style>
+    .form-commonsearch .form-group {
+        margin-left: 0;
+        margin-right: 0;
+        padding: 0;
+    }
+
+    form.form-commonsearch .control-label {
+        padding-right: 0;
+    }
+
+    .tdtitle {
+        margin-bottom: 5px;
+        font-weight: 600;
+    }
+
+    #channeltree {
+        margin-left: -6px;
+    }
+
+    #channelbar .panel-heading {
+        height: 55px;
+        line-height: 25px;
+        font-size: 14px;
+    }
+
+    @media (max-width: 1230px) {
+        .fixed-table-toolbar .search .form-control {
+            display: none;
+        }
+    }
+
+    @media (min-width: 1200px) {
+
+        #channelbar {
+            width: 25%;
+        }
+
+        #archivespanel {
+            width: 75%;
+        }
+    }
+
+    .archives-label span.label {
+        font-weight: normal;
+    }
+
+    .archives-title {
+        width: 400px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .jstree-default .jstree-icon:empty {
+        width: 16px;
+        height: 20px;
+        line-height: 20px;
+    }
+    .jstree-default .jstree-checkbox {
+        background-position: -168px -4px;
+    }
+    .jstree-default .jstree-themeicon {
+        background-position: -265px -4px;
+    }
+    .jstree-default.jstree-checkbox-selection .jstree-clicked > .jstree-checkbox, .jstree-default .jstree-checked > .jstree-checkbox {
+        background-position: -233px -4px;
+    }
+    .jstree-default .jstree-anchor > .jstree-undetermined {
+        background-position: -200px -4px;
+    }
+    .jstree-default .jstree-checkbox:hover {
+        background-position: -168px -36px;
+    }
+    .jstree-default.jstree-checkbox-selection .jstree-clicked > .jstree-checkbox:hover,
+    .jstree-default .jstree-checked > .jstree-checkbox:hover {
+        background-position: -233px -36px;
+    }
+    .jstree-default .jstree-anchor > .jstree-undetermined:hover {
+        background-position: -200px -36px;
+    }
+
+    /* 账号信息垂直居中容器 */
+    .account-info-center {
+        display: flex;
+        align-items: center; /* 垂直居中 */
+        height: 100%; /* 填充整个单元格高度 */
+        min-height: 80px; /* 根据内容调整最小高度 */
+    }
+
+    .info-container {
+        width: 100%; /* 确保宽度填充 */
+    }
+
+    /* 信息行样式 */
+    .info-line {
+        display: flex;
+        line-height: 1.5;
+        margin-bottom: 5px;
+    }
+
+    .info-label {
+        display: inline-block;
+        width: 80px; /* 标签固定宽度 */
+        text-align: right;
+        color: #666;
+        margin-right: 12px;
+        flex-shrink: 0; /* 防止宽度压缩 */
+    }
+
+    .info-value {
+        flex: 1;
+        color: #333;
+        word-break: break-word; /* 更好的文本换行 */
+    }
+
+    /* 状态标签样式 */
+    .info-value .label {
+        display: inline-block;
+        padding: 3px 6px;
+        border-radius: 3px;
+        font-size: 12px;
+        vertical-align: middle;
+    }
+
+    /* 表格单元格调整 */
+    #table td {
+        vertical-align: middle; /* 确保表格默认垂直居中 */
+    }
+</style>

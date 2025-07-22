@@ -1,0 +1,89 @@
+<div class="alert alert-info-light" style="margin-bottom:10px;">
+    <b class="text-red">温馨提示: </b><br>
+    1. 请根据实际需求修改配置信息<br>
+    2. pre_order_no字段必须存在, 可以为空, 用于记录充值订单号前缀<br>
+    3. white_ips为白名单ip, 使用英文逗号(,)隔开<br>
+</div>
+<div class="panel panel-default panel-intro">
+    
+    <div class="panel-heading">
+        {:build_heading(null,FALSE)}
+        <ul class="nav nav-tabs" data-field="status">
+            <li class="active"><a href="#tab-recharge" data-value="" data-toggle="tab">充值</a></li>
+            <li class=""><a href="#tab-withdraw" data-value="" data-toggle="tab">提现</a></li>
+        </ul>
+    </div>
+
+
+    <div class="panel-body">
+        <div id="myTabContent" class="tab-content">
+            <div class="tab-pane fade active in" id="tab-recharge">
+                <div class="widget-body no-padding">
+                    <form id="develop-form" class="develop-form form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+
+                        <div class="form-group">
+                            <label class="control-label col-xs-12"></label>
+                            <div class="col-xs-9 col-sm-9">
+                                <dl class="list-unstyled fieldlist" data-name="row[recharge_config]" id="recharge-table">
+                                    <dd>
+                                        <ins>{:__('key')}</ins>
+                                        <ins>{:__('value')}</ins>
+                                    </dd>
+                                    <dd>
+                                        <ins><a href="javascript:;" class="btn btn-sm btn-success btn-append"><i class="fa fa-plus"></i> {:__('Append')}</a></ins>
+                                    </dd>
+                                </dl>
+
+                                <!--请注意实际开发中textarea应该添加个hidden进行隐藏-->
+                                <textarea name="row[recharge_config]" class="form-control hide" cols="30" rows="5">{$row.recharge_config|htmlentities}</textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-xs-12 col-sm-2"></label>
+                            <div class="col-xs-12 col-sm-8">
+                                <button type="submit" class="btn btn-success btn-embossed ">确定</button>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+            <div class="tab-pane fade " id="tab-withdraw">
+                <div class="widget-body no-padding">
+                    <form id="develop-form" class="develop-form form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+
+                        <div class="form-group">
+                            <label class="control-label col-xs-12"></label>
+                            <div class="col-xs-9 col-sm-9">
+                                <dl class="list-unstyled fieldlist" data-name="row[withdraw_config]" id="develops-table">
+                                    <dd>
+                                        <ins>{:__('key')}</ins>
+                                        <ins>{:__('value')}</ins>
+                                    </dd>
+                                    <dd>
+                                        <ins><a href="javascript:;" class="btn btn-sm btn-success btn-append"><i class="fa fa-plus"></i> {:__('Append')}</a></ins>
+                                    </dd>
+                                </dl>
+
+                                <!--请注意实际开发中textarea应该添加个hidden进行隐藏-->
+                                <textarea name="row[withdraw_config]" class="form-control hide" cols="30" rows="5">{$row.withdraw_config|htmlentities}</textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-xs-12 col-sm-2"></label>
+                            <div class="col-xs-12 col-sm-8">
+                                <button type="submit" class="btn btn-success btn-embossed ">确定</button>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>

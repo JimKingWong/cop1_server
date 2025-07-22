@@ -1,0 +1,76 @@
+<form id="edit-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+    {:token()}
+  
+    <div class="form-group">
+        <label for="c-origin" class="control-label col-xs-12 col-sm-2">{:__('选择站点')}:</label>
+        <div class="col-xs-12 col-sm-4">
+            <input type="text" class="form-control selectpage" data-rule="required" data-source='{$site}' id="c-origin" name="row[origin]" value="" placeholder="站点">
+        </div>
+    </div>
+
+    <!-- <div class="form-group">
+        <label for="c-admin_id" class="control-label col-xs-12 col-sm-2">{:__('选择业务员')}:</label>
+        <div class="col-xs-12 col-sm-4">
+            <input type="text" class="form-control selectpage" data-rule="required" data-source='{$admins}' id="c-origin" name="row[admin_id]" value="" placeholder="业务员">
+        </div>
+    </div> -->
+
+    <div class="form-group">
+        <label for="c-username" class="control-label col-xs-12 col-sm-2">{:__('用户名')}:</label>
+        <div class="col-xs-12 col-sm-4">
+            <input id="c-username"class="form-control" name="row[username]" type="text" placeholder="用户名, 如: test, 后面会自动拼上1 2 3..." >
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="c-number" class="control-label col-xs-12 col-sm-2">{:__('生成数量')}:</label>
+        <div class="col-xs-12 col-sm-4">
+            <input id="c-number" class="form-control" name="row[number]" data-rule="required" type="number" value="" max="30" placeholder="最多100个" min="1">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="c-money" class="control-label col-xs-12 col-sm-2">{:__('金额')}:</label>
+        <div class="col-xs-12 col-sm-4">
+            <input id="c-money" class="form-control" name="row[money]" type="money" value="" placeholder="金额">
+        </div>
+    </div>
+    
+    <div class="form-group">
+        <label for="c-password" class="control-label col-xs-12 col-sm-2">统一{:__('Password')}:</label>
+        <div class="col-xs-12 col-sm-4">
+            <input id="c-password"  class="form-control" name="row[password]" data-rule="required" type="text" value="" placeholder="统一密码"  />
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="c-pay_password" class="control-label col-xs-12 col-sm-2">统一提现密码:</label>
+        <div class="col-xs-12 col-sm-4">
+            <input id="c-pay_password"  class="form-control" name="row[pay_password]" data-rule="required" type="text" value="" placeholder="统一提现密码"  />
+        </div>
+    </div>
+
+    {if $auth->role < 3}
+    <div class="form-group">
+        <label for="c-pay_password" class="control-label col-xs-12 col-sm-2">邀请码:</label>
+        <div class="col-xs-12 col-sm-4">
+            <input id="c-invite_code"  class="form-control" name="row[invite_code]"  type="text" value="" placeholder="指定业务员的邀请码"  />
+        </div>
+    </div>
+    {/if}
+
+    <div class="form-group">
+        <label for="c-remark" class="control-label col-xs-12 col-sm-2">{:__('备注')}:</label>
+        <div class="col-xs-12 col-sm-4">
+            <input id="c-remark"class="form-control" name="row[remark]" type="text" value="模拟账户-测试" readonly>
+        </div>
+    </div>
+   
+   
+    
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-primary btn-embossed disabled">{:__('OK')}</button>
+        </div>
+    </div>
+</form>

@@ -1,0 +1,70 @@
+<div class="alert alert-info-light" style="margin-bottom:10px;">
+    <b class="text-red">总提现: <span id="total_withdraw">0</span></b> 
+    <b class="text-red" style="margin-left: 20px;">总单数: <span id="total_withdraw_num">0</span></b>
+    <b class="text-red" style="margin-left: 20px;">成功支付单数: <span id="success_withdraw">0</span></b>
+
+    <b class="text-green" style="margin-left: 20px;">今日提现: <span id="today_withdraw">0</span></b>
+    <b class="text-green" style="margin-left: 20px;">今日单数: <span id="today_withdraw_num">0</span></b>
+    <b class="text-green" style="margin-left: 20px;">今日成功支付单数: <span id="today_success_withdraw">0</span></b>
+
+    <b class="text-yellow" style="margin-left: 20px;">昨日提现: <span id="yestoday_withdraw">0</span></b>
+    <b class="text-yellow" style="margin-left: 20px;">昨日单数: <span id="yestoday_withdraw_num">0</span></b>
+    <b class="text-yellow" style="margin-left: 20px;">昨日成功支付单数: <span id="yestoday_success_withdraw">0</span></b>
+</div>
+
+<div class="panel panel-default panel-intro">
+    
+    <div class="panel-heading">
+        {:build_heading(null,FALSE)}
+        <ul class="nav nav-tabs" data-field="status">
+            <li class="{:$Think.get.status === null ? 'active' : ''}"><a href="#t-all" data-value="" data-toggle="tab">{:__('All')}</a></li>
+            {foreach name="statusList" item="vo"}
+            <li class="{:$Think.get.status === (string)$key ? 'active' : ''}"><a href="#t-{$key}" data-value="{$key}" data-toggle="tab">{$vo}</a></li>
+            {/foreach}
+        </ul>
+    </div>
+
+
+    <div class="panel-body">
+        <div id="myTabContent" class="tab-content">
+            <div class="tab-pane fade active in" id="one">
+                <div class="widget-body no-padding">
+                    <div id="toolbar" class="toolbar">
+                        <a href="javascript:;" class="btn btn-primary btn-refresh" title="{:__('Refresh')}" ><i class="fa fa-refresh"></i> </a>
+                        
+                    </div>
+                    
+                    <table id="table" class="table table-striped table-bordered table-hover table-nowrap"
+                        data-operate-edit="{:$auth->check('channels/withdraw/edit')}"
+                        data-operate-refuse="{:$auth->check('channels/withdraw/refuse')}"
+                        data-operate-pay="{:$auth->check('channels/withdraw/pay')}"
+                        data-operate-detail="{:$auth->check('channels/withdraw/detail')}"
+                        data-operate-notify="{:$auth->check('channels/withdraw/notify')}"
+                        width="100%">
+                </table>
+                           
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    .boxs{
+        text-align: center; 
+        display: flex; 
+        flex-direction: column; 
+        justify-content: center; 
+        height: 100%;
+    }
+    .boxs-info{
+        margin: 0 auto; 
+        text-align: left;
+    }
+    .boxs-info span{
+        display: inline-block; 
+        width: 90px; 
+        text-align: right;
+    }
+</style>

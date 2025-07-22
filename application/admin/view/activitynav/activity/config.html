@@ -1,0 +1,109 @@
+<!-- 首充奖励 -->
+{if $row.name == 'first_recharge'}
+<form id="config-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+    <div class="alert alert-info-light" style="margin-bottom:10px;">
+        <b class="text-red">温馨提示: </b><br>
+        1. 选择百分比, 数字填5, 则系统自动按5%计算<br>
+        2. 选择固定金额, 数字填5, 则系统直接发放5<br>
+        3. 数值请填写大于0的数字(不包含0)
+    </div>
+   
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('赠送类型')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <div class="radio">
+                <label for="row[type]-0"><input id="row[type]-0" name="row[config][type]" type="radio" value="0" {if !isset($configs['type']) || (isset($configs['type']) && $configs['type'] == 0)}checked{/if} /> 百分比</label> 
+                <label for="row[type]-1"><input id="row[type]-1" name="row[config][type]" type="radio" value="1" {if isset($configs['type']) && $configs['type'] == '1'}checked{/if} /> 固定金额</label> 
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('数值')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-number" class="form-control" name="row[config][number]" type="number" min="1" value="{$configs.number|default=''}">
+        </div>
+    </div>
+
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-primary btn-embossed disabled">{:__('OK')}</button>
+        </div>
+    </div>
+</form>
+{/if}
+
+<!-- 注册奖励 -->
+{if $row.name == 'register_bonus'}
+<form id="config-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+    <div class="alert alert-info-light" style="margin-bottom:10px;">
+        <b class="text-red">温馨提示: </b><br>
+        1. 数值请填写大于0的数字(不包含0), 数字填5, 则系统直接发放5<br>
+        2. 打码量填多少送多少<br>
+    </div>
+   
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('赠送金额')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-money" class="form-control" name="row[config][money]" type="money" min="1" value="{$configs.money|default=''}">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('打码量')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-typing_amount_limit" class="form-control" name="row[config][typing_amount_limit]" type="number" min="1" value="{$configs.typing_amount_limit|default=''}">
+        </div>
+    </div>
+
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-primary btn-embossed disabled">{:__('OK')}</button>
+        </div>
+    </div>
+</form>
+{/if}
+
+<!-- 签到奖励 -->
+{if $row.name == 'signin_bonus'}
+<form id="config-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+    <div class="alert alert-info-light" style="margin-bottom:10px;">
+        <b class="text-red">温馨提示: </b><br>
+        1. sn表示未找到匹配的天数<br>
+        2. s1, s2, s3等代表签到天数<br>
+    </div>
+
+    <div class="form-group ">
+        <label class="control-label col-xs-12 col-sm-2">{:__('签到规则')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <dl class="list-unstyled fieldlist" data-name="row[config][signin]" id="signin-table">
+                <dd>
+                    <ins>{:__('连续签到天数')}</ins>
+                    <ins>{:__('赠送金额')}</ins>
+                </dd>
+                <dd>
+                    <ins><a href="javascript:;" class="btn btn-sm btn-success btn-append"><i class="fa fa-plus"></i> {:__('Append')}</a></ins>
+                </dd>
+            </dl>
+
+            <!--请注意实际开发中textarea应该添加个hidden进行隐藏-->
+            <textarea name="row[config][signin]" class="form-control hidden" cols="30" rows="5">{$configs.signin}</textarea>
+        </div>
+    </div>
+   
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('每日最低充值')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-min_recharge_money" class="form-control" name="row[config][min_recharge_money]" type="min_recharge_money" min="1" value="{$configs.min_recharge_money|default=''}">
+        </div>
+    </div>
+
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-primary btn-embossed disabled">{:__('OK')}</button>
+        </div>
+    </div>
+</form>
+{/if}

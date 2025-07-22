@@ -1,0 +1,77 @@
+<form id="edit-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Level')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-level" class="form-control" name="row[level]" type="number" value="{$row.level|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Image')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <div class="input-group">
+                <input id="c-image" class="form-control" size="50" name="row[image]" type="text" value="{$row.image|htmlentities}">
+                <div class="input-group-addon no-border no-padding">
+                    <span><button type="button" id="faupload-image" class="btn btn-danger faupload" data-input-id="c-image" data-mimetype="image/gif,image/jpeg,image/png,image/jpg,image/bmp,image/webp" data-multiple="false" data-preview-id="p-image"><i class="fa fa-upload"></i> {:__('Upload')}</button></span>
+                    <span><button type="button" id="fachoose-image" class="btn btn-primary fachoose" data-input-id="c-image" data-mimetype="image/*" data-multiple="false"><i class="fa fa-list"></i> {:__('Choose')}</button></span>
+                </div>
+                <span class="msg-box n-right" for="c-image"></span>
+            </div>
+            <ul class="row list-inline faupload-preview" id="p-image"></ul>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Level_reward')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-level_reward" class="form-control" step="0.01" name="row[level_reward]" type="number" value="{$row.level_reward|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Recharge_amount')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-recharge_amount" data-rule="required" class="form-control" step="0.01" name="row[recharge_amount]" type="number" value="{$row.recharge_amount|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Withdraw_times')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-withdraw_times" class="form-control" name="row[withdraw_times]" type="number" value="{$row.withdraw_times|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Withdraw_amount')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-withdraw_amount" class="form-control" step="0.01" name="row[withdraw_amount]" type="number" value="{$row.withdraw_amount|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Bet_amount')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-bet_amount" class="form-control" step="0.01" name="row[bet_amount]" type="number" value="{$row.bet_amount|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Week_reward')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-week_reward" class="form-control" step="0.01" name="row[week_reward]" type="number" value="{$row.week_reward|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Month_reward')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-month_reward" class="form-control" step="0.01" name="row[month_reward]" type="number" value="{$row.month_reward|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Withdraw_amount_day')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-withdraw_amount_day" class="form-control" step="0.01" name="row[withdraw_amount_day]" type="number" value="{$row.withdraw_amount_day|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-primary btn-embossed disabled">{:__('OK')}</button>
+        </div>
+    </div>
+</form>
