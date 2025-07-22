@@ -91,7 +91,6 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                             },
                             sortable: true
                         },
-                        {field: 'userdata.salary', title: __('工资'), sortable: true, operate: 'BETWEEN'},
                         {
                             field: 'invite_code', 
                             title: __('自身码||上级码'), 
