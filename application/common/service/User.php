@@ -268,10 +268,12 @@ class User extends Base
         $logs = VipConfig::receiveLog($user->id);
         // dd($logs);
 
+        $version = config('site.version');
+
         // 是否有可领取的
         $is_vip_receive = 0;
         foreach($vipList as $key => $val){
-            $vipList[$key]['image'] = cdnurl($val['image']);
+            $vipList[$key]['image'] = cdnurl($val['image']) . '?v=' . $version;
             $vipList[$key]['is_receive'] = isset($logs[$val['level']]) ? 1 : 0;
             if($val['level'] == 0){
                 // 0级默认已领取
