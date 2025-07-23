@@ -155,6 +155,8 @@ return [
     '下二级' => 'segundo nível',
     '下三级' => 'terceiro nível',
     '总计' => 'Total',
+    '您只允许从同一个IP创建3个帐户' => 'Só é permitido criar 3 contas a partir do mesmo IP.',
+
 
     '今日投注金额不足' => 'Valor de aposta insuficiente hoje',
     '抽奖次数不足' => 'Não há empates suficientes',

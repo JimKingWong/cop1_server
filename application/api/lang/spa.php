@@ -155,6 +155,9 @@ return [
     '下二级' => 'Referido nivel 2',
     '下三级' => 'Referido nivel 3',
     '总计' => 'Total',
+    '您只允许从同一个IP创建3个帐户' => 'Sólo se permite crear 3 cuentas desde la misma IP',
+
+
     '今日投注金额不足' => 'Apuestas diarias insuficientes',
     '抽奖次数不足' => 'Giros insuficientes',
     '未知错误' => 'Error desconocido',

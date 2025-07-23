@@ -155,6 +155,8 @@ return [
     '下二级'  => 'Subordinate 2',
     '下三级'  => 'Subordinate 3',
     '总计'  => 'Total',
+    '您只允许从同一个IP创建3个帐户' => 'You are only allowed to create 3 accounts from the same IP',
+
 
     '今日投注金额不足'                          => 'Insufficient betting amount today',
     '抽奖次数不足'                              => 'Insufficient lottery attempts',

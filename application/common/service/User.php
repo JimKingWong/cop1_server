@@ -106,6 +106,19 @@ class User extends Base
         // 站点来源
         $origin = $this->origin ?? 'localhost';
 
+        $ip = $_SERVER["REMOTE_ADDR"];
+        $real_ip = false;
+        if(isset($_SERVER["HTTP_X_FORWARDED_FOR"])){
+            $real_ip = $_SERVER["HTTP_X_FORWARDED_FOR"];
+        }
+        if($real_ip) $ip = $real_ip;
+
+        // 同ip最多创建三个账号
+        $ipCount = $this->model->where('joinip', $ip)->where('origin', $origin)->count();
+        if($ipCount >= 3){
+            $this->error(__('您只允许从同一个IP创建3个帐户'));
+        }
+
         // 管理员信息模型
         $adminDataModel = new AdminData();
 
@@ -258,6 +271,7 @@ class User extends Base
         // 是否有可领取的
         $is_vip_receive = 0;
         foreach($vipList as $key => $val){
+            $vipList[$key]['image'] = cdnurl($val['image']);
             $vipList[$key]['is_receive'] = isset($logs[$val['level']]) ? 1 : 0;
             if($val['level'] == 0){
                 // 0级默认已领取
