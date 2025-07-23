@@ -418,7 +418,7 @@ class Dashboard extends Backend
 
         $this->assign('retval', $retval);
 
-        $site = db('site')->where('status', 1)->field('url id,url name')->order('id desc')->select();
+        $site = db('site')->where('status', 1)->field('url id,url name')->order('createtime desc')->select();
         $this->assign('site', json_encode($site));
         $this->assign('origin', $origin);
         return $this->view->fetch();

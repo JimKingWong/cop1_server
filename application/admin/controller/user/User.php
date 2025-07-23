@@ -682,7 +682,7 @@ class User extends Backend
     public function patch()
     {
         if (false === $this->request->isPost()) {
-            $site = db('site')->where('status', 1)->field('url id,url name')->order('id desc')->select();
+            $site = db('site')->where('status', 1)->field('url id,url name')->order('createtime desc')->select();
 
             $admin = Admin::where('role', '>', 2)->field('id,username')->order('id desc')->select();
             $admins = [];
