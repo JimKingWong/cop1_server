@@ -135,7 +135,7 @@ class Omg extends Base
      */
     public function getUserRtp($user)
     {
-        if($user->role == 1 || $user->usersetting->rtp_rate == ''){
+        if($user->role == 1){
             return;
         }
 
@@ -155,6 +155,7 @@ class Omg extends Base
                 return $v->usersetting->rtp_rate;
             }
         }
+        return;
     }
 
     /**
