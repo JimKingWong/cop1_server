@@ -252,7 +252,7 @@ class Jdb extends Base
      */
     protected function userBalance($params)
     {
-        if($params['currency'] != 'BR'){
+        if($params['currency'] != 'COP'){
             return json_encode([
                 "status"    => '9999',
                 "balance"   => 0,
@@ -284,7 +284,7 @@ class Jdb extends Base
     protected function TransferInOut($params)
     {
         // 检测货币
-        if($params['currency'] != 'BR'){
+        if($params['currency'] != 'COP'){
              return json_encode([
                  "status"   => '9999',
                  "balance"  => 0,
@@ -513,7 +513,7 @@ class Jdb extends Base
      */
     protected function TransferOut($params) 
     {
-        if($params['currency'] != 'BR'){
+        if($params['currency'] != 'COP'){
             return json_encode([
                 "status"        => '9999',
                 "balance"       => 0,
@@ -613,7 +613,7 @@ class Jdb extends Base
      */
     protected function TransferIn($params) 
     {
-        if($params['currency'] != 'BR'){
+        if($params['currency'] != 'COP'){
             return json_encode([
                 "status"        => '9999',
                 "balance"       => 0,
@@ -791,7 +791,7 @@ class Jdb extends Base
 
        
 
-        if($params['currency'] != 'BR'){
+        if($params['currency'] != 'COP'){
             return json_encode([
                 "status"        => '9999',
                 "balance"       => 0,
@@ -866,7 +866,7 @@ class Jdb extends Base
     protected function CancelTakeOut($params) 
     {
 
-        if($params['currency'] != 'BR'){
+        if($params['currency'] != 'COP'){
             return json_encode([
                 "status"        => '9999',
                 "balance"       => 0,
@@ -939,7 +939,7 @@ class Jdb extends Base
      */
     public function CancelTransferOut($params) 
     {
-        if($params['currency'] != 'BR'){
+        if($params['currency'] != 'COP'){
             return json_encode([
                 "status"        => '9999',
                 "balance"       => 0,
@@ -1055,7 +1055,7 @@ class Jdb extends Base
      */
     public function SaveIn($params) 
     {
-        if($params['currency'] != 'BR'){
+        if($params['currency'] != 'COP'){
             return json_encode([
                 "status"=> '9999',
                 "balance"=> 0,
