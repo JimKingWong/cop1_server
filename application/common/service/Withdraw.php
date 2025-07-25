@@ -243,7 +243,7 @@ class Withdraw extends Base
 
         $arr = [__('审核中'), __('提现成功'), __('拒绝'), __('提现失败'), __('异常')];
 
-        $fields = "id,order_no,wallet_id,money,real_money,fee,status,paytime,createtime";
+        $fields = "id,order_no,wallet_id,money,real_money,fee,status,paytime,remark,createtime";
         $where['user_id'] = $user->id;
         $list = $this->model->where($where)->field($fields)->order('id desc')->select();
 
@@ -255,6 +255,12 @@ class Withdraw extends Base
             $val->status_text = $arr[$val->status] ?? __('异常');
             
             $val->wallet = $val->wallet;
+
+            if(!containsChinese($val->remark)){
+                $val->remark = $val->remark ? substr($val->remark, strpos($val->remark, ':') + 1) : '';
+            }else{
+                $val->remark = '';
+            }
         }
 
         $retval = [

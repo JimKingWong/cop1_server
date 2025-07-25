@@ -44,9 +44,10 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                             formatter: function (value, row, index) {
                                 let color_class = '';
                                 if(row.is_first_recharge){
-                                     color_class = 'text-red';
+                                    color_class = 'text-red';
                                 }
-                                return '<a href="javascript:" data-url="user/userdata/index?ids=' + row['id'] + '" title="用户信息" class="dialogit ' + color_class + '" data-area=\'["80%", "100%"]\'>' + value + '</a>';
+                                return  `<span class="${color_class}">${value}</span>`;
+                                // return '<a href="javascript:" data-url="user/userdata/index?ids=' + row['id'] + '" title="用户信息" class="dialogit ' + color_class + '" data-area=\'["80%", "100%"]\'>' + value + '</a>';
                             }
                         },
                         {field: 'parent_id', title: __('上级ID'), sortable: true},
