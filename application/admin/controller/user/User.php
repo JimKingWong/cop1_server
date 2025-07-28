@@ -434,93 +434,136 @@ class User extends Backend
             ]);
         }
     }
-    
+
     /**
      * 换绑
      */
     public function parent($row, $params)
     {
         set_time_limit(0);
+        ini_set('memory_limit', '1024M');
         $check = $this->findParent($params['invite_code']);
 
         if($check['code'] == 0){
             $this->error($check['msg']);
         }
+        
+        // 一对多的
+        $arr = [
+            '\app\common\model\Recharge', '\app\common\model\Withdraw',
+            '\app\common\model\MoneyLog', '\app\common\model\RewardLog', 
+            '\app\common\model\Wallet', '\app\common\model\VipLog', 
+            '\app\common\model\TurntableLog', '\app\common\model\PrizeLog',
+            '\app\common\model\SigninLog'
+        ];
 
         if($check['flag'] == 2){
-            $row->admin_id = $check['data']['admin_id'];
-            // $row->parent_id = 0;
-            // $row->parent_id_str = '';
-            $row->save();
+            $where['is_test'] = 0;
+            $where['admin_id'] = ['neq', $check['data']['admin_id']]; // 避免一次性修改太多, 下次再点击修改
+            $users = modelUser::where('is_test', 0)->field('id,parent_id,parent_id_str')->select();
+            // 当前用户的所有下级(不包含自身)
+            $users = modelUser::getTeam($users, $row->id);
+            // 当前的用户补进去一起修改
+            $users[] = $row;
+            // dd($users);
+            // dd($users->toArray());
+            // 业务员的业绩
+            $total_recharge = 0;
+            $total_withdraw = 0;
+        
+            Db::startTrans();
+            try{
+                $user_id = [];
+                foreach($users as $val){
+                    $total_recharge += $val->userdata->total_recharge;
+                    $total_withdraw += $val->userdata->total_withdraw;
 
-            $arr = [
-                '\app\common\model\Recharge', '\app\common\model\Withdraw',
-                '\app\common\model\MoneyLog', '\app\common\model\RewardLog', 
-                '\app\common\model\Wallet', '\app\common\model\VipLog', 
-                '\app\common\model\TurntableLog', '\app\common\model\PrizeLog'
-            ];
+                    $user_id[] = $val->id;
 
-            foreach($arr as $val){
-                $userModel = (new $val);
-                $data =  $userModel::where('user_id', $row->id)->select();
-                foreach($data as $v){
-                    $v->admin_id = $check['data']['admin_id'];
-                    $v->save();
+                    $val->admin_id = $check['data']['admin_id'];
+                    $val->save();
+
+                    // 一对一的直接修改
+                    $val->userdata->admin_id = $check['data']['admin_id'];
+                    $val->userdata->save();
+
+                    $val->usersetting->admin_id = $check['data']['admin_id'];
+                    $val->usersetting->save();
+
+                    $val->userinfo->admin_id = $check['data']['admin_id'];
+                    $val->userinfo->save();
                 }
-            }
 
-            $infoArr = [
-                '\app\common\model\UserData', '\app\common\model\UserInfo', '\app\common\model\UserSetting'
-            ];
+                foreach($arr as $val){
+                    $userModel = (new $val);
+                    $data =  $userModel::where('user_id', 'in', $user_id)->select();
+                    foreach($data as $v){
+                        $v->admin_id = $check['data']['admin_id'];
+                        $v->save();
+                    }
+                }
 
-            foreach($infoArr as $val){
-                $userModel = (new $val);
-                $userModel::where('user_id', $row->id)->update(['admin_id' => $check['data']['admin_id']]);
-
+                // 业务员的业绩加上
+                $admin = Admin::where('id', $check['data']['admin_id'])->find();
+                $admin->admindata->recharge_amount += $total_recharge;
+                $admin->admindata->withdraw_amount += $total_withdraw;
+                $admin->admindata->save();
+                
+                Db::commit();
+            }catch(Exception $e){
+                Db::rollback();
+                $this->error($e->getMessage());
             }
            
         }else{
-            $row->admin_id = $check['data']['admin_id'];
-            $row->parent_id = $check['data']['id'];
-            $row->be_invite_code = $check['data']['invite_code'];
-            $row->parent_id_str = \app\common\model\User::parentIdStr($check['data']);
-            
-            $arr = [
-                '\app\common\model\Recharge', '\app\common\model\Withdraw',
-                '\app\common\model\MoneyLog', '\app\common\model\RewardLog', 
-                '\app\common\model\Wallet', '\app\common\model\VipLog', 
-                '\app\common\model\TurntableLog', '\app\common\model\PrizeLog'
-            ];
-            
-            // $parent = db('user_data')->where('user_id', $row->parent_id)->setInc('invite_num');
-            Db::name('user_data')
-            ->where('user_id', $row->parent_id)
-            ->update([
-                'invite_num' => Db::raw('invite_num + 1'),
-                'invite_recharge_num' => Db::raw('invite_recharge_num + 1')
-            ]);
-
-            foreach($arr as $val){
-                $userModel = (new $val);
-                $data =  $userModel::where('user_id', $row->id)->select();
-                foreach($data as $v){
-                    $v->admin_id = $check['data']['admin_id'];
-                    $v->save();
-                }
+            // 相同的parent_id不修改
+            if($row->parent_id == $check['data']['id']){
+                $this->error('不能换绑到同个用户');
             }
+            
+            Db::startTrans();
+            try{
 
-            $infoArr = [
-                '\app\common\model\UserData', '\app\common\model\UserInfo', '\app\common\model\UserSetting'
-            ];
+                $row->admin_id = $check['data']['admin_id'];
+                $row->parent_id = $check['data']['id'];
+                $row->be_invite_code = $check['data']['invite_code'];
+                $row->parent_id_str = \app\common\model\User::parentIdStr($check['data']);
+                $row->save();
 
-            foreach($infoArr as $val){
-                $userModel = (new $val);
-                $userModel::where('user_id', $row->id)->update(['admin_id' => $check['data']['admin_id']]);
+                $row->userdata->admin_id = $check['data']['admin_id'];
+                $row->userdata->save();
 
+                $row->usersetting->admin_id = $check['data']['admin_id'];
+                $row->usersetting->save();
+
+                $row->userinfo->admin_id = $check['data']['admin_id'];
+                $row->userinfo->save();
+
+                Db::name('user_data')
+                    ->where('user_id', $row->parent_id)
+                    ->update([
+                        'invite_num' => Db::raw('invite_num + 1'),
+                        'invite_recharge_num' => Db::raw('invite_recharge_num + 1')
+                    ]);
+
+                // 其他表的同步修改
+                // 如果与上级同个admin_id, 则不修改
+                if($row->admin_id != $check['data']['admin_id']){
+                    foreach($arr as $val){
+                        $userModel = (new $val);
+                        $data =  $userModel::where('user_id', $row->id)->select();
+                        foreach($data as $v){
+                            $v->admin_id = $check['data']['admin_id'];
+                            $v->save();
+                        }
+                    }
+                }
+
+            }catch(Exception $e){
+                Db::rollback();
+                $this->error($e->getMessage());
             }
         }
-        
-        $row->save();
     }
 
     /**

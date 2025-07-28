@@ -11,6 +11,7 @@ use app\common\controller\Backend;
  */
 class Moneylog extends Backend
 {
+    protected $noNeedRight = ['getType'];
 
     /**
      * Moneylog模型对象

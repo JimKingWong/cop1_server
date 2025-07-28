@@ -145,4 +145,10 @@ class User extends Model
     {
         return $this->hasOne('\app\common\model\UserSetting', 'user_id', 'id')->setEagerlyType(0);
     }
+
+    public function userinfo()
+    {
+        return $this->hasOne('\app\common\model\UserInfo', 'user_id', 'id');
+    }
+
 }
