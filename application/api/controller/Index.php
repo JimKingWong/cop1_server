@@ -25,190 +25,138 @@ class Index extends Api
     protected $noNeedLogin = ['*'];
     protected $noNeedRight = ['*'];
 
-    public function css()
-    {
-        $total = db('recharge')->where('status', '1')->sum('money');
-
-        $today = db('recharge')->where('status', '1')->whereTime('paytime', 'today')->sum('money');
-        $ss = db('daybookadmin')->sum('recharge_amount');
-        
-        echo $ss + $today;
-        dd($total);
-        // 11977.00 + 43309.39  + 58913.11 + 61582.11 + 37457.44 
-        // $recharge1 = db('recharge')->where('status', '1')->whereTime('paytime', 'today')->sum('money');
-    }
-
     /**
      * 首页
-     *
      */
     public function index()
     {
-        // $ss = db('mydata')->sum('register_users');
-        // dd($ss);
+        $this->success('请求成功');
+    }
+
+    /**
+     * 修正业务员数据
+     */
+    public function daybookadmin()
+    {
         set_time_limit(0); // 取消执行时间限制
-        ini_set('memory_limit', '256M'); // 调整内存限制
+        ini_set('memory_limit', '1024M'); // 调整内存限制
 
-        $day = 1;
-        $starttime = date('Y-m-d 00:00:00', strtotime('-'.$day.' day'));
-        $endtime = date('Y-m-d 23:59:59', strtotime('-'.$day.' day'));
+        $field = "id,username,role";
+        $where['role'] = ['>', 2];
+        $admins = Admin::where($where)->field($field)->select();
+
+        $admin_ids = [];
+        foreach($admins as $admin){
+            $admin_ids[] = $admin->id;
+        }
+
+        array_push($admin_ids, 0);
+
+        // 过去几天, 修改这个参数
+        $day = 3;
+        // 昨天的数据
+        $starttime = date('Y-m-d 00:00:00', strtotime('-'. $day .' day'));
+        $endtime = date('Y-m-d 23:59:59', strtotime('-'. $day .' day'));
+        $where['paytime'] = ['between', [$starttime, $endtime]];
         
-        $users = User::whereTime('jointime', [strtotime($starttime), strtotime($endtime)])->where('is_test', 0)->select();
+        $recharge = Recharge::where('paytime', 'between', [$starttime, $endtime])
+            ->where('status', '1')
+            ->whereIn('admin_id', $admin_ids)
+            ->group('admin_id')
+            ->column('sum(money)', 'admin_id');
 
-        // 注册人数
-        $user_count = count($users);
-        echo '注册人数: ' . $user_count. "\n";
-        
-        // 昨日用户id
-        $user_ids = [];
-        // 博主用户id
-        $blogger_user_ids = [];
+        $withdraw = Withdraw::where('paytime', 'between', [$starttime, $endtime])
+            ->where('status', '1')
+            ->whereIn('admin_id', $admin_ids)
+            ->group('admin_id')
+            ->column('sum(money)', 'admin_id');
 
-        // 注册且充值人数
-        $register_recharge_users = 0;
-        foreach($users as $user){
-            if($user->is_first_recharge == 1){
-                $register_recharge_users ++;
-            }
+        // 博主工资
+        $salary = db('user_reward_log')->where('createtime', 'between', [$starttime, $endtime])->where('status', 1)->where('type', 'admin_bonus')->group('admin_id')->column('sum(money)', 'admin_id');
+        $es = new Es();
 
-            if($user->role == 1){
-                $blogger_user_ids[] = $user->id;
-            }
+        // 用作判断是否已插入
+        $adminLogs = db('daybookadmin')->where('date', date('Y-m-d', strtotime('-' . $day . ' day')))->column('id', 'admin_id');
 
-            $user_ids[] = $user->id;
-        }
-        echo '注册且充值人数: ' . $register_recharge_users. "\n";
-
-        // 复冲人数
-        $repeat_recharge_users = 0;
-        // 复冲金额
-        $repeat_recharge_money = 0;
-        // 充值总金额
-        $recharge_money = 0;
-        $recharges = Recharge::whereTime('createtime', [$starttime, $endtime])
-            ->where('status', 1)
-            ->field("user_id,count(id) count,sum(money) money")
-            ->group('user_id')
-            ->select();
-        foreach($recharges as $recharge){
-            if($recharge['count'] > 1){
-                $repeat_recharge_users ++;
-                $repeat_recharge_money += $recharge['money'];
-            }
-            $recharge_money += $recharge['money'];
-        }
-
-        // 充值人数
-        $recharge_count = count($recharges);
-        echo '复冲人数: ' . $repeat_recharge_users. "\n";
-        echo '复冲金额: ' . $repeat_recharge_money. "\n";
-        echo '充值人数: ' . $recharge_count. "\n";
-        echo '充值总金额: ' . $recharge_money. "\n";
-
-        // 提现金额
-        $withdraw_money = 0;
-        // 博主提现金额
-        $blogger_withdraw_money = 0;
-        $withdraws = Withdraw::whereTime('createtime', [$starttime, $endtime])
-            ->where('status', 1)
-            ->where('is_virtual', 0)
-            ->field("user_id,sum(money) money")
-            ->group('user_id')
-            ->select();
-
-        foreach($withdraws as $withdraw){
-            $withdraw_money += $withdraw['money'];
-            if(in_array($withdraw['user_id'], $blogger_user_ids)){
-                $blogger_withdraw_money += $withdraw['money'];
-            }
-        }
-
-        // 客户提现金额
-        $member_withdraw_money = $withdraw_money - $blogger_withdraw_money;
-
-        echo '提现金额: ' . $withdraw_money. "\n";
-        echo '博主提现金额: ' . $blogger_withdraw_money. "\n";
-        echo '客户提现金额: ' . $member_withdraw_money. "\n";
-
-        // 通道费用
+        $game_api_fee = config('channel.game_api_fee');
         $recharge_channel_rate = config('channel.recharge_channel_rate');
         $withdraw_channel_rate = config('channel.withdraw_channel_rate');
-        $channel_fee = $recharge_money * $recharge_channel_rate + $withdraw_money * $withdraw_channel_rate;
-        echo '通道费用: ' . $channel_fee. "\n";
-
-        // 游戏输赢记录统计
-        $es = new Es();
-        $condition = [
-            // 时间范围查询
-            [
-                'type' => 'range',
-                'field' => 'createtime',
-                'value' => [
-                    'gte' => strtotime($starttime),
-                    'lte' => strtotime($endtime),
+        $data = [];
+        foreach($admin_ids as $key => $admin_id){
+            $condition[$key] = [
+                // 时间范围查询
+                [
+                    'type' => 'range',
+                    'field' => 'createtime',
+                    'value' => [
+                        'gte' => strtotime($starttime),
+                        'lte' => strtotime($endtime),
+                    ]
+                ],
+                [
+                    'type'  => 'term',
+                    'field' => 'admin_id',
+                    'value' => $admin_id
                 ]
-            ]
-        ];
+            ];
+            
+            // omg聚合游戏记录集合
+            $omgGroupSearch = $es->groupAggregation('omg_game_record', $condition[$key], 'platform', ['win_amount', 'bet_amount']);
 
-        // 下注流水
-        $bet_amount = 0;
+            $omg_win_amount = array_sum(array_column($omgGroupSearch, 'win_amount_sum'));
+            $omg_bet_amount = array_sum(array_column($omgGroupSearch, 'bet_amount_sum'));
+            $omg_api = bcmul($omg_bet_amount - $omg_win_amount, $game_api_fee, 2);
 
-        // omg聚合游戏记录集合
-        $omgGroupSearch = $es->groupAggregation('omg_game_record', $condition, 'platform', ['win_amount', 'bet_amount']);
-        // dd($omgGroupSearch);
-        // 客损
-        $omg_user_lost = 0;
-        foreach($omgGroupSearch as $val){
-            $omg_user_lost += $val['bet_amount_sum'] - $val['win_amount_sum'];
+            // jdb聚合游戏记录集合
+            $jdbGroupSearch = $es->groupAggregation('jdb_game_record', $condition[$key], 'platform', ['win_amount', 'bet_amount']);
 
-            $bet_amount += $val['bet_amount_sum'];
-        }
+            $jdb_win_amount = array_sum(array_column($jdbGroupSearch, 'win_amount_sum'));
+            $jdb_bet_amount = array_sum(array_column($jdbGroupSearch, 'bet_amount_sum'));
+            $jdb_api = bcmul($jdb_bet_amount - $jdb_win_amount, $game_api_fee, 2);
+            
+            $api_fee = bcadd($omg_api, $jdb_api, 2);
+            $api_fee = abs($api_fee);
 
-        $jdbGroupSearch = $es->groupAggregation('jdb_game_record', $condition, 'platform', ['win_amount', 'bet_amount']);
-        $jdb_user_lost = 0;
-        foreach($jdbGroupSearch as $val){
-            $jdb_user_lost += $val['bet_amount_sum'] - $val['win_amount_sum'];
+            $recharge_amount = $recharge[$admin_id] ?? 0;
+            $withdraw_amount = $withdraw[$admin_id] ?? 0;
+            $transfer_amount = $recharge_amount - $withdraw_amount;
+            $channel_fee = $recharge_amount * $recharge_channel_rate + $withdraw_amount * $withdraw_channel_rate;
+            $profit_and_loss = $recharge_amount - $withdraw_amount - $api_fee - $channel_fee;
+    
 
-            $bet_amount += $val['bet_amount_sum'];
-        }
-
-        // 客损
-        $user_lost = $omg_user_lost + $jdb_user_lost;
-        echo '客损: ' . $user_lost. "\n";
-
-        // API费用
-        $game_api_fee = abs($user_lost) * config('channel.game_api_fee');
-        echo 'API费用: ' . $game_api_fee. "\n";
-
-        // 今日盈利 = 充值总金额 - 提现金额 - 通道费用 - API费用
-        $profit = $recharge_money - $withdraw_money - $channel_fee - $game_api_fee;
-        echo '今日盈利: ' . $profit. "\n";
-
-        $data = [
-            'date'                      => $starttime,
-            'register_users'            => $user_count,
-            'register_recharge_users'   => $register_recharge_users,
-            'repeat_users'              => $repeat_recharge_users,
-            'repeat_amount'             => $repeat_recharge_money,
-            'recharge_count'            => $recharge_count,
-            'recharge_money'            => $recharge_money,
-            'user_lost'                 => $user_lost,
-            'withdraw_money'            => $withdraw_money,
-            'blogger_withdraw_money'    => $blogger_withdraw_money,
-            'member_withdraw_money'     => $member_withdraw_money,
-            'api_fee'                   => $game_api_fee,
-            'channel_fee'               => $channel_fee,
-            'profit'                    => $profit,
-            'bet_amount'                => $bet_amount,
-        ];
-        // dd($data);
-        $mydata = Mydata::where('date', $starttime)->find();
-        if($mydata){
-            $mydata->save($data);
-            echo '数据更新成功'. "\n";
-        }else{
-            Mydata::create($data);
-            echo '数据插入成功'. "\n";
+            $add_count = 0;
+            $edit_count = 0;
+            if(isset($adminLogs[$admin_id])){
+                $arr[$key] = [
+                    'admin_id'              => $admin_id,
+                    'salary'                => $salary[$admin_id] ?? 0,
+                    'recharge_amount'       => $recharge[$admin_id] ?? 0,
+                    'withdraw_amount'       => $withdraw[$admin_id] ?? 0,
+                    'transfer_amount'       => $transfer_amount,
+                    'api_amount'            => sprintf('%.2f', $api_fee),
+                    'channel_fee'           => sprintf('%.2f', $channel_fee),
+                    'profit_and_loss'       => sprintf('%.2f', $profit_and_loss),
+                    'date'                  => date('Y-m-d', strtotime('-'.$day.' day')),
+                    'createtime'            => date('Y-m-d H:i:s'),
+                ];
+                $edit_count += db('daybookadmin')->where('id', $adminLogs[$admin_id])->update($arr[$key]);
+                echo "summaryAdminDaybook: 修正日结报表，日期：{" . date('Y-m-d', strtotime('-'.$day.' day')) . "}，处理记录数：" . $edit_count. "\n";
+            }else{
+                $data[$key] = [
+                    'admin_id'              => $admin_id,
+                    'salary'                => $salary[$admin_id] ?? 0,
+                    'recharge_amount'       => $recharge[$admin_id] ?? 0,
+                    'withdraw_amount'       => $withdraw[$admin_id] ?? 0,
+                    'transfer_amount'       => $transfer_amount,
+                    'api_amount'            => sprintf('%.2f', $api_fee),
+                    'channel_fee'           => sprintf('%.2f', $channel_fee),
+                    'profit_and_loss'       => sprintf('%.2f', $profit_and_loss),
+                    'date'                  => date('Y-m-d', strtotime('-'.$day.' day')),
+                    'createtime'            => date('Y-m-d H:i:s'),
+                ];
+                $add_count += db('daybookadmin')->insertAll($data);
+                echo "summaryAdminDaybook: 生成日结报表，日期：{" . date('Y-m-d', strtotime('-'.$day.' day')) . "}，处理记录数：" . count($data). "\n";
+            }
         }
     }
 
