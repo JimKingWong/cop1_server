@@ -5,6 +5,7 @@ namespace app\admin\controller\user;
 use app\admin\model\Admin;
 use app\common\controller\Backend;
 use app\common\library\Auth;
+use app\common\model\User as ModelUser;
 use think\Db;
 use Exception;
 use think\exception\PDOException;
@@ -60,7 +61,7 @@ class User extends Backend
 
             
             $list = $this->model
-                ->with(['userdata', 'admin.dadmin.department'])
+                ->with(['userdata', 'usersetting', 'admin.dadmin.department'])
                 ->where($where)
                 ->where($map)
                 ->order($sort, $order)
@@ -224,12 +225,29 @@ class User extends Backend
         $row->usersetting->rtp_rate = $params['rtp_rate'];
         if($row->role != 1){
             $omg = new \app\common\service\game\Omg;
-            $res = $omg->setRtp($row->id, $row->usersetting->rtp_rate);
+            $res = $omg->setRtp($row, $row->usersetting->rtp_rate);
             if($res['code'] != 1){
                 $this->error($res['msg']);
             }
         }
         $row->usersetting->save();
+    }
+
+    /**
+     * 设置刷子
+     */
+    public function risk($row, $params)
+    {
+        $users = ModelUser::where([
+            ['EXP', Db::raw("FIND_IN_SET(". $row->id .", parent_id_str)")]
+        ])->whereOr('id', $row->id)->field('id,parent_id,parent_id_str')->select();
+
+        foreach($users as $val){
+            if(isset($val->usersetting)){
+                $val->usersetting->is_risk = $params['is_risk'];
+                $val->usersetting->save();
+            }
+        }
     }
 
     /**
@@ -683,7 +701,7 @@ class User extends Backend
     {
         if (false === $this->request->isPost()) {
             $site = db('site')->where('status', 1)->field('url id,url name')->order('createtime desc')->select();
-
+            
             $admin = Admin::where('role', '>', 2)->field('id,username')->order('id desc')->select();
             $admins = [];
             foreach($admin as $k => $v){

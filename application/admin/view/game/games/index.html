@@ -46,6 +46,14 @@
                             </ul>
                         </div>
 
+                        <div class="dropdown btn-group {:$auth->check('game/games/multi')?'':'hide'}">
+                            <a class="btn btn-success btn-more dropdown-toggle btn-disabled disabled" data-toggle="dropdown">{:__('设置游戏类型')}</a>
+                            <ul class="dropdown-menu text-left" role="menu">
+                                {foreach name="typeList" item="vo"}
+                                <li><a class="btn btn-link btn-multi btn-disabled disabled" href="javascript:" data-params="type={$key}">{:__('Set type to ' . $key)}</a></li>
+                                {/foreach}
+                            </ul>
+                        </div>
 
                         <a class="btn btn-success btn-recyclebin btn-dialog {:$auth->check('game/games/recyclebin')?'':'hide'}" href="game/games/recyclebin" title="{:__('Recycle bin')}"><i class="fa fa-recycle"></i> {:__('Recycle bin')}</a>
                     </div>

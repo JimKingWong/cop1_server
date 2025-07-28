@@ -14,6 +14,7 @@ use fast\Tree;
  */
 class Omg extends Backend
 {
+    protected $multiFields = 'is_works,status,type';
 
     /**
      * Omg模型对象
@@ -103,5 +104,18 @@ class Omg extends Backend
 
         $count = count($ids);
         $this->success(__('归类成功! 数量为: %s', $count));
+    }
+
+    /**
+     * 更新游戏列表
+     */
+    public function update()
+    {
+        $service = new \app\common\service\game\Omg();
+        $count = $service->getGameList();
+        if(!$count){
+            $this->error(__('当前没有新游戏可更新!'));
+        }
+        $this->success(__('更新成功! 数量为: %s', $count));
     }
 }

@@ -15,15 +15,17 @@
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Table_name')}:</label>
         <div class="col-xs-12 col-sm-8">
-            <input id="c-table_name" class="form-control" name="row[table_name]" type="text" value="{$row.table_name|htmlentities}">
+            <!-- <input id="c-table_name" class="form-control" name="row[table_name]" type="text" value="{$row.table_name|htmlentities}"> -->
+            {:build_select('table_name', $table_list, $row.table_name, ['class'=>'form-control selectpicker', 'data-rule'=>'required'])}
+
         </div>
     </div>
-    <div class="form-group">
+    <!-- <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Service_class')}:</label>
         <div class="col-xs-12 col-sm-8">
             <input id="c-service_class" class="form-control" name="row[service_class]" type="text" value="{$row.service_class|htmlentities}">
         </div>
-    </div>
+    </div> -->
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('获取连接')}:</label>
         <div class="col-xs-12 col-sm-8">

@@ -31,7 +31,7 @@
                             </ul>
                         </div>
 
-                        <div class="dropdown btn-group {:$auth->check('game/games/multi')?'':'hide'}">
+                        <div class="dropdown btn-group {:$auth->check('game/jdb/multi')?'':'hide'}">
                             <a class="btn btn-warning btn-more dropdown-toggle btn-disabled disabled" data-toggle="dropdown">{:__('是否维护')}</a>
                             <ul class="dropdown-menu text-left" role="menu">
                                 {foreach name="isWorksList" item="vo"}

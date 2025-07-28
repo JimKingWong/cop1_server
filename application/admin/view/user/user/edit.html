@@ -36,9 +36,9 @@
             {:build_radios('row[cpf_status]', ['0'=>__('任意CPF'), '1'=>__('只能与上次提现相同CPF')], $row['usersetting']['cpf_status'])}
         </div>
     </div>
+
     {/if}
     {if $auth->role < 3}
-
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('支付密码')}:</label>
         <div class="col-xs-12 col-sm-4">

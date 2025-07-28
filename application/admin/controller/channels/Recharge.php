@@ -41,7 +41,7 @@ class Recharge extends Backend
      */
     public function index()
     {
-        ini_set('memory_limit', '256M');
+        ini_set('memory_limit', '512M');
         
         //当前是否为关联查询
         $this->relationSearch = true;

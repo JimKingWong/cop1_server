@@ -42,6 +42,8 @@ class Userdata extends Backend
      */
     public function moneylog()
     {
+        ini_set('memory_limit', '512M');
+
         $this->model = model('\app\admin\model\user\Moneylog');
         $this->dataLimit = 'department';
         //当前是否为关联查询
@@ -79,6 +81,8 @@ class Userdata extends Backend
      */
     public function rewardlog()
     {
+        ini_set('memory_limit', '512M');
+
         $this->model = model('\app\admin\model\user\Rewardlog');
         $this->dataLimit = 'department';
 
@@ -113,10 +117,89 @@ class Userdata extends Backend
     }
 
     /**
+     * 签到明细
+     */
+    public function signinlog()
+    {
+        ini_set('memory_limit', '512M');
+
+        $this->model = model('\app\admin\model\user\Signin');
+        $this->dataLimit = 'department';
+
+        //当前是否为关联查询
+        $this->relationSearch = true;
+        //设置过滤方法
+        $this->request->filter(['strip_tags', 'trim']);
+        if ($this->request->isAjax()) {
+            //如果发送的来源是Selectpage，则转发到Selectpage
+            if ($this->request->request('keyField')) {
+                return $this->selectpage();
+            }
+            list($where, $sort, $order, $offset, $limit) = $this->buildparams();
+
+            $list = $this->model
+                    ->with(['user'])
+                    ->where($where)
+                    ->order($sort, $order)
+                    ->paginate($limit);
+
+            foreach ($list as $row) {
+                
+                $row->getRelation('user')->visible(['username']);
+            }
+
+            $result = array("total" => $list->total(), "rows" => $list->items());
+
+            return json($result);
+        }
+        return $this->view->fetch();
+    }
+
+    /**
+     * 转盘明细
+     */
+    public function turntablelog()
+    {
+        ini_set('memory_limit', '512M');
+
+        $this->model = model('\app\admin\model\user\Turntablelog');
+        $this->dataLimit = 'department';
+        //当前是否为关联查询
+        $this->relationSearch = true;
+        //设置过滤方法
+        $this->request->filter(['strip_tags', 'trim']);
+        if ($this->request->isAjax()) {
+            //如果发送的来源是Selectpage，则转发到Selectpage
+            if ($this->request->request('keyField')) {
+                return $this->selectpage();
+            }
+            list($where, $sort, $order, $offset, $limit) = $this->buildparams();
+
+            $list = $this->model
+                    ->with(['user'])
+                    ->where($where)
+                    ->order($sort, $order)
+                    ->paginate($limit);
+
+            foreach ($list as $row) {
+                
+                $row->getRelation('user')->visible(['username']);
+            }
+
+            $result = array("total" => $list->total(), "rows" => $list->items());
+
+            return json($result);
+        }
+        return $this->view->fetch();
+    }
+
+    /**
      * 充值
      */
     public function recharge()
     {
+        ini_set('memory_limit', '512M');
+
         $this->dataLimit = 'department';
         
         $this->model = new Recharge();
@@ -222,6 +305,8 @@ class Userdata extends Backend
      */
     public function withdraw()
     {
+        ini_set('memory_limit', '512M');
+
         $this->dataLimit = 'department';
 
         $this->model = new Withdraw();
@@ -317,6 +402,7 @@ class Userdata extends Backend
         return $this->view->fetch('index');
     }
 
+
     /**
      * 下级数据(掉绑前)
      */
@@ -327,9 +413,12 @@ class Userdata extends Backend
 
         if ($this->request->isAjax()) {
             $filter = json_decode($this->request->get('filter'), true);
+
             $user_id = $filter['user_id'];
             $row = User::get($user_id);
             $invite_code = $row->invite_code;
+
+            $language = $filter['language'] ?? 'cn';
 
             $map['be_invite_code'] = $invite_code;
             $map['is_test'] = 0;
@@ -525,25 +614,55 @@ class Userdata extends Backend
                 4 => $total_withdraw,
             ];
 
-            // 等级数组
-            $levelArr = [
-                1 => '下级',
-                2 => '下二级',
-                3 => '下三级',
-                4 => '总计'
+            $langLevelArr = [
+                'cn' => [
+                    1 => '一级',
+                    2 => '二级',
+                    3 => '三级',
+                    4 => '总计'
+                ],
+                'en' => [
+                    1 => 'One',
+                    2 => 'Two',
+                    3 => 'Three',
+                    4 => 'Total'
+                ],
+                'pt' => [
+                    1 => 'Um',
+                    2 => 'Dois',
+                    3 => 'Três',
+                    4 => 'Total'
+                ],
+                'spa' => [
+                    1 => 'Uno',
+                    2 => 'Dos',
+                    3 => 'Tres',
+                    4 => 'Total'
+                ],
             ];
 
-            $retval = [];
+            // 等级数组
+            // $levelArr = [
+            //     1 => '下级',
+            //     2 => '下二级',
+            //     3 => '下三级',
+            //     4 => '总计'
+            // ];
+
+            $levelArr = $langLevelArr[$language] ?? $langLevelArr['cn'];
+
+            $header = $this->tableHeader($language);
+            $retval[0] = $header;
             for($i = 1; $i <= 4; $i++){
-                $retval[$i - 1]['level'] = $levelArr[$i] ?? '';
-                $retval[$i - 1]['total_user'] = $peopleArr[$i] ?? 0;
-                $retval[$i - 1]['valid_user'] = $validArr[$i] ?? 0;
-                $retval[$i - 1]['total_recharge_num'] = $rechargeNumArr[$i] ?? 0;
-                $retval[$i - 1]['total_recharge_money'] = sprintf('%.2f', $rechargeMoneyArr[$i]) ?? 0;
-                $retval[$i - 1]['avg_recharge_money'] = sprintf('%.2f', $avgRechargeMoneyArr[$i]) ?? 0;
-                $retval[$i - 1]['total_withdraw_num'] = $withdrawNumArr[$i] ?? 0;
-                $retval[$i - 1]['total_withdraw_money'] = sprintf('%.2f', $withdrawMoneyArr[$i]) ?? 0;
-                $retval[$i - 1]['total_bet'] = sprintf('%.2f', $betArr[$i]) ?? 0;
+                $retval[$i]['level'] = $levelArr[$i] ?? '';
+                $retval[$i]['total_user'] = $peopleArr[$i] ?? 0;
+                $retval[$i]['valid_user'] = $validArr[$i] ?? 0;
+                $retval[$i]['total_recharge_num'] = $rechargeNumArr[$i] ?? 0;
+                $retval[$i]['total_recharge_money'] = sprintf('%.2f', $rechargeMoneyArr[$i]) ?? 0;
+                $retval[$i]['avg_recharge_money'] = sprintf('%.2f', $avgRechargeMoneyArr[$i]) ?? 0;
+                $retval[$i]['total_withdraw_num'] = $withdrawNumArr[$i] ?? 0;
+                $retval[$i]['total_withdraw_money'] = sprintf('%.2f', $withdrawMoneyArr[$i]) ?? 0;
+                $retval[$i]['total_bet'] = sprintf('%.2f', $betArr[$i]) ?? 0;
             }
 
             // 工资
@@ -573,6 +692,9 @@ class Userdata extends Backend
         if ($this->request->isAjax()) {
             $filter = json_decode($this->request->get('filter'), true);
             $user_id = $filter['user_id'];
+
+            $language = $filter['language'] ?? 'cn';
+            // dd($language);
             
             // 所有下三级用户
             $users = User::getSubUsers($user_id);
@@ -762,24 +884,55 @@ class Userdata extends Backend
             ];
 
             // 等级数组
-            $levelArr = [
-                1 => '下级',
-                2 => '下二级',
-                3 => '下三级',
-                4 => '总计'
+            $langLevelArr = [
+                'cn' => [
+                    1 => '一级',
+                    2 => '二级',
+                    3 => '三级',
+                    4 => '总计'
+                ],
+                'en' => [
+                    1 => 'One',
+                    2 => 'Two',
+                    3 => 'Three',
+                    4 => 'Total'
+                ],
+                'pt' => [
+                    1 => 'Um',
+                    2 => 'Dois',
+                    3 => 'Três',
+                    4 => 'Total'
+                ],
+                'spa' => [
+                    1 => 'Uno',
+                    2 => 'Dos',
+                    3 => 'Tres',
+                    4 => 'Total'
+                ],
             ];
 
-            $retval = [];
+            // 等级数组
+            // $levelArr = [
+            //     1 => '下级',
+            //     2 => '下二级',
+            //     3 => '下三级',
+            //     4 => '总计'
+            // ];
+
+            $levelArr = $langLevelArr[$language] ?? $langLevelArr['cn'];
+
+            $header = $this->tableHeader($language);
+            $retval[0] = $header;
             for($i = 1; $i <= 4; $i++){
-                $retval[$i - 1]['level'] = $levelArr[$i] ?? '';
-                $retval[$i - 1]['total_user'] = $peopleArr[$i] ?? 0;
-                $retval[$i - 1]['valid_user'] = $validArr[$i] ?? 0;
-                $retval[$i - 1]['total_recharge_num'] = $rechargeNumArr[$i] ?? 0;
-                $retval[$i - 1]['total_recharge_money'] = sprintf('%.2f', $rechargeMoneyArr[$i]) ?? 0;
-                $retval[$i - 1]['avg_recharge_money'] = sprintf('%.2f', $avgRechargeMoneyArr[$i]) ?? 0;
-                $retval[$i - 1]['total_withdraw_num'] = $withdrawNumArr[$i] ?? 0;
-                $retval[$i - 1]['total_withdraw_money'] = sprintf('%.2f', $withdrawMoneyArr[$i]) ?? 0;
-                $retval[$i - 1]['total_bet'] = sprintf('%.2f', $betArr[$i]) ?? 0;
+                $retval[$i]['level'] = $levelArr[$i] ?? '';
+                $retval[$i]['total_user'] = $peopleArr[$i] ?? 0;
+                $retval[$i]['valid_user'] = $validArr[$i] ?? 0;
+                $retval[$i]['total_recharge_num'] = $rechargeNumArr[$i] ?? 0;
+                $retval[$i]['total_recharge_money'] = sprintf('%.2f', $rechargeMoneyArr[$i]) ?? 0;
+                $retval[$i]['avg_recharge_money'] = sprintf('%.2f', $avgRechargeMoneyArr[$i]) ?? 0;
+                $retval[$i]['total_withdraw_num'] = $withdrawNumArr[$i] ?? 0;
+                $retval[$i]['total_withdraw_money'] = sprintf('%.2f', $withdrawMoneyArr[$i]) ?? 0;
+                $retval[$i]['total_bet'] = sprintf('%.2f', $betArr[$i]) ?? 0;
             }
 
             // 工资
@@ -797,4 +950,63 @@ class Userdata extends Backend
             return json(['total' => 4, 'rows' => $retval, "extend" => $extend]);
         }
     }
+
+
+    
+    /**
+     * 表头
+     */
+    public function tableHeader($language = 'cn')
+    {
+        $arr = [
+            'cn' => [
+                'level'                 => '等级',
+                'total_user'            => '总人数',
+                'valid_user'            => '有效用户',
+                'total_recharge_num'    => '充值人数',
+                'total_recharge_money'  => '充值金额',
+                'avg_recharge_money'    => '平均充值',
+                'total_withdraw_num'    => '提现人数',
+                'total_withdraw_money'  => '提现金额',
+                'total_bet'             => '总流水',
+            ],
+            'en' => [
+                'level'                 => 'Level',
+                'total_user'            => 'Total User',
+                'valid_user'            => 'Valid User',
+                'total_recharge_num'    => 'Recharge User',
+                'total_recharge_money'  => 'Recharge Money',
+                'avg_recharge_money'    => 'Avg Recharge',
+                'total_withdraw_num'    => 'Withdraw User',
+                'total_withdraw_money'  => 'Withdraw Money',
+                'total_bet'             => 'Total flow',
+            ],
+            'pt' => [
+                'level'                 => 'Nível',
+                'total_user'            => 'Total de usuários',
+                'valid_user'            => 'Usuário válido',
+                'total_recharge_num'    => 'Número de recargas',
+                'total_recharge_money'  => 'Valor de recarga',
+                'avg_recharge_money'    => 'Recarga média',
+                'total_withdraw_num'    => 'Número de saques',
+                'total_withdraw_money'  => 'Valor de saque',
+                'total_bet'             => 'fluxo de caixa',
+            ],
+            'spa' => [
+                'level'                 => 'Nivel',
+                'total_user'            => 'Total de usuarios',
+                'valid_user'            => 'Usuario valido',
+                'total_recharge_num'    => 'Numero de recargas',
+                'total_recharge_money'  => 'Valor de recarga',
+                'avg_recharge_money'    => 'Recarga promedio',
+                'total_withdraw_num'    => 'Numero de retiros',
+                'total_withdraw_money'  => 'Valor de retiro',
+                'total_bet'             => 'Flujo de efectivo',
+            ],
+        ];
+
+        return $arr[$language];
+    }
+
+
 }

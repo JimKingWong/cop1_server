@@ -1,0 +1,51 @@
+
+<div class="panel panel-default panel-intro">
+    
+    <div class="panel-heading">
+        <!-- <div class="panel-lead"><em>多表格（Multitable）</em>用于展示在一个页面展示多个表格数据,并且每次切换时刷新</div> -->
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="#omgrecord" data-toggle="tab">OMG游戏汇总</a></li>
+            <li><a href="#jdbrecord" data-toggle="tab">JDB游戏汇总</a></li>
+        </ul>
+    </div>
+
+
+    <div class="panel-body">
+        <div id="myTabContent" class="tab-content">
+            <!-- omg -->
+            <div class="tab-pane fade active in" id="omgrecord">
+                <div id="toolbar1" class="toolbar">
+                    {:build_toolbar('refresh')}
+                    <a href="javascript:;" class="btn btn-warning" style="font-size:14px;color:#fff;">
+                        <span class="extend">
+                            下注金额：<span id="bet_amount">0</span>
+                            注单数：<span id="bet_count">0</span>
+                            输赢金额：<span id="transfer_amount">0</span>
+                            派彩金额：<span id="win_amount">0</span>
+                        </span>
+                    </a>
+                </div>
+                <table id="omgrecord_table" class="table table-striped table-bordered table-hover" width="100%">
+                </table>
+            </div>
+
+            <!-- jdb -->
+            <div class="tab-pane fade" id="jdbrecord">
+                <div id="toolbar2" class="toolbar">
+                    {:build_toolbar('refresh')}
+                    <a href="javascript:;" class="btn btn-danger" style="font-size:14px;color:#fff;">
+                        <span class="extend">
+                            下注金额：<span id="jdb_bet_amount">0</span>
+                            注单数：<span id="jdb_bet_count">0</span>
+                            输赢金额：<span id="jdb_transfer_amount">0</span>
+                            派彩金额：<span id="jdb_win_amount">0</span>
+                        </span>
+                    </a>
+                </div>
+                <table id="jdbrecord_table" class="table table-striped table-bordered table-hover" width="100%">
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>

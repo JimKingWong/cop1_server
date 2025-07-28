@@ -143,6 +143,6 @@ class User extends Model
 
     public function usersetting()
     {
-        return $this->hasOne('\app\common\model\UserSetting', 'user_id', 'id');
+        return $this->hasOne('\app\common\model\UserSetting', 'user_id', 'id')->setEagerlyType(0);
     }
 }

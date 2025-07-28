@@ -6,6 +6,7 @@
             <li class="active {:$auth->check('user/user/balance')?'':'hide'}"><a href="#tab-balance" data-value="" data-toggle="tab">余额修改</a></li>
             <li class="{:$auth->check('user/user/box')?'':'hide'}"><a href="#tab-box" data-value="" data-toggle="tab">宝箱黑名单</a></li>
             <li class="{:$auth->check('user/user/rtp')?'':'hide'}"><a href="#tab-rtp" data-value="" data-toggle="tab">点控设置</a></li>
+            <li class="{:$auth->check('user/user/risk')?'':'hide'}"><a href="#tab-risk" data-value="" data-toggle="tab">风控设置</a></li>
             <li class="{:$auth->check('user/user/parent')?'':'hide'}"><a href="#tab-parent" data-value="" data-toggle="tab">换绑</a></li>
             <li class="{:$auth->check('user/user/unbind')?'':'hide'}"><a href="#tab-unbind" data-value="" data-toggle="tab">掉绑</a></li>
             <li class="{:$auth->check('user/user/commission')?'':'hide'}"><a href="#tab-commission" data-value="" data-toggle="tab">充值分佣设置</a></li>
@@ -90,6 +91,31 @@
                             <label for="c-rtp_rate" class="control-label col-xs-12 col-sm-2">{:__('RTP值')}:</label>
                             <div class="col-xs-6 col-sm-4">
                                 <input id="c-rtp_rate" class="form-control" name="row[rtp_rate]" type="text" value="{$row.usersetting.rtp_rate}">
+                            </div>
+                        </div>
+                   
+                        <div class="form-group">
+                            <label class="control-label col-xs-12 col-sm-2"></label>
+                            <div class="col-xs-12 col-sm-8">
+                                <button type="submit" class="btn btn-success btn-embossed ">确定</button>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+             <!-- 风控设置 -->
+            <div class="tab-pane fade " id="tab-risk">
+                <div class="widget-body no-padding">
+                     <div class="alert alert-info-light" style="margin-bottom:10px;">
+                        <b class="text-red">提示: 下三级的都会设置为刷子</b> 
+                    </div>
+                    <form id="develop-form" class="develop-form form-horizontal" role="form" data-toggle="validator" method="POST" action="{:url('user.user/setting?type=risk&ids=' . $row['id'])}">
+                        <div class="form-group">
+                            <label for="c-risk" class="control-label col-xs-12 col-sm-2">{:__('刷子')}:</label>
+                            <div class="col-xs-6 col-sm-4">
+                                {:build_radios('row[is_risk]', ['0'=>__('否'), '1'=>__('是')], $row['usersetting']['is_risk'])}
                             </div>
                         </div>
                    

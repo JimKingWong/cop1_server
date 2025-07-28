@@ -45,6 +45,7 @@ class Record extends Backend
      */
     public function omgrecord()
     {
+        ini_set('memory_limit', '1024M');
         //设置过滤方法
         $this->request->filter(['strip_tags', 'trim']);
        
@@ -115,6 +116,7 @@ class Record extends Backend
      */
     public function jdbrecord()
     {
+        ini_set('memory_limit', '1024M');
         //设置过滤方法
         $this->request->filter(['strip_tags', 'trim']);
         if (false === $this->request->isAjax()) {

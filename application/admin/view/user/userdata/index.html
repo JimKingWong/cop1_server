@@ -9,19 +9,22 @@
     <div class="panel-heading">
         <!-- <div class="panel-lead"><em>多表格（Multitable）</em>用于展示在一个页面展示多个表格数据,并且每次切换时刷新</div> -->
         <ul class="nav nav-tabs">
-            <li class="active {:$auth->check('user/userdata/moneylog')}"><a href="#moneylog" data-toggle="tab">余额明细</a></li>
-            <li class="{:$auth->check('user/userdata/rewardlog')}"><a href="#rewardlog" data-toggle="tab">奖励明细</a></li>
-            <li class="{:$auth->check('user/userdata/recharge')}"><a href="#recharge" data-toggle="tab">充值明细</a></li>
-            <li class="{:$auth->check('user/userdata/withdraw')}"><a href="#withdraw" data-toggle="tab">提现明细</a></li>
+            <li class="active {:$auth->check('user/userdata/moneylog') ? '' : 'hide'}"><a href="#moneylog" data-toggle="tab">余额明细</a></li>
+            <li class="{:$auth->check('user/userdata/rewardlog') ? '' : 'hide'}"><a href="#rewardlog" data-toggle="tab">奖励明细</a></li>
+            <li class="{:$auth->check('user/userdata/signinlog') ? '' : 'hide'}"><a href="#signinlog" data-toggle="tab">签到明细</a></li>
+            <li class="{:$auth->check('user/userdata/turntablelog') ? '' : 'hide'}"><a href="#turntablelog" data-toggle="tab">转盘明细</a></li>
+            <li class="{:$auth->check('user/userdata/recharge') ? '' : 'hide'}"><a href="#recharge" data-toggle="tab">充值明细</a></li>
+            <li class="{:$auth->check('user/userdata/withdraw') ? '' : 'hide'}"><a href="#withdraw" data-toggle="tab">提现明细</a></li>
             {if $ids}
-            <li class="{:$auth->check('user/userdata/subuser')}"><a href="#subuser" data-toggle="tab">下级数据</a></li>
-            <li class="{:$auth->check('user/userdata/subuser')}"><a href="#unbind" data-toggle="tab">掉绑后数据</a></li>
+            <li class="{:$auth->check('user/userdata/subuser') ? '' : 'hide'}"><a href="#subuser" data-toggle="tab">下级数据</a></li>
+            <li class="{:$auth->check('user/userdata/subuser') ? '' : 'hide'}"><a href="#unbind" data-toggle="tab">掉绑后数据</a></li>
             {/if}
         </ul>
     </div>
     <div class="panel-body">
         <div id="myTabContent" class="tab-content">
 
+            <!-- 余额明细 -->
             <div class="tab-pane fade active in" id="moneylog">
                 <div id="toolbar1" class="toolbar">
                     {:build_toolbar('refresh')}
@@ -36,6 +39,24 @@
                     {:build_toolbar('refresh')}
                 </div>
                 <table id="rewardlog_table" class="table table-striped table-bordered table-hover" width="100%">
+                </table>
+            </div>
+
+            <!-- 签到明细 -->
+            <div class="tab-pane fade" id="signinlog">
+                <div id="toolbar2" class="toolbar">
+                    {:build_toolbar('refresh')}
+                </div>
+                <table id="signinlog_table" class="table table-striped table-bordered table-hover" width="100%">
+                </table>
+            </div>
+
+            <!-- 转盘明细 -->
+            <div class="tab-pane fade" id="turntablelog">
+                <div id="toolbar2" class="toolbar">
+                    {:build_toolbar('refresh')}
+                </div>
+                <table id="turntablelog_table" class="table table-striped table-bordered table-hover" width="100%">
                 </table>
             </div>
 
@@ -87,9 +108,9 @@
             <!-- 下级数据 -->
             <div class="tab-pane fade" id="subuser">
                 <div class="alert alert-info-light" style="margin-bottom:10px;">
-                    <b class="text-red">博主工资: <span id="salary">0</span></b> 
-                    <b class="text-red" style="margin-left: 20px;">系统分佣: <span id="commission">0</span></b>
-                    <b class="text-red" style="margin-left: 20px;">博主邀请有效人数: <span id="valid_users">0</span></b>
+                    <b class="text-red"><span class="salary-title">博主工资</span>: <span id="salary">0</span></b> 
+                    <b class="text-red" style="margin-left: 20px;"><span class="commission-title">系统分佣</span>: <span id="commission">0</span></b>
+                    <b class="text-red" style="margin-left: 20px;"><span class="valid_users-title">博主邀请有效人数</span>: <span id="valid_users">0</span></b>
                 </div>
 
                 <div id="toolbar5" class="toolbar">
@@ -105,9 +126,9 @@
             <!-- 掉绑后数据 -->
             <div class="tab-pane fade" id="unbind">
                 <div class="alert alert-info-light" style="margin-bottom:10px;">
-                    <b class="text-red">博主工资: <span id="unbind_salary">0</span></b> 
-                    <b class="text-red" style="margin-left: 20px;">系统分佣: <span id="unbind_commission">0</span></b>
-                    <b class="text-red" style="margin-left: 20px;">博主邀请有效人数: <span id="unbind_valid_users">0</span></b>
+                    <b class="text-red"><span class="salary-title">博主工资</span>: <span id="unbind_salary">0</span></b> 
+                    <b class="text-red" style="margin-left: 20px;"><span class="commission-title">系统分佣</span>: <span id="unbind_commission">0</span></b>
+                    <b class="text-red" style="margin-left: 20px;"><span class="valid_users-title">博主邀请有效人数</span>: <span id="unbind_valid_users">0</span></b>
                 </div>
 
                 <div id="toolbar6" class="toolbar">
@@ -119,3 +140,178 @@
         </div>
     </div>
 </div>
+
+<script type="text/html" id="itemtpl">
+  
+	<div class="wanl_order_list col-sm-12">
+		<table class="table table-bordered table-hover ">
+			<tbody>
+                <tr>
+                    <td class="fix-108">
+                        <%=item.level%>
+                    </td>
+                    <td class="fix-108">
+                        <%=item.total_user%>
+                    </td>
+                    <td class="fix-108">
+                        <%=item.valid_user%>
+                    </td>
+                    <td class="fix-108">
+                        <%=item.total_recharge_num%>
+                    </td>
+                    <td class="fix-108">
+                        <%=item.total_recharge_money%>
+                    </td>
+                    <td class="fix-108">
+                        <%=item.avg_recharge_money%>
+                    </td>
+                    <td class="fix-108">
+                        <%=item.total_withdraw_num%>
+                    </td>
+                    <td class="fix-108">
+                        <%=item.total_withdraw_money%>
+                    </td>
+                    <td class="fix-108">
+                        <%=item.total_bet%>
+                    </td>
+                </tr>
+			</tbody>
+		</table>
+	</div>
+</script>
+
+<script id="itemtplsubuser" type="text/html">
+    <!--form表单必须添加form-commsearch这个类-->
+    <form action="" class="form-commonsearch">
+        <div style="border-radius:2px;margin-bottom:10px;background:#f5f5f5;padding:15px 20px;">
+            <div class="row">
+                 <div class="col-xs-12 col-sm-6 col-md-3">
+                    <div class="form-group">
+                        <!--隐式的operate操作符，必须携带一个class为operate隐藏的文本框,且它的data-name="字段",值为操作符-->
+                        <input class="operate" type="hidden" data-name="language" value="="/>
+                        <div>
+                        {:build_radios('language', ['cn'=>__('中文'), 'en'=>__('English'), 'pt'=> __('Português'), 'spa'=> __('Español')])}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-6 col-md-3">
+                    <div class="form-group">
+                        <label class="control-label"></label>
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <input type="submit" class="btn btn-success btn-block checkout-lang" value="切换语音"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</script>
+
+<script type="text/html" id="unbindtpl">
+  
+	<div class="wanl_order_list col-sm-12">
+		<table class="table table-bordered table-hover ">
+			<tbody>
+                <tr>
+                    <td class="fix-108">
+                        <%=item.level%>
+                    </td>
+                    <td class="fix-108">
+                        <%=item.total_user%>
+                    </td>
+                    <td class="fix-108">
+                        <%=item.valid_user%>
+                    </td>
+                    <td class="fix-108">
+                        <%=item.total_recharge_num%>
+                    </td>
+                    <td class="fix-108">
+                        <%=item.total_recharge_money%>
+                    </td>
+                    <td class="fix-108">
+                        <%=item.avg_recharge_money%>
+                    </td>
+                    <td class="fix-108">
+                        <%=item.total_withdraw_num%>
+                    </td>
+                    <td class="fix-108">
+                        <%=item.total_withdraw_money%>
+                    </td>
+                    <td class="fix-108">
+                        <%=item.total_bet%>
+                    </td>
+                </tr>
+			</tbody>
+		</table>
+	</div>
+</script>
+
+<script id="itemtplunbind" type="text/html">
+    <!--form表单必须添加form-commsearch这个类-->
+    <form action="" class="form-commonsearch">
+        <div style="border-radius:2px;margin-bottom:10px;background:#f5f5f5;padding:15px 20px;">
+            <div class="row">
+                 <div class="col-xs-12 col-sm-6 col-md-3">
+                    <div class="form-group">
+                        <!--隐式的operate操作符，必须携带一个class为operate隐藏的文本框,且它的data-name="字段",值为操作符-->
+                        <input class="operate" type="hidden" data-name="lang" value="="/>
+                        <div>
+                        {:build_radios('lang', ['cn'=>__('中文'), 'en'=>__('English'), 'pt'=> __('Português'), 'spa'=> __('Español')])}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-6 col-md-3">
+                    <div class="form-group">
+                        <label class="control-label"></label>
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <input type="submit" class="btn btn-success btn-block checkout-lang" value="切换语音"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</script>
+
+
+<style type="text/css">
+	@page {
+		size: auto;
+		margin: 0mm;
+	}
+	
+	.fix-108{
+		width: 108px;
+		text-align: center;
+        vertical-align: middle;
+	}
+	.wanl_order_list .table>thead{
+		background: #f9fafc;
+	}
+	.bootstrap-table .table,
+	.bootstrap-table .table>thead>tr>th{
+		border-bottom: 1px solid #f1f1f1;
+	}
+	.table-bordered{
+		border: 1px solid #f1f1f1;
+	}
+	.table-bordered > thead > tr > th, 
+	.table-bordered > tbody > tr > td {
+		border: 1px solid #f1f1f1;
+		border-bottom: 0;
+	}
+	.table-bordered > thead > tr > th, label{
+		margin-bottom: 0;
+		font-weight: normal;
+	}
+	.table-hover > tbody > tr:hover {
+	  background-color: #fffbfb;
+	}
+    .wanl_order_list .operation a{
+		color: #565656;
+	}
+</style>

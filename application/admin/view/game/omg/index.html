@@ -31,7 +31,7 @@
                             </ul>
                         </div>
 
-                        <div class="dropdown btn-group {:$auth->check('game/games/multi')?'':'hide'}">
+                        <div class="dropdown btn-group {:$auth->check('game/omg/multi')?'':'hide'}">
                             <a class="btn btn-warning btn-more dropdown-toggle btn-disabled disabled" data-toggle="dropdown">{:__('是否维护')}</a>
                             <ul class="dropdown-menu text-left" role="menu">
                                 {foreach name="isWorksList" item="vo"}
@@ -40,8 +40,20 @@
                             </ul>
                         </div>
 
+                        <div class="dropdown btn-group {:$auth->check('game/omg/multi')?'':'hide'}">
+                            <a class="btn btn-success btn-more dropdown-toggle btn-disabled disabled" data-toggle="dropdown">{:__('设置游戏类型')}</a>
+                            <ul class="dropdown-menu text-left" role="menu">
+                                {foreach name="typeList" item="vo"}
+                                <li><a class="btn btn-link btn-multi btn-disabled disabled" href="javascript:" data-params="type={$key}">{:__('Set type to ' . $key)}</a></li>
+                                {/foreach}
+                            </ul>
+                        </div>
+
+
                         <!-- <a class="btn btn-success btn-recyclebin btn-dialog {:$auth->check('game/omg/recyclebin')?'':'hide'}" href="game/omg/recyclebin" title="{:__('Recycle bin')}"><i class="fa fa-recycle"></i> {:__('Recycle bin')}</a> -->
                         <a href="javascript:;" class="btn btn-info btn-patchadd btn-disabled disabled {:$auth->check('game/omg/patchadd')?'':'hide'}" title="{:__('归类游戏')}" >{:__('归类游戏')}</a>
+
+                        <a class="btn btn-danger btn-change btn-update {:$auth->check('game/omg/update')?'':'hide'}" data-params="action=start" data-url="game/omg/update" href="javascript:;">更新游戏</a>
 
                     </div>
                     <table id="table" class="table table-striped table-bordered table-hover table-nowrap"
