@@ -29,7 +29,7 @@ class Admin extends Model
 
         self::afterInsert(function($row){
             if(isset($row['role']) && $row['role'] > 2){
-                $data['invite_code'] = createInviteCode(config('system.agent_code_length'));
+                // $data['invite_code'] = createInviteCode(config('system.agent_code_length'));
             }
             // 业务员才要邀请码
             $data['admin_id'] = $row['id'];
