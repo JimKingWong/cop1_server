@@ -156,6 +156,7 @@ return [
     '下三级' => 'terceiro nível',
     '总计' => 'Total',
     '您只允许从同一个IP创建3个帐户' => 'Só é permitido criar 3 contas a partir do mesmo IP.',
+    '请切换通道' => 'Por favor mude de canal',
 
 
     '今日投注金额不足' => 'Valor de aposta insuficiente hoje',
@@ -206,4 +207,9 @@ return [
     '注册赠送' => 'Bônus de inscrição',
     '充值佣金' => 'Comissão de recarga',
     'PG下注奖励' => 'Bónus de aposta PG',
+    '退款' => 'Reembolso',
+    '充值赠送' => 'Recarregar presente',
+    '签到奖励' => 'Recompensas de login',
+
+
 ];

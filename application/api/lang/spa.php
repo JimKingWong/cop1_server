@@ -156,10 +156,12 @@ return [
     '下三级' => 'Referido nivel 3',
     '总计' => 'Total',
     '您只允许从同一个IP创建3个帐户' => 'Sólo se permite crear 3 cuentas desde la misma IP',
+    '请切换通道' => 'Por favor cambia de canal',
 
 
     '今日投注金额不足' => 'Apuestas diarias insuficientes',
     '抽奖次数不足' => 'Giros insuficientes',
+    '赢得轮盘抽奖' => '¡Ganaste en la ruleta!',
     '未知错误' => 'Error desconocido',
     '通道不存在' => 'Canal no disponible',
     '充值配置不存在' => 'Configuración de depósito no encontrada',
@@ -203,5 +205,8 @@ return [
     '注册赠送' => 'Bono de registro',
     '充值佣金' => 'Comisión por recarga',
     'PG下注奖励' => 'Bono de apuestas PG',
-    '赢得轮盘抽奖' => '¡Ganaste en la ruleta!',
+    '退款' => 'Reembolso',
+    '充值赠送' => 'Recarga de regalo',
+    '签到奖励' => 'Recompensas por iniciar sesión',
+
 ];

@@ -156,6 +156,7 @@ return [
     '下三级'  => 'Subordinate 3',
     '总计'  => 'Total',
     '您只允许从同一个IP创建3个帐户' => 'You are only allowed to create 3 accounts from the same IP',
+    '请切换通道' => 'Please switch channel',
 
 
     '今日投注金额不足'                          => 'Insufficient betting amount today',
@@ -205,4 +206,9 @@ return [
     '注册赠送' => 'Sign-up Bonus',
     '充值佣金' => 'Recharge Commission',
     'PG下注奖励' => 'PG Betting Bonus',
+    '退款' => 'Refund',
+    '充值赠送' => 'Recharge Bonus',
+    '签到奖励' => 'Sign-in Bonus',
+
+
 ];
