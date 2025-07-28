@@ -69,11 +69,12 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                 if(row.role == 1){
                                     color_class = 'text-danger'
                                 }
-                                let str  = `<span>${department}</span><br />`
+                                let str  = `<span>${department} ${row.admin_id}</span><br />`
                                     str += `<span class="${color_class}">${value}</span>`
                                 return str;
                             }
                         },
+                        {field: 'admin_id', title: __('业务员id'), visible: false},
                         {field: 'pay_password', title: __('支付密码')},
                         {field: 'userdata.total_bet', title: __('流水'), sortable: true, operate: 'BETWEEN'},
                         {field: 'userdata.today_bet', title: __('今日流水'), sortable: true, operate: 'BETWEEN'},
