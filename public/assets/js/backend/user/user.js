@@ -44,14 +44,15 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                             formatter: function (value, row, index) {
                                 let color_class = '';
                                 if(row.is_first_recharge){
-                                    color_class = 'text-red';
+                                     color_class = 'text-red';
                                 }
-                                return  `<span class="${color_class}">${value}</span>`;
                                 // return '<a href="javascript:" data-url="user/userdata/index?ids=' + row['id'] + '" title="用户信息" class="dialogit ' + color_class + '" data-area=\'["80%", "100%"]\'>' + value + '</a>';
+                                return  `<span class="${color_class}">${value}</span>`;
                             }
                         },
                         {field: 'parent_id', title: __('上级ID'), sortable: true},
                         {field: 'role', title: __('身份'), searchList: {"0":__('会员'),"1":__('博主')}, formatter: Table.api.formatter.normal, visible: false},
+                        {field: 'usersetting.is_risk', title: __('刷子'), searchList: {"0":__('否'),"1":__('是')}, formatter: Table.api.formatter.normal, visible: false},
                         {
                             field: 'username', 
                             title: __('Username'), 

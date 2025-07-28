@@ -1,4 +1,4 @@
-define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefined, Backend, Table, Form) {
+define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'template'], function ($, undefined, Backend, Table, Form, Template) {
 
     var Controller = {
         index: function () {
@@ -109,6 +109,103 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
 
                 // 为表格2绑定事件
                 Table.api.bindevent(rewardlog_table);
+            },
+            signinlog: function () {
+                var signinlog_table = $("#signinlog_table");
+                signinlog_table.bootstrapTable({
+                    url: 'user/userdata/signinlog',
+                    extend: {
+                        index_url: '',
+                        add_url: '',
+                        edit_url: '',
+                        del_url: '',
+                        multi_url: '',
+                        table: '',
+                    },
+                    toolbar: '#toolbar7',
+                    sortName: 'id',
+                    search: false,
+                    searchFormVisible: false,
+                    // commonSearch: false,
+                    showExport: false,
+                    showColumns: false,
+                    showToggle: false,
+                    columns: [
+                        [
+                            {field: 'user_id', title: __('User_id'), operate: false},
+                            {field: 'user.username', title: __('User.username'), operate: false},
+                            {field: 'days', title: __('连续签到次数'), operate: false},
+                            {field: 'money', title: __('Money'), operate: false},
+                            {field: 'createtime', title: __('签到时间'), operate: false, addclass:'datetimerange', autocomplete:false},
+                        ]
+                    ],
+                    queryParams: function (params) {
+                        //这里可以追加搜索条件
+                        var filter = JSON.parse(params.filter);
+                        var op = JSON.parse(params.op);
+                        //这里可以动态赋值，比如从URL中获取admin_id的值，filter.admin_id=Fast.api.query('admin_id');
+                        if(Config.user_id){
+                            filter.user_id = Config.user_id;
+                            op.user_id = "=";
+                        }
+                        params.filter = JSON.stringify(filter);
+                        params.op = JSON.stringify(op);
+                        return params;
+                    },
+                });
+
+                // 为表格2绑定事件
+                Table.api.bindevent(signinlog_table);
+            },
+            turntablelog: function () {
+                var turntablelog_table = $("#turntablelog_table");
+                turntablelog_table.bootstrapTable({
+                    url: 'user/userdata/turntablelog',
+                    extend: {
+                        index_url: '',
+                        add_url: '',
+                        edit_url: '',
+                        del_url: '',
+                        multi_url: '',
+                        table: '',
+                    },
+                    toolbar: '#toolbar8',
+                    sortName: 'id',
+                    search: false,
+                    searchFormVisible: false,
+                    // commonSearch: false,
+                    showExport: false,
+                    showColumns: false,
+                    showToggle: false,
+                    columns: [
+                        [
+                            {field: 'id', title: __('Id')},
+                            {field: 'user_id', title: __('User_id'), operate: false},
+                            {field: 'user.username', title: __('User.username'), operate: false},
+                            // {field: 'type', title: __('Type'), searchList: {"silver":__('Type silver'),"golden":__('Type golden'),"diamond":__('Type diamond')}, formatter: Table.api.formatter.normal, operate: false},
+                            {field: 'turntable_id', title: __('转盘id'), operate: false},
+                            {field: 'today_bet', title: __('当日流水'), operate: false},
+                            {field: 'money', title: __('金额'), operate: false},
+                            {field: 'createtime', title: __('Createtime'), operate: false, addclass:'datetimerange', autocomplete:false},
+                        ]
+                    ],
+                    queryParams: function (params) {
+                        //这里可以追加搜索条件
+                        var filter = JSON.parse(params.filter);
+                        var op = JSON.parse(params.op);
+                        //这里可以动态赋值，比如从URL中获取admin_id的值，filter.admin_id=Fast.api.query('admin_id');
+                        if(Config.user_id){
+                            filter.user_id = Config.user_id;
+                            op.user_id = "=";
+                        }
+                        params.filter = JSON.stringify(filter);
+                        params.op = JSON.stringify(op);
+                        return params;
+                    },
+                });
+
+                // 为表格2绑定事件
+                Table.api.bindevent(turntablelog_table);
             },
             recharge: function () {
                 var recharge_table = $("#recharge_table");
@@ -281,11 +378,12 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
             },
             subuser: function () {
                 var subuser_table = $("#subuser_table");
+                Template.helper("Moment", Moment);
 
                 //当表格数据加载完成时
                 subuser_table.on('load-success.bs.table', function (e, data) {
                     //这里可以获取从服务端获取的JSON数据
-                    console.log(data);
+                    // console.log(data);
                     //这里我们手动设置底部的值
                     $("#salary").text(data.extend.salary);
                     $("#commission").text(data.extend.commission);
@@ -295,30 +393,69 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 subuser_table.bootstrapTable({
                     url: 'user/userdata/subuser',
                     toolbar: '#toolbar5',
+                    templateView: true,
+                    searchFormTemplate: 'itemtplsubuser',
                     search: false,
-                    commonSearch: false,
+                    searchFormVisible: true,
+                    pagination: false,
                     columns: [
                         [
-                            {field: 'level', title: __('等级')},
-                            {field: 'total_user', title: __('总人数')},
-                            {field: 'valid_user', title: __('业务员有效用户')},
-                            {field: 'total_recharge_num', title: __('充值人数')},
-                            {field: 'total_recharge_money', title: __('充值金额')},
-                            {field: 'avg_recharge_money', title: __('平均充值')},
-                            {field: 'total_withdraw_num', title: __('提现人数')},
-                            {field: 'total_withdraw_money', title: __('提现金额')},
-                            {field: 'total_bet', title: __('总流水')},
+                            {field: 'level', title: __('等级'), operate: false},
+                            {field: 'total_user', title: __('总人数'), operate: false},
+                            {field: 'valid_user', title: __('业务员有效用户'), operate: false},
+                            {field: 'total_recharge_num', title: __('充值人数'), operate: false},
+                            {field: 'total_recharge_money', title: __('充值金额'), operate: false},
+                            {field: 'avg_recharge_money', title: __('平均充值'), operate: false},
+                            {field: 'total_withdraw_num', title: __('提现人数'), operate: false},
+                            {field: 'total_withdraw_money', title: __('提现金额'), operate: false},
+                            {field: 'total_bet', title: __('总流水'), operate: false},
                         ]
                     ],
                     queryParams: function (params) {
+                        
                         if(Config.user_id){
+                            let language = $('input[name="language"]:checked').val();
+
+                            let langArr = {
+                                'cn': {
+                                    'checkout_lang': '切换语音',
+                                    'salary': '博主工资',
+                                    'commission': '系统佣金',
+                                    'valid_users': '博主邀请有效用户'
+                                },
+                               'en': {
+                                    'checkout_lang': 'Switch language',
+                                    'salary': 'Salary',
+                                    'commission': 'Commission',
+                                    'valid_users': 'Valid users'
+                                },
+                                'pt': {
+                                    'checkout_lang': 'Mudar idioma',
+                                    'salary': 'Salário',
+                                    'commission': 'Comissão',
+                                    'valid_users': 'Usuários válidos'
+                                },
+                                'spa': {
+                                    'checkout_lang': 'Cambiar idioma',
+                                    'salary': 'Salario',
+                                    'commission': 'Comisión',
+                                    'valid_users': 'Usuarios válidos'
+                               }
+                            }
+
+                            $('.checkout-lang').val(langArr[language].checkout_lang);
+                            $('.salary-title').text(langArr[language].salary);
+                            $('.commission-title').text(langArr[language].commission);
+                            $('.valid_users-title').text(langArr[language].valid_users);
                             //这里可以追加搜索条件
                             var filter = {};
                             var op = {};
+                             if(language){
+                                filter.language = language;
+                                op.language = "=";
+                            }
                             filter.user_id = Config.user_id;
                             op.user_id = "=";
-                            filter.withdraw_id = Config.withdraw_id;
-                            op.withdraw_id = "=";
                             params.filter = JSON.stringify(filter);
                             params.op = JSON.stringify(op);
                             return params;
@@ -333,10 +470,13 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
             unbind: function () {
                 var unbind_table = $("#unbind_table");
 
+                Template.helper("Moment", Moment);
+
+
                 //当表格数据加载完成时
                 unbind_table.on('load-success.bs.table', function (e, data) {
                     //这里可以获取从服务端获取的JSON数据
-                    console.log(data);
+                    // console.log(data);
                     //这里我们手动设置底部的值
                     $("#unbind_salary").text(data.extend.salary);
                     $("#unbind_commission").text(data.extend.commission);
@@ -346,27 +486,66 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 unbind_table.bootstrapTable({
                     url: 'user/userdata/unbind',
                     toolbar: '#toolbar6',
+                    templateView: true,
+                    searchFormTemplate: 'itemtplunbind',
                     search: false,
-                    commonSearch: false,
+                    searchFormVisible: true,
+                    pagination: false,
                     columns: [
                         [
-                            {field: 'level', title: __('等级')},
-                            {field: 'total_user', title: __('总人数')},
-                            {field: 'valid_user', title: __('业务员有效用户')},
-                            {field: 'total_recharge_num', title: __('充值人数')},
-                            {field: 'total_recharge_money', title: __('充值金额')},
-                            {field: 'avg_recharge_money', title: __('平均充值')},
-                            {field: 'total_withdraw_num', title: __('提现人数')},
-                            {field: 'total_withdraw_money', title: __('提现金额')},
-                            {field: 'total_bet', title: __('总流水')},
+                            {field: 'level', title: __('等级'), operate: false},
+                            {field: 'total_user', title: __('总人数'), operate: false},
+                            {field: 'valid_user', title: __('业务员有效用户'), operate: false},
+                            {field: 'total_recharge_num', title: __('充值人数'), operate: false},
+                            {field: 'total_recharge_money', title: __('充值金额'), operate: false},
+                            {field: 'avg_recharge_money', title: __('平均充值'), operate: false},
+                            {field: 'total_withdraw_num', title: __('提现人数'), operate: false},
+                            {field: 'total_withdraw_money', title: __('提现金额'), operate: false},
+                            {field: 'total_bet', title: __('总流水'), operate: false},
                         ]
                     ],
                     queryParams: function (params) {
                         if(Config.user_id){
+                            let language = $('input[name="lang"]:checked').val();
+
+                            let langArr = {
+                                'cn': {
+                                    'checkout_lang': '切换语音',
+                                    'salary': '博主工资',
+                                    'commission': '系统佣金',
+                                    'valid_users': '博主邀请有效用户'
+                                },
+                               'en': {
+                                    'checkout_lang': 'Switch language',
+                                    'salary': 'Salary',
+                                    'commission': 'Commission',
+                                    'valid_users': 'Valid users'
+                                },
+                                'pt': {
+                                    'checkout_lang': 'Mudar idioma',
+                                    'salary': 'Salário',
+                                    'commission': 'Comissão',
+                                    'valid_users': 'Usuários válidos'
+                                },
+                                'spa': {
+                                    'checkout_lang': 'Cambiar idioma',
+                                    'salary': 'Salario',
+                                    'commission': 'Comisión',
+                                    'valid_users': 'Usuarios válidos'
+                               }
+                            }
+
+                            $('.checkout-lang').val(langArr[language].checkout_lang);
+                            $('.salary-title').text(langArr[language].salary);
+                            $('.commission-title').text(langArr[language].commission);
+                            $('.valid_users-title').text(langArr[language].valid_users);
                             //这里可以追加搜索条件
                             var filter = {};
                             var op = {};
-                            
+                             if(language){
+                                filter.language = language;
+                                op.language = "=";
+                            }
                             filter.user_id = Config.user_id;
                             op.user_id = "=";
                             params.filter = JSON.stringify(filter);

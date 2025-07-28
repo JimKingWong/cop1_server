@@ -53,6 +53,15 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 Backend.api.open('game/omg/patchadd?ids=' + ids.join(","), '归类游戏', {area: ['40%', '60%']});
             
             });
+
+            $(document).on("click", ".btn-update", function () {
+                //在table外不可以使用添加.btn-change的方法
+                Fast.api.ajax('game/omg/update', '', function (data, ret) {
+                    layer.msg(ret.msg);
+                    $(".btn-refresh").trigger("click");
+                })
+            });
+
             // 为表格绑定事件
             Table.api.bindevent(table);
         },

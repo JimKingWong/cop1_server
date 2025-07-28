@@ -5,13 +5,13 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
             // 初始化表格参数配置
             Table.api.init({
                 extend: {
-                    index_url: 'user/turntablelog/index' + location.search,
-                    add_url: 'user/turntablelog/add',
-                    edit_url: 'user/turntablelog/edit',
-                    del_url: 'user/turntablelog/del',
-                    multi_url: 'user/turntablelog/multi',
-                    import_url: 'user/turntablelog/import',
-                    table: 'user_turntable_log',
+                    index_url: 'user/signin/index' + location.search,
+                    add_url: 'user/signin/add',
+                    edit_url: 'user/signin/edit',
+                    del_url: 'user/signin/del',
+                    multi_url: 'user/signin/multi',
+                    import_url: 'user/signin/import',
+                    table: 'user_signin_log',
                 }
             });
 
@@ -24,13 +24,11 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 sortName: 'id',
                 columns: [
                     [
-                        {field: 'id', title: __('Id')},
                         {field: 'user_id', title: __('User_id')},
                         {field: 'user.username', title: __('User.username'), operate: 'LIKE'},
-                        {field: 'type', title: __('Type'), searchList: {"silver":__('Type silver'),"golden":__('Type golden'),"diamond":__('Type diamond')}, formatter: Table.api.formatter.normal},
-                        {field: 'turntable_id', title: __('Turntable_id')},
-                        {field: 'today_bet', title: __('Today_bet')},
+                        {field: 'days', title: __('Days')},
                         {field: 'money', title: __('Money'), operate:'BETWEEN'},
+                        {field: 'type', title: __('Type'), searchList: {"0":__('Type 0'),"1":__('Type 1')}, formatter: Table.api.formatter.normal},
                         {field: 'createtime', title: __('Createtime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false},
                     ]
                 ]
