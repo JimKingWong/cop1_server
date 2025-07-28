@@ -2,8 +2,6 @@
 
 namespace app\common\service\util;
 
-use think\Db;
-
 /**
  * 项目启动
  */
@@ -122,50 +120,4 @@ class Startup
         }
     }
     
-    /**
-     * 清理数据库数据
-     */
-    public static function clearData()
-    {
-        $prefix = config('database.prefix');
-
-        // 需要截断表的
-        $needClear = [
-            'admin_log', 'box_record', 'daybookadmin', 'daybookblogger', 'letter', 'letter_read', 
-            'mydata', 'prize_log', 'recharge', 'user', 'user_collect_log', 'user_data', 'user_info',
-            'user_money_log', 'user_reward_log', 'user_setting', 'user_signin_log', 'user_turntable_log',
-            'user_vip_log', 'user_wallet', 'withdraw'
-        ];
-        foreach($needClear as $v){
-            Db::query('TRUNCATE TABLE ' . $prefix . $v);
-            echo $v . ' 清空成功! ' . '<br>';
-        }
-
-        // 保存数据, 只清理一些数据, 不清理id
-        $admindata = model('AdminData')->select();
-        foreach($admindata as $v){
-            $v->recharge_amount = 0;
-            $v->withdraw_amount = 0;
-            $v->send_amount = 0;
-            $v->quota = 0;
-            $v->save();
-        }
-
-        $site = model('Site')->select();
-        foreach($site as $k => $v){
-            if($k > 0){
-                $v->delete();
-            }
-        }
-        Db::execute("ALTER TABLE ga_site AUTO_INCREMENT = 2");
-
-        // 转盘数据
-        $turntable = model('Turntable')->select();
-        foreach($turntable as $v){
-            $v->num = 0;
-            $v->left = $v->total;
-            $v->save();
-        }
-        
-    }
 }
