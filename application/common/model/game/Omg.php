@@ -2,6 +2,7 @@
 
 namespace app\common\model\game;
 
+use app\common\model\Game;
 use think\Model;
 use traits\model\SoftDelete;
 
@@ -45,5 +46,35 @@ class Omg extends Model
             8 => 'Hacksaw', 
             25 => 'ASKME'
         ];
+    }
+
+    
+    /**
+     * 获取omgcode
+     */
+    public static function omgCode($user)
+    {
+        // 刷子直接走这个
+        if($user->usersetting->is_risk == 1){
+            return 'pg_omg_100X';
+        }
+
+        // 测试用户
+        if($user->is_test == 1){
+            return 'pgomg_test';
+        }
+
+        $rate = Game::withDrawRate();
+        if($rate < 45){
+            $code = 'pg_omg_500X';
+        }elseif($rate >= 45 && $rate < 55){
+            $code = 'pgomg';
+        }elseif($rate >= 55 && $rate < 60){
+            $code = 'pg_omg_1500X';
+        }elseif($rate >= 60){
+            $code = 'pg_omg_2000X';
+        }
+
+        return $code;
     }
 }

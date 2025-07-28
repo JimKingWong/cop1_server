@@ -78,6 +78,12 @@ class Game extends Base
         }
         // dd($omg);
 
+        // omg分流
+        if($table_name == 'game_omg'){
+            $code = \app\common\model\game\Omg::omgCode($user);
+            $map['code'] = $code;
+        }
+
         // 获取游戏服务
         $map['table_name'] = $table_name;
         $platform = $this->model::services($map);

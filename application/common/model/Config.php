@@ -179,7 +179,7 @@ class Config extends Model
         $uploadcfg['thumbstyle'] = $uploadcfg['thumbstyle'] ?? '';
 
         $upload = [
-            'cdnurl'     => $uploadcfg['cdnurl'],
+            'cdnurl'     => is_local_env() ? $uploadcfg['localcdnurl'] : $uploadcfg['cdnurl'],
             'uploadurl'  => $uploadurl,
             'bucket'     => 'local',
             'maxsize'    => $uploadcfg['maxsize'],

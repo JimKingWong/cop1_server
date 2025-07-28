@@ -51,7 +51,7 @@ class Platform extends Base
         $language = db('language')->where('status', 1)->order('weigh desc')->field('id,name,title,is_default')->cache(true)->select();
 
         // 签到状态
-        $signin = Activity::where('name', 'signin_bonus')->cache(true, 86400)->find();
+        $signin = Activity::where('name', 'signin_bonus')->find();
         $signin_status = $signin['status'] ?? 0;
 
         $retval = [

@@ -117,7 +117,7 @@ class Omg extends Base
         // 设置用户rtp
         $rtp = $this->getUserRtp($user);
         if($rtp){
-            $this->setRtp($user['id'], $rtp);
+            $this->setRtp($user, $rtp);
             $user->usersetting->rtp_rate = $rtp;
             $user->usersetting->save();
         }
@@ -161,12 +161,19 @@ class Omg extends Base
     /**
      * 设置rtp
      */
-    public function setRtp($uname, $rtp, $switch = 2)
+    public function setRtp($user, $rtp, $switch = 2)
     {
+        $uname = (string)$user['id'];
+
+        $code = $this->model::omgCode($user);
+        $platform = Platform::where('code', $code)->find();
+        $app_id = $platform->config['app_id'] ?? '';
+        $secret_key = $platform->config['secret_key'] ?? '';
+
         $trace_id = Sign::generateTraceId();
         $apiUrl = 'https://api-backend.omgapi.cc/api/v1/merchant/outer/rtp/control?trace_id=' . $trace_id;
         $data = [
-            'app_id'    => $this->app_id,
+            'app_id'    => $app_id,
             'uname'     => (string)$uname,
             'rtp'       => $rtp * 1000,
             'switch'    => $switch,
@@ -176,7 +183,7 @@ class Omg extends Base
 
         $jsonData = json_encode($data);
 
-        $sign = Sign::omgSign($urlParams, $jsonData, $this->secret_key);
+        $sign = Sign::omgSign($urlParams, $jsonData, $secret_key);
 
         // 设置请求头
         $header = [
@@ -323,7 +330,7 @@ class Omg extends Base
             $user->money = $money;
             $user->save();
             
-            if($data['app_id'] == $this->app_id){
+            if($user->is_test == 0){
                 // 添加ES记录
                 $betInfoArr = [
                     'transaction_id'    => $transfer_id,
@@ -388,7 +395,7 @@ class Omg extends Base
             $user->money = bcadd($user->money, $win_amount, 2);
             $user->save();
             
-            if($data['app_id'] == $this->app_id){
+            if($user->is_test == 0){
                 // 添加ES记录
                 $betInfoArr = [
                     'transaction_id'    => $transfer_id,
@@ -451,7 +458,7 @@ class Omg extends Base
             $user->save();
             
             //正式环境
-            if($data['app_id'] == $this->app_id){
+            if($user->is_test == 0){
                 // 添加ES记录
                 $betInfoArr = [
                     'transaction_id'    => $transfer_id,
@@ -530,7 +537,7 @@ class Omg extends Base
             $user->money = bcadd($user->money, $transfer_amount, 2);
             $user->save();
             
-            if($data['app_id'] == $this->app_id){
+            if($user->is_test == 0){
                 // 添加ES记录
                 $betInfoArr = [
                     'transaction_id'    => $transfer_id,
@@ -601,7 +608,7 @@ class Omg extends Base
             $user->money = bcsub($user->money, $transfer_amount, 2);
             $user->save();
             
-            if($data['app_id'] == $this->app_id){
+            if($user->is_test == 0){
                 // 添加ES记录
                 $betInfoArr = [
                     'transaction_id'    => $transfer_id,
@@ -655,7 +662,7 @@ class Omg extends Base
         
         $res = json_decode($res, true);
         
-        $this->syncGameList($res['data']);
+        return $this->syncGameList($res['data']);
     }
     
     /**
@@ -665,6 +672,7 @@ class Omg extends Base
      */
     protected function syncGameList(array $gameList)
     {
+        $count = 0;
         Db::startTrans();
         try {
             $insertData = [];
@@ -694,10 +702,11 @@ class Omg extends Base
             if(!empty($insertData)){
                 // 批量插入新游戏（使用INSERT IGNORE防止潜在冲突）
                 Db::name('game_omg')->insertAll($insertData);
+                $count = count($insertData);
             }
             
             Db::commit();
-            return true;
+            return $count;
             
         } catch (\Exception $e) {
             Db::rollback();

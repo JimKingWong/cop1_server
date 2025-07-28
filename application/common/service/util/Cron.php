@@ -388,13 +388,23 @@ class Cron
 
         foreach($withdraws as $withdraw){
             $withdraw_money += $withdraw['money'];
-            if(in_array($withdraw['user_id'], $blogger_user_ids)){
-                $blogger_withdraw_money += $withdraw['money'];
-            }
+            // if(in_array($withdraw['user_id'], $blogger_user_ids)){
+            //     $blogger_withdraw_money += $withdraw['money'];
+            // }
         }
 
         // 客户提现金额
-        $member_withdraw_money = $withdraw_money - $blogger_withdraw_money;
+        // $member_withdraw_money = $withdraw_money - $blogger_withdraw_money;
+        
+        $member_withdraw_money = Withdraw::alias('w')
+        ->join('ga_user u', 'w.user_id = u.id')
+        ->whereTime('w.createtime', 'today')
+        ->where('w.status', '1')
+        ->where('w.is_virtual', 0)
+        ->where('u.role', 0)
+        ->sum('w.money');
+        
+        $blogger_withdraw_money = $withdraw_money-$member_withdraw_money;
 
         echo '提现金额: ' . $withdraw_money. "\n";
         echo '博主提现金额: ' . $blogger_withdraw_money. "\n";

@@ -2,7 +2,9 @@
 
 namespace app\common\model;
 
+use app\common\model\game\Omg;
 use app\common\model\game\Platform;
+use think\Cache;
 use think\Model;
 use traits\model\SoftDelete;
 
@@ -70,5 +72,26 @@ class Game extends Model
         return $platform;
     }
 
-    
+    /**
+     * 玩家提款率
+     */
+    public static function withDrawRate()
+    {
+        $rate = Cache::store('redis')->get('withdraw_rate');
+        if(!$rate){
+            $where['b.role'] = 0;
+            $where['b.is_test'] = 0;
+            $recharge_money = Recharge::alias('a')->join('user b', 'a.user_id = b.id')->where('a.status', '1')->whereTime('a.paytime', 'today')->where($where)->sum('a.money');
+
+            $withdraw_money = Withdraw::alias('a')->join('user b', 'a.user_id = b.id')->where('a.status', '1')->whereTime('a.paytime', 'today')->where($where)->sum('a.money');
+
+            if($recharge_money > 0){
+                $rate = round($withdraw_money / $recharge_money, 2) * 100;
+            }
+            \think\Log::record($rate, 'withdraw_rate');
+            Cache::store('redis')->set('withdraw_rate', $rate, 3600);
+        }
+        
+        return $rate;
+    }
 }

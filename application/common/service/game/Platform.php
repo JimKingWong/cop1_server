@@ -61,7 +61,7 @@ class Platform extends Base
             "gameid"    => $game_id,
             "token"     => $token,
             "nick"      => $this->auth->nickname,
-            "lang"      => 'pt',
+            "lang"      => $language,
             "cid"       => 8,
         ];
         // dd($data);

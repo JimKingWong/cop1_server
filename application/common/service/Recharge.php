@@ -131,6 +131,10 @@ class Recharge extends Base
             $this->error(__('通道不存在'));
         }
 
+        if($channel['max_money'] > 0 && $money > $channel['max_money']){
+            $this->error(__('请切换通道'));
+        }
+        
         // 充值配置
         $config = $channel->recharge_config;
         if(!$config){
@@ -158,7 +162,7 @@ class Recharge extends Base
 
         $gift_amount = 0;
         foreach($configList as $val){
-            if($money >= $val['min_money'] && $money <= $val['max_money']){
+            if($money >= $val['min_money'] && $money < $val['max_money']){
                 $recharge_config_id = $val['id'];
                 $gift_amount = $val['gift_amount'];
                 break;
