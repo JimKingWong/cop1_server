@@ -287,7 +287,7 @@ class Recharge extends Base
         return 'OK';
     }
 
-      /**
+    /**
      * ouropago 充值回调接口
      */
     public function ouropago_recharge()
@@ -324,6 +324,47 @@ class Recharge extends Base
 
         if($params['status'] == 'SUCCESS'){
             $amount = $params['price'] / 100; // 转为元
+            
+            $this->notify($order, $amount, $activity);
+        }
+        
+        return 'success';
+    }
+
+    /**
+     * funpay 充值回调接口
+     */
+    public function funpay_recharge()
+    {
+        $params = $this->request->param();
+     
+        \think\Log::record($params,'funpay_recharge_param');
+        
+        $where['order_no'] = $params['orderNo'];
+        $where['status'] = '0';
+        $order = $this->model->where($where)->find();
+        if(!$order){
+            // 订单不存在
+            return 'fail'; 
+        }
+
+        // 用户cpf补上
+        $order->cpf = $params['real_cpf'] ?? '';
+
+        // 获取配置
+        $config = $order->channel->recharge_config;
+
+        // IP白名单验证通过
+        $ip = getUserIP();
+        if(isset($config['ip_white_list']) && !in_array($ip, explode(',', $config['ip_white_list']))){
+            return 'fail'; // IP白名单验证不通过
+        }
+
+        // 首充活动
+        $activity = Activity::where('name', 'first_recharge')->where('status', 1)->find();
+
+        if($params['status'] == 'success'){
+            $amount = $order->money; // 转为元
             
             $this->notify($order, $amount, $activity);
         }

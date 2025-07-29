@@ -25,6 +25,72 @@ class Sign
     }
 
     /**
+     * funpay 加密
+     */
+    public static function rsaencrypt($data, $mch_private_key)
+    {
+        ksort($data);
+        $str = '';
+        foreach($data as $k => $v){
+            if(!empty($v)){
+                $str .= (string) $k.'='. $v . '&';
+            }
+        }
+
+        $str = rtrim($str, '&');
+        $encrypted = '';
+
+        //替换成自己的私钥
+        $pem = chunk_split($mch_private_key, 64, "\n");
+        $pem = "-----BEGIN PRIVATE KEY-----\n" . $pem . "-----END PRIVATE KEY-----\n";
+        $private_key = openssl_pkey_get_private($pem);
+        $crypto = '';
+        foreach(str_split($str, 117) as $chunk){
+            openssl_private_encrypt($chunk, $encryptData, $private_key);
+            $crypto .= $encryptData;
+        }
+        $encrypted = base64_encode($crypto);
+        $encrypted = str_replace(array('+','/','='), array('-','_',''), $encrypted);
+
+        $data['sign'] = $encrypted;
+        return $data;
+    }
+
+    /**
+     * funpay 解密
+     */
+    public static function rsadecrypt($data, $mch_public_key)
+    {
+        ksort($data);
+        $toSign ='';
+        foreach($data as $key=>$value){
+            if(strcmp($key, 'sign')!= 0  && $value!=''){
+                $toSign .= $key . '=' . $value . '&';
+            }
+        }
+
+        $str = rtrim($toSign, '&');
+
+        // 替换自己的公钥
+        $pem = chunk_split($mch_public_key, 64, "\n");
+        $pem = "-----BEGIN PUBLIC KEY-----\n" . $pem . "-----END PUBLIC KEY-----\n";
+        $publickey = openssl_pkey_get_public($pem);
+
+        $base64 = str_replace(array('-', '_'), array('+', '/'), $data['sign']);
+
+        $crypto = '';
+        foreach(str_split(base64_decode($base64), 128) as $chunk) {
+            openssl_public_decrypt($chunk, $decrypted, $publickey);
+            $crypto .= $decrypted;
+        }
+
+        if($str != $crypto){
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * cp签名
      */
     public static function cpSign($data, $key)
@@ -94,7 +160,7 @@ class Sign
     }
 
     /**
-     * 加密
+     * jdb加密
      */
     public static function encrypt($data, $key, $iv)
     {
@@ -106,7 +172,7 @@ class Sign
     }
 
     /**
-     * 解密
+     * jdb解密
      */
     public static function decrypt($data, $key, $iv)
     {
@@ -116,6 +182,9 @@ class Sign
         return utf8_encode(trim($decrypted));
     }
 
+    /**
+     * jdb填充
+     */
     private static function padString($source)
     {
         $paddingChar = ' ';
@@ -128,4 +197,5 @@ class Sign
        
         return $source;
     }
+
 }

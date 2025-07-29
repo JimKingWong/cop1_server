@@ -54,7 +54,7 @@ class Channel extends Api
         return $service->cepay_withdraw();
     }
 
-  /**
+    /**
      * ce充值回调
      */
     public function ouropago_recharge()
@@ -73,4 +73,25 @@ class Channel extends Api
         // 控制器返回
         return $service->ouropago_withdraw();
     }
+
+     /**
+     * fun充值回调
+     */
+    public function funpay_recharge()
+    {
+        $service = new \app\common\service\Recharge();
+        // 控制器返回
+        return $service->funpay_recharge();
+    }
+
+    /**
+     * fun提现回调
+     */
+    public function funpay_withdraw()
+    {
+        $service = new \app\common\service\Withdraw();
+        // 控制器返回
+        return $service->funpay_withdraw();
+    }
+
 }

@@ -345,6 +345,140 @@ class Channel
     {
         $apiUrl = $config['gate'] . '/cashOut/query';
 
+        $params = [
+            'orderNo'       => $order['order_no'],
+        ];
+
+        $shard_str = sha1(json_encode($params));
+        $authorization = md5($shard_str . $config['secret']);
+        // 设置请求头
+        $header = [
+            CURLOPT_HTTPHEADER  => [
+                'AppId: ' . $config['merchantId'],
+                'Authorization:' . $authorization,
+                'Content-Type: application/json',
+            ]
+        ];
+
+        $res = Http::post($apiUrl, json_encode($params), $header);
+        $res = json_decode($res, true);
+        return $res['data'];
+    }
+
+    /**
+     * funpay 充值通道
+     */
+    public static function funpayRecharge($config, $order)
+    {
+        // 发起提现接口
+        $apiUrl = $config['gate'] . $config['url'];
+
+        $pageUrl = db('user')->where('id', $order['user_id'])->value('origin');
+        $pageUrl = 'https://' . $pageUrl;
+        
+        $domain = config('channel.domain');
+
+        $rand = rand(100, 999);
+        $params = [
+            'merchant'      => $config['merchantId'],
+            'businessCode'  => $config['businessCode'], // 业务代码网银, 当前选择哥伦比亚网银139
+            'orderNo'       => $order['order_no'],
+            'name'          => 'hms-cop',
+            'phone'         => $order['user_id'] . $rand,
+            'email'         => $order['user_id'] . $rand . '@hms-cop.com',
+            'amount'        => $order['money'],
+            'notifyUrl'     => $domain . $config['callback'],
+            'pageUrl'       => $pageUrl,
+            'bankCode'      => 'BANK',
+            'subject'       => 'hms-cop Recharge',
+        ];
+
+        // 代收用秘钥
+        $params = Sign::rsaencrypt($params, $config['secret']);
+        // dd($params);
+        // 设置请求头
+        $header = [
+            CURLOPT_HTTPHEADER  => [
+                'Content-Type: application/json',
+            ]
+        ];
+
+        $res = Http::post($apiUrl, json_encode($params), $header);
+        $res = json_decode($res, true);
+        dd($res);
+        // 成功返回支付链接
+        $payUrl = '';
+        if($res['code'] == 0){
+            $payUrl = $res['data']['orderData'];
+        }
+        return $payUrl;
+    }
+
+    /**
+     * funpay 提现通道
+     */
+    public static function funpayWithDraw($config, $order)
+    {
+        
+        $apiUrl = $config['gate'] . $config['url'];
+
+        $domain = config('channel.domain');
+        
+        $arr = [
+            'PIX_CPF' => 'CPF',
+            'PIX_PHONE' => 'PHONE',
+            'PIX_EMAIL' => 'EMAIL',
+        ];
+        
+        $pix_type = $arr[$order->wallet->chave_pix] ?? 'CPF';
+
+        $pix = $order->wallet->pix ?? '';
+        
+        $params = [
+            "orderNo"           => $order['order_no'],
+            "price"             => $order['real_money'] * 100,
+            'accountNo'         => $pix,
+            'accountType'       => $pix_type,
+            'creditorDocument'  => '', // CPF 证件号（如需校验则填写正确 CPF 号;不校验传空字符串）
+            'description'       => '代付',
+            "callbackUrl"       => $domain . $config['callback'],
+        ];
+        // dd($params);
+        $shard_str = sha1(json_encode($params));
+        $authorization = md5($shard_str. $config['secret']);
+        // 设置请求头
+        $header = [
+            CURLOPT_HTTPHEADER  => [
+                'AppId: ' . $config['merchantId'],
+                'Authorization:' . $authorization,
+                'Content-Type: application/json',
+            ]
+        ];
+
+        $res = Http::post($apiUrl, json_encode($params), $header);
+        $res = json_decode($res, true);
+        
+        $code = 0;
+        $msg = '';
+        if($res['code'] == '0'){
+            $code = 1;
+            $msg = $res['msg'];
+        }
+
+        $retval = [
+            'code'  => $code,
+            'msg'   => $msg,
+        ];
+        return $retval;
+    }
+
+    /**
+     * funpay 查看代收
+     */
+    public static function funpayQuery($config, $order)
+    {
+        $apiUrl = $config['gate'] . '/cashOut/query';
+
          $params = [
             'orderNo'       => $order['order_no'],
         ];
@@ -364,4 +498,5 @@ class Channel
         $res = json_decode($res, true);
         return $res['data'];
     }
+
 }
