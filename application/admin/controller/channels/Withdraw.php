@@ -65,21 +65,26 @@ class Withdraw extends Backend
 
             $admin = db('admin')->where('role', '>', 2)->column('nickname', 'id');
             $list = $this->model
-                    ->with(['user','wallet', 'userdata'])
+                    ->with(['user','wallet'])
                     ->where($where)
                     ->order($sort, $order)
                     ->paginate($limit);
 
             foreach ($list as $row) {
-                // $row->getRelation('admin')->visible(['nickname']);
-                // $row->getRelation('admindata')->visible(['invite_code']);
+                
                 $row->admin_nickname = isset($admin[$row->admin_id]) ? $admin[$row->admin_id] : '';
+                $row->user_salary = $row->user->userdata->salary;
+                $row->user_total_recharge = $row->user->userdata->total_recharge;
+                $row->user_total_withdraw = $row->user->userdata->total_withdraw;
+                $row->user_total_profit = $row->user->userdata->total_profit;
+                $row->user_total_bet = $row->user->userdata->total_bet;
+
 				$row->getRelation('user')->visible(['username', 'money', 'origin', 'role', 'remark']);
 				$row->getRelation('wallet')->visible(['name', 'area_code','phone_number','pix_type','chave_pix','cpf','pix','is_default']);
             }
 
             $withdraw = $this->model
-                ->with(['user','wallet', 'userdata'])
+                ->with(['user','wallet'])
                 ->where($where)
                 ->select();
 

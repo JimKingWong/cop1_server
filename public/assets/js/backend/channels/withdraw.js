@@ -50,11 +50,11 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                 return `<div class="boxs">
                                             <div class="boxs-info">
                                                 <div><span>余额: </span>${row.user.money}</div>
-                                                <div><span>工资: </span>${row.userdata.salary}</div>
-                                                <div><span>充值: </span>${row.userdata.total_recharge}</div>
-                                                <div><span>提现: </span>${row.userdata.total_withdraw}</div>
-                                                <div><span>总盈利: </span>${row.userdata.total_profit}</div>
-                                                <div><span>总流水: </span>${row.userdata.total_bet}</div>
+                                                <div><span>工资: </span>${row.user_salary}</div>
+                                                <div><span>充值: </span>${row.user_total_recharge}</div>
+                                                <div><span>提现: </span>${row.user_total_withdraw}</div>
+                                                <div><span>总盈利: </span>${row.user_total_profit}</div>
+                                                <div><span>总流水: </span>${row.user_total_bet}</div>
                                             </div>
                                         </div>`;
                             },
