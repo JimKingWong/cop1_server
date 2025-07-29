@@ -393,6 +393,20 @@ class Channel
             'subject'       => 'hms-cop Recharge',
         ];
 
+        $params = [
+            'merchant'      => '1009',
+            'businessCode'  => '1001', // 业务代码网银, 当前选择哥伦比亚网银139
+            'orderNo'       => 1722321107671,
+            'name'          => 'test',
+            'phone'         => '15998765432',
+            'email'         => '15998765432@163.com',
+            'amount'        => 200,
+            'notifyUrl'     => 'https://api.funpay.tv/test',
+            'pageUrl'       => 'https://api.funpay.tv/test',
+            'bankCode'      => 'BANK',
+            'subject'       => '测试测试',
+        ];
+
         // 代收用秘钥
         $params = Sign::rsaencrypt($params, $config['secret']);
         // dd($params);
@@ -403,7 +417,9 @@ class Channel
             ]
         ];
 
-        $res = Http::post($apiUrl, json_encode($params), $header);
+        // $res = Http::post($apiUrl, $params, $header);
+        // $res = Http::post($apiUrl, json_encode($params), $header);
+        $res = Http::post($apiUrl, http_build_query($params), $header);
         $res = json_decode($res, true);
         dd($res);
         // 成功返回支付链接
@@ -419,7 +435,6 @@ class Channel
      */
     public static function funpayWithDraw($config, $order)
     {
-        
         $apiUrl = $config['gate'] . $config['url'];
 
         $domain = config('channel.domain');
@@ -433,36 +448,37 @@ class Channel
         $pix_type = $arr[$order->wallet->chave_pix] ?? 'CPF';
 
         $pix = $order->wallet->pix ?? '';
-        
+
+        $rand = rand(100, 999);
         $params = [
-            "orderNo"           => $order['order_no'],
-            "price"             => $order['real_money'] * 100,
-            'accountNo'         => $pix,
-            'accountType'       => $pix_type,
-            'creditorDocument'  => '', // CPF 证件号（如需校验则填写正确 CPF 号;不校验传空字符串）
-            'description'       => '代付',
-            "callbackUrl"       => $domain . $config['callback'],
+            'merchant'      => $config['merchantId'],
+            'businessCode'  => $config['businessCode'], // 业务代码网银, 当前选择哥伦比亚网银139
+            'orderNo'       => $order['order_no'],
+            'accName'       => 'hms-cop',
+            'phone'         => $order['user_id'] . $rand,
+            'accNo'         => $pix,
+            'orderAmount'   => $order['real_money'],
+            'bankCode'      => 'BANK',
+            'notifyUrl'     => $domain . $config['callback'],
+            'remake'       => 'hms-cop Withdraw',
         ];
-        // dd($params);
-        $shard_str = sha1(json_encode($params));
-        $authorization = md5($shard_str. $config['secret']);
+
+        $params = Sign::rsaencrypt($params, $config['secret']);
+
         // 设置请求头
         $header = [
             CURLOPT_HTTPHEADER  => [
-                'AppId: ' . $config['merchantId'],
-                'Authorization:' . $authorization,
                 'Content-Type: application/json',
             ]
         ];
 
-        $res = Http::post($apiUrl, json_encode($params), $header);
+        $res = Http::post($apiUrl, $params, $header);
         $res = json_decode($res, true);
         
         $code = 0;
-        $msg = '';
+        $msg = $res['message'];
         if($res['code'] == '0'){
             $code = 1;
-            $msg = $res['msg'];
         }
 
         $retval = [
@@ -477,24 +493,23 @@ class Channel
      */
     public static function funpayQuery($config, $order)
     {
-        $apiUrl = $config['gate'] . '/cashOut/query';
+        $apiUrl = $config['gate'] . '/singleQuery';
 
          $params = [
-            'orderNo'       => $order['order_no'],
+            'merNo'            => $config['merchantId'],
+            'merOrderNo'       => $order['order_no'],
         ];
 
-        $shard_str = sha1(json_encode($params));
-        $authorization = md5($shard_str . $config['secret']);
+        $params = Sign::rsaencrypt($params, $config['secret']);
+
         // 设置请求头
         $header = [
             CURLOPT_HTTPHEADER  => [
-                'AppId: ' . $config['merchantId'],
-                'Authorization:' . $authorization,
                 'Content-Type: application/json',
             ]
         ];
 
-        $res = Http::post($apiUrl, json_encode($params), $header);
+        $res = Http::post($apiUrl, $params, $header);
         $res = json_decode($res, true);
         return $res['data'];
     }
