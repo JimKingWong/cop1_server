@@ -51,7 +51,7 @@ class Withdraw extends Backend
      */
     public function index()
     {
-        ini_set('memory_limit', '512M');
+        ini_set('memory_limit', '1024M');
         //当前是否为关联查询
         $this->relationSearch = true;
         //设置过滤方法
@@ -63,21 +63,23 @@ class Withdraw extends Backend
             }
             list($where, $sort, $order, $offset, $limit) = $this->buildparams();
 
+            $admin = db('admin')->where('role', '>', 2)->column('nickname', 'id');
             $list = $this->model
-                    ->with(['admin','admindata','user','wallet', 'userdata'])
+                    ->with(['user','wallet', 'userdata'])
                     ->where($where)
                     ->order($sort, $order)
                     ->paginate($limit);
 
             foreach ($list as $row) {
-                $row->getRelation('admin')->visible(['nickname']);
-                $row->getRelation('admindata')->visible(['invite_code']);
+                // $row->getRelation('admin')->visible(['nickname']);
+                // $row->getRelation('admindata')->visible(['invite_code']);
+                $row->admin_nickname = isset($admin[$row->admin_id]) ? $admin[$row->admin_id] : '';
 				$row->getRelation('user')->visible(['username', 'money', 'origin', 'role', 'remark']);
 				$row->getRelation('wallet')->visible(['name', 'area_code','phone_number','pix_type','chave_pix','cpf','pix','is_default']);
             }
 
             $withdraw = $this->model
-                ->with(['admin','admindata','user','wallet', 'userdata'])
+                ->with(['user','wallet', 'userdata'])
                 ->where($where)
                 ->select();
 
@@ -145,6 +147,11 @@ class Withdraw extends Backend
         $this->assignconfig('channel', $channel);
         return $this->view->fetch();
     }
+    
+    
+    
+    
+    
 
     /**
      * 查看凭证

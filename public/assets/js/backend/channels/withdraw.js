@@ -36,7 +36,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                                 <a href="javascript:" data-url="channels/withdraw/subuser?user_id=${row.user_id}&withdraw_id=${row.id}" class="dialogit" title="用户数据" data-area=\'["80%", "100%"]\'>
                                                 <div><span>用户名: </span>${row.user.username}</div>
                                                 </a>
-                                                <div><span>来源: </span>${row.admin.nickname}</div>
+                                                <div><span>来源: </span>${row.admin_nickname}</div>
                                                 <div><span>站点: </span>${row.user.origin}</div>
                                             </div>
                                         </div>`;
@@ -79,8 +79,8 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'wallet.pix', title: __('Wallet.cpf'), operate: 'LIKE', table: table, class: 'autocontent', formatter: Table.api.formatter.content, visible: false},
                         {field: 'wallet.chave_pix', title: __('Wallet.chave_pix'), searchList: {"PIX_CPF":__('PIX_CPF'),"PIX_PHONE":__('PIX_PHONE'),"PIX_CNPJ":__('PIX_CNPJ')}, visible: false},
                         {field: 'money', title: __('Money'), operate:'BETWEEN', sortable: true},
-                        {field: 'real_money', title: __('Real_money'), operate:'BETWEEN'},
-                        {field: 'fee', title: __('Fee'), operate:'BETWEEN'},
+                        {field: 'real_money', title: __('Real_money'), operate: false},
+                        {field: 'fee', title: __('Fee'), operate: false},
                         {field: 'remark', title: __('Remark'), operate: 'LIKE', table: table, class: 'autocontent'},
                         {field: 'user.remark', title: __('用户备注'), operate: 'LIKE', table: table, class: 'autocontent'},
                         {field: 'status', title: __('Status'), searchList: {"0":__('Status 0'),"1":__('Status 1'),"2":__('Status 2'),"3":__('Status 3'),"4":__('Status 4'),"5":__('Status 5')}, formatter: Table.api.formatter.status},
