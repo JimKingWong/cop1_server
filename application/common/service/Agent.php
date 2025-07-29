@@ -233,7 +233,7 @@ class Agent extends Base
         $user = $this->auth->getUser();
         $user_id = $user->id;
         if($id != ''){
-            $user_id = $id;
+            $where['id'] = $id;
         }
 
         // 所有下级
