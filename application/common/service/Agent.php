@@ -314,18 +314,21 @@ class Agent extends Base
         $user = $this->auth->getUser();
 
         $user_id = $user->id;
+
         if($id != ''){
-            $user_id = $id;
+            $where['id'] = $id;
         }
 
         // 获取下级用户
         $user_ids = db('user')->where('parent_id', $user_id)->column('id');
         // dd($user_ids);
 
+        $where['parent_id'] = ['in', $user_ids];
+
         $fields = 'id,parent_id,username,is_first_recharge,createtime';
         $list = User::where([
             ['EXP', Db::raw("FIND_IN_SET(". $user_id .", parent_id_str)")]
-        ])->where('parent_id', 'in', $user_ids)->field($fields);
+        ])->where($where)->field($fields);
 
         if($start_time != ''){
             $list->where('createtime', '>=', strtotime($start_time));
@@ -510,7 +513,7 @@ class Agent extends Base
 
         $user_id = $user->id;
         if($id != ''){
-            $user_id = $id;
+            $where['id'] = $id;
         }
         
         $fields = 'id,parent_id,parent_id_str,username';
