@@ -121,6 +121,19 @@ class Platform extends Base
     }
 
     /**
+     * 银行列表
+     */
+    public function bank()
+    {
+        $bank = db('bank')->where('status', 1)->order('weigh desc')->field('id,code,name')->select();
+
+        $retval = [
+            'bank' => $bank,
+        ];
+        $this->success(__('请求成功'), $retval);
+    }
+
+    /**
      * 站内信
      */
     public function letter()

@@ -650,4 +650,62 @@ class User extends Base
 
         $this->success(__('请求成功'), $retval);
     }
+
+    /**
+     * 添加银行卡
+     */
+    public function addbank()
+    {
+        $name           = $this->request->post('name');
+        $area_code      = $this->request->post('area_code');
+        $phone_number   = $this->request->post('phone_number');
+        $email          = $this->request->post('email');
+        $bank_code      = $this->request->post('bank_code');
+        $bank_account   = $this->request->post('bank_account');
+        $identityType   = $this->request->post('identityType');
+        $identityNo     = $this->request->post('identityNo');
+        $bank_id        = $this->request->post('bank_id');
+
+        if(!$name || !$area_code || !$phone_number || !$email || !$bank_code || !$bank_account || !$identityType || !$identityNo){
+            $this->error(__('请填写完整信息'));
+        }
+
+        $bank = db('bank')->column('name', 'code');
+        $bank_name = $bank[$bank_code] ?? '';
+        if(!$bank_name){
+            $this->error(__('请选择正确的银行'));
+        }
+
+        $user = $this->auth->getUser();
+
+        $userbankModel = new \app\common\model\UserBank;
+
+        $where['id'] = $bank_id;
+        $where['user_id'] = $user->id;
+        $user_bank = $userbankModel::where('user_id', $user->id)->find();
+
+        $data = [
+            'user_id'       => $user->id,
+            'name'          => $name,
+            'area_code'     => $area_code,
+            'phone_number'  => $phone_number,
+            'email'         => $email,
+            'bank_code'     => $bank_code,
+            'bank_name'     => $bank_name,
+            'bank_account'  => $bank_account,
+            'identity_type' => $identityType,
+            'identity_no'   => $identityNo,
+        ];
+        if($user_bank){
+            $result = $user_bank->save($data);
+        }else{
+            $result = $userbankModel::create($data);
+        }
+
+        if($result === false){
+            $this->error(__('修改失败'));
+        }
+        $this->success(__('修改成功'));
+    }
+
 }

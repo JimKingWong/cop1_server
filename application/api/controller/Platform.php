@@ -51,6 +51,15 @@ class Platform extends Api
     }
 
     /**
+     * 获取银行列表
+     */
+    public function bank()
+    {
+        $service = new \app\common\service\Platform;
+        $service->bank();
+    }
+
+    /**
      * 站内信
      * @ApiMethod (GET)
      * @ApiParams (name="type", type="int", description="0,1,2,3 分别代表系统消息、用户、面板")
