@@ -27,10 +27,12 @@ class Withdraw extends Base
     {
         $user = $this->auth->getUser();
 
-        $wallet = Wallet::where('user_id', $user->id)
-            ->order('is_default desc,id desc')
-            ->field('id,name,area_code,phone_number,chave_pix,pix,cpf,is_default')
-            ->select();
+        // $wallet = Wallet::where('user_id', $user->id)
+        //     ->order('is_default desc,id desc')
+        //     ->field('id,name,area_code,phone_number,chave_pix,pix,cpf,is_default')
+        //     ->select();
+
+        $bank = db('user_bank')->where('user_id', $user->id)->find();
 
         $need_bet = max($user->userdata->typing_amount_limit - $user->userdata->total_bet, 0);
         $retval = [
@@ -39,7 +41,7 @@ class Withdraw extends Base
             'withdraw_rate' => config('system.withdraw_rate'), // 提现手续费
             'money'         => $user->money, // 账户余额
             'need_bet'      => sprintf('%.2f', $need_bet), // 打码量
-            'wallet'        => $wallet, // 钱包列表
+            'bank'          => $bank, // 钱包列表
         ];
         $this->success(__('请求成功'), $retval);
     }
