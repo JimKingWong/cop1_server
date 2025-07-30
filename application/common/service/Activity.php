@@ -45,8 +45,11 @@ class Activity extends Base
      */
     public function checkSignin($row)
     {
+        $today_bet = 0;
         $where = [];
         if(isset($this->auth->id)){
+            $user = $this->auth->getUser();
+            $today_bet = $user->userdata->today_bet ?? 0;
             $where['user_id'] = $this->auth->id;
         }
         // 今日充值
@@ -89,7 +92,8 @@ class Activity extends Base
             'list'              => $list, // 签到列表
             'is_signin'         => $is_signin, // 今日是否可签
             'recharge_money'    => $recharge_money, // 今日充值
-            'min_recharge_money' => $row['config']['min_recharge_money'], // 最小充值金额
+            'today_bet'         => $today_bet, // 今日流水
+            'min_recharge_money'=> $row['config']['min_recharge_money'], // 最小充值金额
             'days'              => $days, // 连续签到天数
             'config'            => $row['config']['signin'], // 配置
             'status'            => $row['status'], // 活动状态

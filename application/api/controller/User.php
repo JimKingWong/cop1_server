@@ -184,4 +184,10 @@ class User extends Api
         $service = new \app\common\service\User();
         $service->rank();
     }
+
+    public function addbank()
+    {
+        $service = new \app\common\service\User();
+        $service->addbank();
+    }
 }
