@@ -43,7 +43,7 @@ class Channel
         ];
         
         // 获取sign
-        $data['sign'] = Sign::common($data, $config['secret'], 'key', 0);
+        $data['sign'] = Sign::supeSign($data, $config['secret']);
         ksort($data);
         // dd($apiUrl);
         // 设置请求头
@@ -54,8 +54,8 @@ class Channel
         ];
 
         // 发送POST请求
-        $res = Http::post($apiUrl, $data, $header);
-        // $res = Http::post($apiUrl, json_encode($data), $header);
+        // $res = Http::post($apiUrl, $data, $header);
+        $res = Http::post($apiUrl, json_encode($data), $header);
         dd($res);
 
         // $res = Http::post($apiUrl, http_build_query($data), $header);
