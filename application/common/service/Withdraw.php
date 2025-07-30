@@ -32,7 +32,7 @@ class Withdraw extends Base
         //     ->field('id,name,area_code,phone_number,chave_pix,pix,cpf,is_default')
         //     ->select();
 
-        $bank = db('user_bank')->where('user_id', $user->id)->find();
+        $bank = db('user_bank')->where('user_id', $user->id)->select();
 
         $need_bet = max($user->userdata->typing_amount_limit - $user->userdata->total_bet, 0);
         $retval = [
