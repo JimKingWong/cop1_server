@@ -93,6 +93,7 @@ class Activity extends Base
             'recharge_money'    => $recharge_money, // 今日充值
             'today_bet'         => $today_bet, // 今日流水
             'min_recharge_money'=> $row['config']['min_recharge_money'], // 最小充值金额
+            'min_today_bet'     => $row['config']['today_bet'], // 最小充值金额
             'days'              => $days, // 连续签到天数
             'config'            => $row['config']['signin'], // 配置
             'status'            => $row['status'], // 活动状态
