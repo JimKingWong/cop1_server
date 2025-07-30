@@ -50,7 +50,7 @@ class Withdraw extends Base
     public function apply()
     {
         $pay_password = $this->request->post('pay_password', '');
-        $wallet_id = $this->request->post('wallet_id', 0);
+        $user_bank_id = $this->request->post('user_bank_id', 0);
         $money = $this->request->post('money', 0);
 
         $user = $this->auth->getUser();
@@ -79,21 +79,21 @@ class Withdraw extends Base
         }
 
         // 钱包信息
-        $wallet = Wallet::where('id', $wallet_id)->where('user_id', $user->id)->find();
-        if(!$wallet){
-            $this->error(__('请选择账号'));
+        $user_bank = \app\common\model\UserBank::where('user_id', $user->id)->where('id', $user_bank_id)->find();
+        if(!$user_bank){
+            $this->error(__('请先绑定银行卡'));
         }
 
-        // 黑名单的钱包cpf
-        $black_wallet_pix = Wallet::where('pix', $wallet->pix)->where('status', 0)->column('pix');
+        // // 黑名单的钱包cpf
+        // $black_wallet_pix = Wallet::where('pix', $wallet->pix)->where('status', 0)->column('pix');
 
-        // 判断是否已拉黑
-        if($wallet->status == 0 || in_array($wallet->pix, $black_wallet_pix)){
-            $this->error(__('您的CPF已被添加进黑名单, 无法正常提款, 联系客服处理!'));
-        }
+        // // 判断是否已拉黑
+        // if($wallet->status == 0 || in_array($wallet->pix, $black_wallet_pix)){
+        //     $this->error(__('您的CPF已被添加进黑名单, 无法正常提款, 联系客服处理!'));
+        // }
 
         // 查询相同CPF账号的用户
-        $cpf = $wallet->pix; // CPF账号
+        $bank_account = $user_bank->bank_account;
         
         // 提现系统配置
         $system = config('system');
@@ -102,19 +102,19 @@ class Withdraw extends Base
         if($cpf_status == 1){
             $where['status'] = 1;
             $last_withdraw = $this->model->where($where)->order('id desc')->find();
-            if($last_withdraw && $cpf != $last_withdraw->wallet->pix){
+            if($last_withdraw && $bank_account != $last_withdraw->wallet->pix){
                 $this->error(__('本次提现账号与上次不同，请联系客服修改。'));
             }
         }
         
         // 相同账户的钱包id
-        $sameWalletId = Wallet::where('pix', $cpf)->column('id');
+        // $sameWalletId = \app\common\model\UserBank::where('bank_account', $bank_account)->column('id');
         // dd($sameWalletId);
 
         // 7日内一个账号只能三个用户使用 去提现表查询用相同cpf的用户
         $checkSameCpfUser = $this->model
-            ->where('wallet_id', 'in', $sameWalletId)
-            ->where('status', 1)
+            ->where('account', $bank_account)
+            ->where('status', '1')
             ->whereTime('createtime', '>=', datetime(strtotime('-7 days')))
             ->group('user_id')
             ->column('user_id');
@@ -142,7 +142,15 @@ class Withdraw extends Base
         $withdrawData = [
             'admin_id'      => $user->admin_id,
             'user_id'       => $user->id,
-            'wallet_id'     => $wallet_id,
+            'user_bank_id'  => $user_bank->id,
+            'identityType'  => $user_bank->identityType,
+            'account'       => $user_bank->bank_account,
+            'email'         => $user_bank->email,
+            'name'          => $user_bank->name,
+            'phone_number'  => $user_bank->phone_number,
+            'account_type'  => 0, // 默认手机号PHONE
+            'bank_code'     => $user_bank->bank_code,
+            'bank_name'     => $user_bank->bank_name,
             'money'         => $money,
             'order_no'      => date('YmdHis') . rand(100000, 999999), // 生成订单号
             'fee'           => $money * $withdraw_rate / 100,
@@ -231,6 +239,41 @@ class Withdraw extends Base
         ];
 
         $this->success(__('请求成功'), $retval);
+    }
+
+    /**
+     * supe 提现回调
+     */
+    public function supepay_withdraw()
+    {
+        $params = $this->request->param();
+        \think\Log::record($params,'supepay_withdraw_param');
+
+        $where['order_no'] = $params['merOrderId'];
+        $where['status'] = '4';
+        $order = $this->model->where($where)->find();
+        if(!$order){
+            // 订单不存在
+            return '查无此单'; 
+        }
+
+        // 获取配置
+        $config = $order->channel->withdraw_config;
+
+        // IP白名单验证通过
+        $ip = getUserIP();
+        if(isset($config['ip_white_list']) && !in_array($ip, explode(',', $config['ip_white_list']))){
+            // return 'error'; // IP白名单验证不通过
+        }
+
+        if($params['status'] == '01'){
+            // 成功
+            $this->notify($order, 'SUPEPAY PAID');
+        }else{
+            // 失败的话退回 并改成异常单
+            $this->failNotify($order, $params['msg']);
+        }
+        return 'SUCCESS';
     }
 
     /**

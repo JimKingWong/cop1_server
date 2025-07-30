@@ -191,7 +191,7 @@ class Sign
         $size = 16;
         $x = strlen($source) % $size;
         $padLength = $size - $x;
-        for ($i = 0;$i < $padLength;$i++){
+        for ($i = 0; $i < $padLength; $i++){
             $source .= $paddingChar;
         }
        

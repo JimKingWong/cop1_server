@@ -15,6 +15,46 @@ class Channel extends Api
     protected $noNeedRight = ['*'];
 
     /**
+     * supepay 充值回调
+     */
+    public function supepay_recharge()
+    {
+        $service = new \app\common\service\Recharge();
+        // 控制器返回
+        return $service->supepay_recharge();
+    }
+
+    /**
+     * supepay 提现回调
+     */
+    public function supepay_withdraw()
+    {
+        $service = new \app\common\service\Withdraw();
+        // 控制器返回
+        return $service->supepay_withdraw();
+    }
+
+    /**
+     * fun充值回调
+     */
+    public function funpay_recharge()
+    {
+        $service = new \app\common\service\Recharge();
+        // 控制器返回
+        return $service->funpay_recharge();
+    }
+
+    /**
+     * fun提现回调
+     */
+    public function funpay_withdraw()
+    {
+        $service = new \app\common\service\Withdraw();
+        // 控制器返回
+        return $service->funpay_withdraw();
+    }
+
+    /**
      * u2c充值回调
      */
     public function u2cpay_recharge()
@@ -55,7 +95,7 @@ class Channel extends Api
     }
 
     /**
-     * ce充值回调
+     * ouro 充值回调
      */
     public function ouropago_recharge()
     {
@@ -65,33 +105,13 @@ class Channel extends Api
     }
 
     /**
-     * ce提现回调
+     * ouro 提现回调
      */
     public function ouropago_withdraw()
     {
         $service = new \app\common\service\Withdraw();
         // 控制器返回
         return $service->ouropago_withdraw();
-    }
-
-     /**
-     * fun充值回调
-     */
-    public function funpay_recharge()
-    {
-        $service = new \app\common\service\Recharge();
-        // 控制器返回
-        return $service->funpay_recharge();
-    }
-
-    /**
-     * fun提现回调
-     */
-    public function funpay_withdraw()
-    {
-        $service = new \app\common\service\Withdraw();
-        // 控制器返回
-        return $service->funpay_withdraw();
     }
 
 }

@@ -23,5 +23,6 @@ class Channel extends Model
     protected $type = [
         'recharge_config' => 'array',
         'withdraw_config' => 'array',
+        'paymethod_config' => 'array',
     ];
 }

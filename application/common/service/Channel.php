@@ -12,6 +12,149 @@ class Channel
 {
 
     /**
+     * supepay 充值通道
+     */
+    public static function supepayRecharge($config, $order)
+    {
+        // 发起充值接口
+        $apiUrl = $config['gate'] . $config['url'];
+        
+        $domain = config('channel.domain');
+
+        $nonceStr = Sign::generateTraceId(); // 生成随机字符串, 借用omg游戏的
+        // 请求参数
+        $data = [
+            'countryId'                 => $config['countryId'],
+            'currency'                  => $config['currency'],
+            'payProduct'                => $order['channel_code'],
+            'merId'                     => $config['merchantId'],
+            'merOrderNo'                => $order['order_no'],
+            'orderAmount'               => $order['money'], 
+            'nonceStr'                  => $nonceStr,
+            'customerEmail'             => $order['email'],
+            'customerName'              => $order['name'],
+            'customerPhone'             => $order['phone_number'],
+            'customerIdentification'    => $order['identityNo'],
+            'checkOut'                  => true,
+            'description'               => 'Hermes Recharge',
+            'callbackUrl'               => $domain . $config['callback'],
+        ];
+        
+        // 获取sign
+        $data['sign'] = Sign::common($data, $config['secret'], 'secret', 0);
+        // dd($apiUrl);
+        // 设置请求头
+        $header = [
+            CURLOPT_HTTPHEADER  => [
+                'Content-Type: application/json',
+            ]
+        ];
+
+        // 发送POST请求
+        // $res = Http::post($apiUrl, $data, $header);
+        $res = Http::post($apiUrl, json_encode($data), $header);
+        dd($res);
+
+        // $res = Http::post($apiUrl, http_build_query($data), $header);
+        $res = json_decode($res, true);
+        dd($res);
+
+        // 成功返回支付链接
+        $payUrl = '';
+        if($res['code'] == 200){
+            $payUrl = $res['data']['url'];
+        }
+        return $payUrl;
+    }
+
+    /**
+     * supepay 提现通道
+     */
+    public static function supepayWithdraw($config, $order)
+    {
+        // 发起提现接口
+        $apiUrl = $config['gate'] . $config['url'];
+        
+        $domain = config('channel.domain');
+
+        $nonceStr = Sign::generateTraceId(); // 生成随机字符串, 借用omg游戏的
+        // 请求参数
+        $data = [
+            'countryId'                 => $config['countryId'],
+            'currency'                  => $config['currency'],
+            'payProduct'                => $order['channel_method'],
+            'merId'                     => $config['merchantId'],
+            'merOrderNo'                => $order['order_no'],
+            'orderAmount'               => $order['money'], 
+            'nonceStr'                  => $nonceStr,
+            'customerName'              => $order['name'],
+            'customerIdentificationType'=> '00', // 证件类型 暂时写死
+            'customerIdentification'    => $order['identityNo'],
+            'checkOut'                  => true,
+            'description'               => 'Hermes Withdraw',
+            'callbackUrl'               => $domain . $config['callback'],
+        ];
+        
+        // 获取sign
+        $data['sign'] = Sign::common($data, $config['secret'], 'secret', 0);
+        // dd($data);
+
+        // 设置请求头
+        $header = [
+            CURLOPT_HTTPHEADER  => [
+                'Content-Type: application/json',
+            ]
+        ];
+
+        // 发送POST请求
+        $res = Http::post($apiUrl, http_build_query($data), $header);
+        $res = json_decode($res, true);
+        
+        $code = 0;
+        $msg = '';
+        if($res['success']){
+            $code = 1;
+            $msg = $res['errorCode'];
+        }
+
+        $retval = [
+            'code'  => $code,
+            'msg'   => $msg,
+        ];
+        return $retval;
+    }
+    
+    /**
+     * supepay 查询通道
+     */
+    public static function supepayQuery($config, $order)
+    {
+        // 发起提现接口
+        $apiUrl = $config['gate'] . '/api/open/merchant/payment/query';
+        
+        // 请求参数
+        $data = [
+            'merchantId'        => $config['merchantId'],
+            'merchantOrderNo'   => $order['order_no'],
+        ];
+        
+        // 获取sign
+        $data['sign'] = Sign::common($data, $config['secret'], 'secret');
+
+        // 设置请求头
+        $header = [
+            CURLOPT_HTTPHEADER  => [
+                'Content-Type: application/x-www-form-urlencoded',
+            ]
+        ];
+
+        // 发送POST请求
+        $res = Http::post($apiUrl, http_build_query($data), $header);
+        $res = json_decode($res, true);
+        return $res['data'];
+    }
+
+    /**
      * u2cpay 充值通道
      */
     public static function u2cpayRecharge($config, $order)
@@ -452,7 +595,7 @@ class Channel
         $rand = rand(100, 999);
         $params = [
             'merchant'      => $config['merchantId'],
-            'businessCode'  => $config['businessCode'], // 业务代码网银, 当前选择哥伦比亚网银139
+            'businessCode'  => $config['businessCode'], // 业务代码网银, 当前选择哥伦比亚网银代付140
             'orderNo'       => $order['order_no'],
             'accName'       => 'hms-cop',
             'phone'         => $order['user_id'] . $rand,

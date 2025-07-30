@@ -209,4 +209,9 @@ return [
     '充值赠送' => 'Recarga de regalo',
     '签到奖励' => 'Recompensas por iniciar sesión',
 
+
+    '请先绑定银行卡' => 'Primero vincule su tarjeta bancaria,',
+    '请填写完整信息' => 'Complete todos los campos',
+    '请选择正确的银行' => 'Seleccione el banco correcto',
+
 ];

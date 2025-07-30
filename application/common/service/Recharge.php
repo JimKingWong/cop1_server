@@ -58,7 +58,19 @@ class Recharge extends Base
         $min_recharge = config('system.min_recharge');
 
         // 通道列表
-        $channel = Channel::where('status', 1)->field('id,title,name')->order('weigh desc')->select();
+        $channel = Channel::where('status', 1)->field('id,title,name,paymethod_config')->order('weigh desc')->select();
+        foreach($channel as $key => $val){
+            if($val->paymethod_config){
+                $i = 0;
+                $configArr = [];
+                foreach($val->paymethod_config as $k => $v){
+                    $configArr[$i]['code'] = (string)$k;
+                    $configArr[$i]['name'] = $v;
+                    $i ++;
+                }
+                $val->paymethod_config = $configArr;
+            }
+        }
 
         // 是否首充
         $is_first_recharge = $this->auth->is_first_recharge;
@@ -122,6 +134,7 @@ class Recharge extends Base
     public function create()
     {
         $channel_id = $this->request->post('channel_id', 0);
+        $channel_code = $this->request->post('channel_code');
         $money = $this->request->post('money', 0);
 
         // 验证通道ID
@@ -142,8 +155,17 @@ class Recharge extends Base
             $this->error(__('充值配置不存在'));
         }
 
+        // 支付方式
+        $paymethod_config = $channel->paymethod_config;
+        $paymethod_config_keys = array_keys($paymethod_config);
+        
+        if(!in_array($channel_code, $paymethod_config_keys)){
+            // 支付方式不存在
+            $this->error(__('充值配置不存在'));
+        }
+
         // 最小充值
-        $min_recharge = config('system.min_recharge');
+        $min_recharge = $channel->min_money;
         if($money < $min_recharge){
             // 充值金额小于最小充值金额
             $this->error(__('充值金额小于最小充值金额'));
@@ -171,12 +193,24 @@ class Recharge extends Base
 
         // 获取站点信息
         $multiple = \app\common\model\Site::where('url', $this->origin)->value('multiple');
+
+        $user_bank = \app\common\model\UserBank::where('user_id', $user->id)->find();
+        if(!$user_bank){
+            $this->error(__('请先绑定银行卡'));
+        }
         
         // 订单数据
         $orderData = [
             'admin_id'            => $user->admin_id,
             'user_id'             => $user->id,
             'channel_id'          => $channel_id,
+            'channel_code'        => $channel_code,
+            'user_bank_id'        => $user_bank->id,
+            'name'                => $user_bank->name,
+            'email'               => $user_bank->email,    
+            'phone_number'        => $user_bank->phone_number,
+            'identityType'        => $user_bank->identityType,
+            'identityNo'          => $user_bank->identityNo,  
             'recharge_config_id'  => $recharge_config_id,
             'order_no'            => $order_no,
             'money'               => $money,
@@ -205,6 +239,46 @@ class Recharge extends Base
         ];
         
         $this->success(__('请求成功'), $retval);
+    }
+
+    /**
+     * supe 充值回调接口
+     */
+    public function supepay_recharge()
+    {
+        $params = $this->request->param();
+        \think\Log::record($params,'supe_recharge_param');
+
+        $where['order_no'] = $params['merOrderId'];
+        $where['status'] = '0';
+        $order = $this->model->where($where)->find();
+        if(!$order){
+            // 订单不存在
+            return '查无此单'; 
+        }
+
+        // 用户cpf补上
+        $order->cpf = $params['cpf'] ?? '';
+
+        // 获取配置
+        $config = $order->channel->recharge_config;
+
+        // IP白名单验证通过
+        $ip = getUserIP();
+        if(isset($config['ip_white_list']) && !in_array($ip, explode(',', $config['ip_white_list']))){
+            // return 'error'; // IP白名单验证不通过
+        }
+
+        // 首充活动
+        $activity = Activity::where('name', 'first_recharge')->where('status', 1)->find();
+
+        if($params['status'] == '01'){
+            $amount = $order->money; // 转为元
+            
+            $this->notify($order, $amount, $activity);
+        }
+        
+        return 'SUCCESS';
     }
 
     /**
