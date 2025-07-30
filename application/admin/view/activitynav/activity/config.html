@@ -99,6 +99,13 @@
         </div>
     </div>
 
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('每日最低流水')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-today_bet" class="form-control" name="row[config][today_bet]" type="today_bet" min="1" value="{$configs.today_bet|default=''}">
+        </div>
+    </div>
+
     <div class="form-group layer-footer">
         <label class="control-label col-xs-12 col-sm-2"></label>
         <div class="col-xs-12 col-sm-8">
