@@ -190,4 +190,10 @@ class User extends Api
         $service = new \app\common\service\User();
         $service->addbank();
     }
+
+    public function getbank()
+    {
+        $service = new \app\common\service\User();
+        $service->getbank();
+    }
 }

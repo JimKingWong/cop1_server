@@ -671,6 +671,7 @@ class User extends Base
         }
 
         $bank = db('bank')->column('name', 'code');
+        
         $bank_name = $bank[$bank_code] ?? '';
         if(!$bank_name){
             $this->error(__('请选择正确的银行'));
@@ -683,7 +684,7 @@ class User extends Base
         $where['id'] = $bank_id;
         $where['user_id'] = $user->id;
         $user_bank = $userbankModel::where('user_id', $user->id)->find();
-
+        
         $data = [
             'user_id'       => $user->id,
             'name'          => $name,
@@ -693,8 +694,8 @@ class User extends Base
             'bank_code'     => $bank_code,
             'bank_name'     => $bank_name,
             'bank_account'  => $bank_account,
-            'identity_type' => $identityType,
-            'identity_no'   => $identityNo,
+            'identityType' => $identityType,
+            'identityNo'   => $identityNo,
         ];
         if($user_bank){
             $result = $user_bank->save($data);
@@ -706,6 +707,24 @@ class User extends Base
             $this->error(__('修改失败'));
         }
         $this->success(__('修改成功'), $data);
+    }
+
+    /**
+     * 获取银行卡
+     */
+    public function getbank()
+    {
+        $user = $this->auth->getUser();
+
+        $userbankModel = new \app\common\model\UserBank;
+
+        $where['user_id'] = $user->id;
+        $user_bank = $userbankModel::where('user_id', $user->id)->find();
+
+        $retval = [
+            'bank' => $user_bank,
+        ];
+        $this->success(__('请求成功'), $retval);
     }
 
 }
