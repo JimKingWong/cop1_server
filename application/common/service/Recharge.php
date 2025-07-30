@@ -73,11 +73,18 @@ class Recharge extends Base
         }
 
         // 是否首充
-        $is_first_recharge = $this->auth->is_first_recharge;
+        $is_first_recharge = $this->auth->is_first_recharge ?? 0;
+
+        // 是否设置银行卡
+        $is_bank = 0;
+        if(isset($this->auth->id)){
+            $is_bank = db('user_bank')->where('user_id', $this->auth->id)->find() ? 1 : 0;
+        }
 
         $retval = [
             'min_recharge'          => $min_recharge,
             'is_first_recharge'     => $is_first_recharge,
+            'is_bank'               => $is_bank,
             'config'                => $list,
             'channel'               => $channel,
         ];
