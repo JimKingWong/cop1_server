@@ -138,6 +138,14 @@ class Withdraw extends Base
             $this->error(__('提现金额不能大于账户余额'));
         }
 
+        // 提现收手续费（6W（约105RMB）以下5%手续费  6W以上免手续费）
+        $fee = 0;
+        if($money <= 60000){
+            $fee = $money * $withdraw_rate / 100;
+        }
+
+        $real_money = $money - $fee; // 实际到账金额
+
         // 提现数据
         $withdrawData = [
             'admin_id'      => $user->admin_id,
@@ -153,8 +161,8 @@ class Withdraw extends Base
             'bank_name'     => $user_bank->bank_name,
             'money'         => $money,
             'order_no'      => date('YmdHis') . rand(100000, 999999), // 生成订单号
-            'fee'           => $money * $withdraw_rate / 100,
-            'real_money'    => $money - ($money * $withdraw_rate / 100),
+            'fee'           => $fee,
+            'real_money'    => $real_money,
             'type'          => 0, // 0表示普通提现, 1佣金
             'is_virtual'    => $user->is_test == 1 ? 1 : 0, // 0表示真实提现, 1虚拟提现
             'status'        => $user->is_test == 1 ? 3 : 0, 

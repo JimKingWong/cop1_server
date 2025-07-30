@@ -31,6 +31,8 @@ class Channel
             'merOrderNo'                => $order['order_no'],
             'orderAmount'               => $order['money'], 
             'nonceStr'                  => $nonceStr,
+            'customerAccount'           => '60872832',
+            'lastName'                  => $order['name'],
             'customerEmail'             => $order['email'],
             'customerName'              => $order['name'],
             'customerPhone'             => $order['phone_number'],
@@ -41,7 +43,8 @@ class Channel
         ];
         
         // 获取sign
-        $data['sign'] = Sign::common($data, $config['secret'], 'secret', 0);
+        $data['sign'] = Sign::common($data, $config['secret'], 'key', 0);
+        ksort($data);
         // dd($apiUrl);
         // 设置请求头
         $header = [
@@ -51,8 +54,8 @@ class Channel
         ];
 
         // 发送POST请求
-        // $res = Http::post($apiUrl, $data, $header);
-        $res = Http::post($apiUrl, json_encode($data), $header);
+        $res = Http::post($apiUrl, $data, $header);
+        // $res = Http::post($apiUrl, json_encode($data), $header);
         dd($res);
 
         // $res = Http::post($apiUrl, http_build_query($data), $header);
@@ -88,6 +91,7 @@ class Channel
             'orderAmount'               => $order['money'], 
             'nonceStr'                  => $nonceStr,
             'customerName'              => $order['name'],
+            'customerName'              => $order['name'],
             'customerIdentificationType'=> '00', // 证件类型 暂时写死
             'customerIdentification'    => $order['identityNo'],
             'checkOut'                  => true,
@@ -96,7 +100,7 @@ class Channel
         ];
         
         // 获取sign
-        $data['sign'] = Sign::common($data, $config['secret'], 'secret', 0);
+        $data['sign'] = Sign::common($data, $config['secret'], 'key', 0);
         // dd($data);
 
         // 设置请求头
@@ -139,7 +143,7 @@ class Channel
         ];
         
         // 获取sign
-        $data['sign'] = Sign::common($data, $config['secret'], 'secret');
+        $data['sign'] = Sign::common($data, $config['secret'], 'key', 0);
 
         // 设置请求头
         $header = [

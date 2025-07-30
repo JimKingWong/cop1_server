@@ -705,7 +705,7 @@ class User extends Base
         if($result === false){
             $this->error(__('修改失败'));
         }
-        $this->success(__('修改成功'));
+        $this->success(__('修改成功'), $data);
     }
 
 }

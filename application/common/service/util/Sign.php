@@ -25,6 +25,30 @@ class Sign
     }
 
     /**
+     * supe 签名
+     * @param $data 待签名数据
+     * @param $key 签名key
+     * @param $is_lower 是否小写
+     * @return string
+     */
+    public static function supeSign($data, $key)
+    {
+        ksort($data);
+        $str = '';
+        foreach ($data as $k => $v) {
+            if (is_bool($v)) {
+                $str .= $k . '=' . ($v ? 'true' : 'false') . '&';
+            } else {
+                $str .= $k . '=' . rawurldecode((string)$v) . '&';
+            }
+        }
+        $str .= 'key=' . $key;
+        $str = str_replace('¤cy', '&currency', $str);
+        $sign = md5($str);
+        return strtoupper($sign);
+    }
+
+    /**
      * funpay 加密
      */
     public static function rsaencrypt($data, $mch_private_key)
