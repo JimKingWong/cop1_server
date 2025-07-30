@@ -65,9 +65,8 @@ class Activity extends Base
         // 可签状态
         $is_signin = 0;
         // 今日充值大于等于配置最小充值金额，且上次签到时间小于今天凌晨时间，则可签到
-        if($recharge_money >= $row['config']['min_recharge_money']){
+        if($recharge_money >= $row['config']['min_recharge_money'] && $today_bet >= $row['config']['today_bet']){
             if($last_signin && strtotime($last_signin['createtime']) < strtotime(date('Ymd'))){
-
                 $is_signin = 1;
             }elseif(!$last_signin){
                 // 属于没签到过的
