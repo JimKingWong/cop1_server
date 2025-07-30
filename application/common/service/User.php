@@ -665,8 +665,8 @@ class User extends Base
         $identityType   = $this->request->post('identityType');
         $identityNo     = $this->request->post('identityNo');
         $bank_id        = $this->request->post('bank_id');
-
-        if(!$name == '' || !$area_code == '' || !$phone_number == '' || !$email == '' || !$bank_code == '' || !$bank_account == '' || !$identityType == '' || !$identityNo == ''){
+   
+        if($name == '' || $area_code == '' || $phone_number == '' || $email == '' || $bank_code == '' || $bank_account == '' || $identityType == '' || $identityNo == ''){
             $this->error(__('请填写完整信息'));
         }
 
