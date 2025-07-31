@@ -70,4 +70,30 @@ class UserBank extends Model
         }
         return $cert;
     }
+
+    /**
+     * 账户类型
+     */
+    public static function accountType($flag = 1)
+    {
+        if($flag == 1){
+            $account = [
+                0 => __('活期账户'),
+                1 => __('储蓄账户'),
+            ];
+        }else{
+            $account = [
+                [
+                    'type' => 0,
+                    'name' => __('活期账户'),
+                ],
+                [
+                    'type' => 1,
+                    'name' => __('储蓄账户'),
+                ],
+            ];
+        }
+
+        return $account;
+    }
 }
