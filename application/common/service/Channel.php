@@ -44,7 +44,7 @@ class Channel
         $data['sign'] = Sign::supeSign($data, $config['secret']);
 
         ksort($data);
-        
+
         // 设置请求头
         $header = [
             CURLOPT_HTTPHEADER  => [
@@ -55,7 +55,6 @@ class Channel
         // 发送POST请求
         $res = Http::post($apiUrl, json_encode($data), $header);
         $res = json_decode($res, true);
-        dd($res);
 
         // 成功返回支付链接
         $payUrl = '';
