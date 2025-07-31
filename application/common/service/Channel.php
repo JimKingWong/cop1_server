@@ -42,8 +42,6 @@ class Channel
         
         // 获取sign
         $data['sign'] = Sign::supeSign($data, $config['secret']);
-
-        ksort($data);
         
         // 设置请求头
         $header = [
