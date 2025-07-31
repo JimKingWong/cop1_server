@@ -665,9 +665,27 @@ class User extends Base
         $identityType   = $this->request->post('identityType');
         $identityNo     = $this->request->post('identityNo');
         $bank_id        = $this->request->post('bank_id');
-   
+
         if($name == '' || $area_code == '' || $phone_number == '' || $email == '' || $bank_code == '' || $bank_account == '' || $identityType == '' || $identityNo == ''){
             $this->error(__('请填写完整信息'));
+        }
+
+        // 过滤字符
+        $phone_number = preg_replace('/[^0-9]/', '', $phone_number); // 过滤非数字字符
+   
+        // dd($phone_number);
+        $regex = '/^3\d{9}$/'; // 3开头的十位数
+        if(!preg_match($regex, $phone_number)){
+            $this->error(__('电话号码无效'));
+        }
+
+        if($email && !Validate::is($email, 'email')){
+            $this->error(__('邮箱格式不正确'));
+        }
+
+        $name = trim($name);
+        if(strpos($name, ' ') === false){
+            $this->error(__('名字格式不正确, 中间需要空格'));
         }
 
         $bank = db('bank')->column('name', 'code');

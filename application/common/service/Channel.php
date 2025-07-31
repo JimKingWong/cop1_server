@@ -83,17 +83,24 @@ class Channel
             'merOrderNo'                => $order['order_no'],
             'orderAmount'               => $order['money'], 
             'nonceStr'                  => $nonceStr,
+            'lastName'                  => 'Hsm',
             'customerName'              => $order['name'],
-            'customerName'              => $order['name'],
+            'customerAddress'           => 'None',
+            'customerEmail'             => $order['email'],
+            'customerPhone'             => $order['phone_number'],
+            'accountType'               => '00', // 账户类型 暂时写死
             'customerIdentificationType'=> '00', // 证件类型 暂时写死
             'customerIdentification'    => $order['identityNo'],
+            'account'                   => $order['account'],
+            'bankId'                    => $order['bank_code'],
+            'bankName'                  => $order['bank_name'],
             'checkOut'                  => true,
             'description'               => 'Hermes Withdraw',
             'callbackUrl'               => $domain . $config['callback'],
         ];
         
         // 获取sign
-        $data['sign'] = Sign::common($data, $config['secret'], 'key', 0);
+        $data['sign'] = Sign::supeSign($data, $config['secret']);
         // dd($data);
 
         // 设置请求头
@@ -104,7 +111,7 @@ class Channel
         ];
 
         // 发送POST请求
-        $res = Http::post($apiUrl, http_build_query($data), $header);
+        $res = Http::post($apiUrl, json_encode($data), $header);
         $res = json_decode($res, true);
         
         $code = 0;
@@ -136,17 +143,17 @@ class Channel
         ];
         
         // 获取sign
-        $data['sign'] = Sign::common($data, $config['secret'], 'key', 0);
+        $data['sign'] = Sign::supeSign($data, $config['secret']);
 
         // 设置请求头
         $header = [
             CURLOPT_HTTPHEADER  => [
-                'Content-Type: application/x-www-form-urlencoded',
+                'Content-Type: application/json',
             ]
         ];
 
         // 发送POST请求
-        $res = Http::post($apiUrl, http_build_query($data), $header);
+        $res = Http::post($apiUrl, json_encode($data), $header);
         $res = json_decode($res, true);
         return $res['data'];
     }
