@@ -24,7 +24,7 @@ class Channel
         
         $domain = config('channel.domain');
 
-        $bank_code = 'COPDS' . $order['bank_code'];
+        $bank_code = 'BANK';
 
         $params = [
             'merchant'      => $config['merchantId'],
@@ -158,8 +158,30 @@ class Channel
         $domain = config('channel.domain');
 
         $nonceStr = Sign::generateTraceId(); // 生成随机字符串, 借用omg游戏的
+
         // 请求参数
-        $data = [
+        // $params = [
+        //     'countryId'                 => $config['countryId'],
+        //     'currency'                  => $config['currency'],
+        //     'payProduct'                => $order['channel_code'],
+        //     'merId'                     => $config['merchantId'],
+        //     'merOrderNo'                => $order['order_no'],
+        //     'orderAmount'               => $order['money'], 
+        //     'nonceStr'                  => $nonceStr,
+        //     'customerEmail'             => $order['email'],
+        //     'customerName'              => $order['name'],
+        //     'customerPhone'             => $order['phone_number'],
+        //     'customerIdentification'    => $order['identityNo'],
+        //     'checkOut'                  => true,
+        //     'description'               => 'Hermes Recharge',
+        //     'callbackUrl'               => $domain . $config['callback'],
+        // ];
+
+        $phone_numer = 3 . rand(100000000, 999999999);
+
+        $name = 'Hermes Recharge';
+        
+        $params = [
             'countryId'                 => $config['countryId'],
             'currency'                  => $config['currency'],
             'payProduct'                => $order['channel_code'],
@@ -167,17 +189,19 @@ class Channel
             'merOrderNo'                => $order['order_no'],
             'orderAmount'               => $order['money'], 
             'nonceStr'                  => $nonceStr,
-            'customerEmail'             => $order['email'],
-            'customerName'              => $order['name'],
-            'customerPhone'             => $order['phone_number'],
-            'customerIdentification'    => $order['identityNo'],
+            'customerEmail'             => 'Hermes@hms.com',
+            'customerName'              => $name,
+            'customerPhone'             => $phone_numer,
+            'customerIdentification'    => $phone_numer,
             'checkOut'                  => true,
             'description'               => 'Hermes Recharge',
             'callbackUrl'               => $domain . $config['callback'],
         ];
         
         // 获取sign
-        $data['sign'] = Sign::supeSign($data, $config['secret']);
+        $params['sign'] = Sign::supeSign($params, $config['secret']);
+
+        ksort($params);
         
         // 设置请求头
         $header = [
@@ -187,7 +211,7 @@ class Channel
         ];
 
         // 发送POST请求
-        $res = Http::post($apiUrl, json_encode($data), $header);
+        $res = Http::post($apiUrl, json_encode($params), $header);
         $res = json_decode($res, true);
         // dd($res);
 
