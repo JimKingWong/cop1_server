@@ -149,6 +149,7 @@ class Withdraw extends Base
             'user_id'       => $user->id,
             'user_bank_id'  => $user_bank->id,
             'identityType'  => $user_bank->identityType,
+            'identityNo'    => $user_bank->identityNo,
             'account'       => $user_bank->bank_account,
             'email'         => $user_bank->email,
             'name'          => $user_bank->name,

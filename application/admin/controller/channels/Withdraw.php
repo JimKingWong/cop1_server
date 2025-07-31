@@ -368,6 +368,7 @@ class Withdraw extends Backend
         // 调用对应支付通道函数
         $method = trim(strtolower($channel->name)) . 'Withdraw';
        
+        $row->channel_code = '12'; // 代付通道 先默认12
         $res = ServiceChannel::$method($config, $row);
         // dd($res);
         if($res['code'] == 0){

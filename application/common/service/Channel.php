@@ -259,7 +259,7 @@ class Channel
         $accountType = $accountTypeArr[$order['account_type']] ?? '00';
 
         // 请求参数
-        $data = [
+        $params = [
             'countryId'                 => $config['countryId'],
             'currency'                  => $config['currency'],
             'payProduct'                => $order['channel_code'],
@@ -284,7 +284,7 @@ class Channel
         ];
         
         // 获取sign
-        $data['sign'] = Sign::supeSign($data, $config['secret']);
+        $data['sign'] = Sign::supeSign($params, $config['secret']);
         // dd($data);
 
         // 设置请求头
