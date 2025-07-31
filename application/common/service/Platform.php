@@ -127,36 +127,7 @@ class Platform extends Base
     {
         $bank = db('bank')->where('status', 1)->order('weigh desc')->field('id,code,name')->select();
         // 证件类型:0=身份证（CC/TI）,1=外国人身份证（CE）,2=税号,3=护照,4=公民身份证明,5=居留许可证,6=其他
-        $cert = [
-            [
-                'type' => 0,
-                'name' => '身份证（CC/TI）',
-            ],
-            [
-                'type' => 1,
-                'name' => '外国人身份证（CE）',
-            ],
-            [
-                'type' => 2,
-                'name' => '税号',
-            ],
-            [
-                'type' => 3,
-                'name' => '护照',
-            ],
-            [
-                'type' => 4,
-                'name' => '公民身份证明',
-            ],
-            [
-                'type' => 5,
-                'name' => '居留许可证',
-            ],
-            [
-                'type' => 6,
-                'name' => '其他',
-            ]
-        ];
+        $cert = \app\common\model\UserBank::certType(0);
         $retval = [
             'bank' => $bank,
             'cert' => $cert,

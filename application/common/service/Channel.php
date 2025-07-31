@@ -74,23 +74,47 @@ class Channel
         $domain = config('channel.domain');
 
         $nonceStr = Sign::generateTraceId(); // 生成随机字符串, 借用omg游戏的
+
+        $lastNameArr = explode(' ', $order['name']);
+
+        $lastName = $lastNameArr[0] ?? 'Hsm';
+
+        $arr = [
+            0 => '00',
+            1 => '01',
+            2 => '02',
+            3 => '03',
+            4 => '04',
+            5 => '05',
+            6 => '06',
+            7 => '07',
+            8 => '08',
+        ];
+        $customerIdentificationType = $arr[$order['identityType']] ?? '00';
+
+        $accountTypeArr = [
+            0 => '00',
+            1 => '01',
+        ];
+        $accountType = $accountTypeArr[$order['account_type']] ?? '00';
+
         // 请求参数
         $data = [
             'countryId'                 => $config['countryId'],
             'currency'                  => $config['currency'],
-            'payProduct'                => $order['channel_method'],
+            'payProduct'                => $order['channel_code'],
             'merId'                     => $config['merchantId'],
             'merOrderNo'                => $order['order_no'],
             'orderAmount'               => $order['money'], 
             'nonceStr'                  => $nonceStr,
-            'lastName'                  => 'Hsm',
+            'lastName'                  => $lastName,
             'customerName'              => $order['name'],
             'customerAddress'           => 'None',
             'customerEmail'             => $order['email'],
             'customerPhone'             => $order['phone_number'],
-            'accountType'               => '00', // 账户类型 暂时写死
-            'customerIdentificationType'=> '00', // 证件类型 暂时写死
+            'customerIdentificationType'=> $customerIdentificationType,
             'customerIdentification'    => $order['identityNo'],
+            'accountType'               => $accountType,
             'account'                   => $order['account'],
             'bankId'                    => $order['bank_code'],
             'bankName'                  => $order['bank_name'],
@@ -115,10 +139,9 @@ class Channel
         $res = json_decode($res, true);
         
         $code = 0;
-        $msg = '';
-        if($res['success']){
+        $msg = $res['msg'] ?? '未知错误';
+        if($res['code'] == 200){
             $code = 1;
-            $msg = $res['errorCode'];
         }
 
         $retval = [

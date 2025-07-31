@@ -20,4 +20,54 @@ class UserBank extends Model
     protected $createTime = 'createtime';
     protected $updateTime = 'updatetime';
     
+
+    public static function certType($flag = 1)
+    {
+        if ($flag == 1) {
+            $cert = [
+                __('身份证（CC/TI）'), __('外国人身份证（CE）'), __('税号'), __('护照'), __('离境证'), __('军官证'), __('其他'), __('公民身份证明'), __('居留许可证')
+            ];
+            return $cert;
+        } else {
+            $cert = [
+                [
+                    'type' => 0,
+                    'name' => __('身份证（CC/TI）'),
+                ],
+                [
+                    'type' => 1,
+                    'name' => __('外国人身份证（CE）'),
+                ],
+                [
+                    'type' => 2,
+                    'name' => __('税号'),
+                ],
+                [
+                    'type' => 3,
+                    'name' => __('护照'),
+                ],
+                [
+                    'type' => 4,
+                    'name' => __('离境证'),
+                ],
+                [
+                    'type' => 5,
+                    'name' => __('军官证'),
+                ],
+                [
+                    'type' => 6,
+                    'name' => __('其他'),
+                ],
+                [
+                    'type' => 7,
+                    'name' => __('公民身份证明'),
+                ],
+                [
+                    'type' => 7,
+                    'name' => __('居留许可证'),
+                ],
+            ];
+        }
+        return $cert;
+    }
 }
