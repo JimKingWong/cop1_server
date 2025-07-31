@@ -153,11 +153,6 @@ class Withdraw extends Backend
         return $this->view->fetch();
     }
     
-    
-    
-    
-    
-
     /**
      * 查看凭证
      */
@@ -196,7 +191,8 @@ class Withdraw extends Backend
             $tradeFieldArr = [
                 'CEPAY'         => 'transaction_id',
                 'OUROPAGO'      => 'endToEndId',
-                'U2CPAY'        => 'orderNo'
+                'U2CPAY'        => 'orderNo',
+                'SUPEPAY'       => 'supefinaOrderId'
             ];
 
             $keyArr = array_keys($urlArr);

@@ -157,7 +157,7 @@ class Channel
     public static function supepayQuery($config, $order)
     {
         // 发起提现接口
-        $apiUrl = $config['gate'] . '/api/open/merchant/payment/query';
+        $apiUrl = $config['gate'] . '/api/supefina/transactions/search-status';
         
         // 请求参数
         $data = [
