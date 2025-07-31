@@ -12,6 +12,142 @@ class Channel
 {
 
     /**
+     * funpay 充值通道
+     */
+    public static function funpayRecharge($config, $order)
+    {
+        // 发起提现接口
+        $apiUrl = $config['gate'] . $config['url'];
+
+        $pageUrl = db('user')->where('id', $order['user_id'])->value('origin');
+        $pageUrl = 'https://' . $pageUrl;
+        
+        $domain = config('channel.domain');
+
+        $bank_code = 'COPDS' . $order['bank_code'];
+
+        $params = [
+            'merchant'      => $config['merchantId'],
+            'businessCode'  => $config['businessCode'], // 业务代码网银, 当前选择哥伦比亚网银139
+            'orderNo'       => $order['order_no'],
+            'name'          => $order['name'],
+            'phone'         => $order['phone_number'],
+            'email'         => $order['email'],
+            'amount'        => $order['money'],
+            'notifyUrl'     => $domain . $config['callback'],
+            'pageUrl'       => $pageUrl,
+            'bankCode'      => $bank_code,
+            'subject'       => 'hms-cop Recharge',
+        ];
+
+        // 代收用秘钥
+        $params = Sign::rsaencrypt($params, $config['secret']);
+        // dd($params);
+        // 设置请求头
+        $header = [
+            CURLOPT_HTTPHEADER  => [
+                'Content-Type: application/json',
+            ]
+        ];
+
+        // $res = Http::post($apiUrl, $params, $header);
+        $res = Http::post($apiUrl, json_encode($params), $header);
+        // $res = Http::post($apiUrl, http_build_query($params), $header);
+        $res = json_decode($res, true);
+        dd($res);
+        // 成功返回支付链接
+        $payUrl = '';
+        if($res['code'] == 0){
+            $payUrl = $res['data']['orderData'];
+        }
+        return $payUrl;
+    }
+
+    /**
+     * funpay 提现通道
+     */
+    public static function funpayWithDraw($config, $order)
+    {
+        $apiUrl = $config['gate'] . $config['url'];
+
+        $domain = config('channel.domain');
+        
+        $arr = [
+            'PIX_CPF' => 'CPF',
+            'PIX_PHONE' => 'PHONE',
+            'PIX_EMAIL' => 'EMAIL',
+        ];
+        
+        $pix_type = $arr[$order->wallet->chave_pix] ?? 'CPF';
+
+        $pix = $order->wallet->pix ?? '';
+
+        $rand = rand(100, 999);
+        $params = [
+            'merchant'      => $config['merchantId'],
+            'businessCode'  => $config['businessCode'], // 业务代码网银, 当前选择哥伦比亚网银代付140
+            'orderNo'       => $order['order_no'],
+            'accName'       => 'hms-cop',
+            'phone'         => $order['user_id'] . $rand,
+            'accNo'         => $pix,
+            'orderAmount'   => $order['real_money'],
+            'bankCode'      => 'BANK',
+            'notifyUrl'     => $domain . $config['callback'],
+            'remake'       => 'hms-cop Withdraw',
+        ];
+
+        $params = Sign::rsaencrypt($params, $config['secret']);
+
+        // 设置请求头
+        $header = [
+            CURLOPT_HTTPHEADER  => [
+                'Content-Type: application/json',
+            ]
+        ];
+
+        $res = Http::post($apiUrl, $params, $header);
+        $res = json_decode($res, true);
+        
+        $code = 0;
+        $msg = $res['message'];
+        if($res['code'] == '0'){
+            $code = 1;
+        }
+
+        $retval = [
+            'code'  => $code,
+            'msg'   => $msg,
+        ];
+        return $retval;
+    }
+
+    /**
+     * funpay 查看代收
+     */
+    public static function funpayQuery($config, $order)
+    {
+        $apiUrl = $config['gate'] . '/singleQuery';
+
+         $params = [
+            'merNo'            => $config['merchantId'],
+            'merOrderNo'       => $order['order_no'],
+        ];
+
+        $params = Sign::rsaencrypt($params, $config['secret']);
+
+        // 设置请求头
+        $header = [
+            CURLOPT_HTTPHEADER  => [
+                'Content-Type: application/json',
+            ]
+        ];
+
+        $res = Http::post($apiUrl, $params, $header);
+        $res = json_decode($res, true);
+        return $res['data'];
+    }
+
+    /**
      * supepay 充值通道
      */
     public static function supepayRecharge($config, $order)
@@ -531,155 +667,6 @@ class Channel
         ];
 
         $res = Http::post($apiUrl, json_encode($params), $header);
-        $res = json_decode($res, true);
-        return $res['data'];
-    }
-
-    /**
-     * funpay 充值通道
-     */
-    public static function funpayRecharge($config, $order)
-    {
-        // 发起提现接口
-        $apiUrl = $config['gate'] . $config['url'];
-
-        $pageUrl = db('user')->where('id', $order['user_id'])->value('origin');
-        $pageUrl = 'https://' . $pageUrl;
-        
-        $domain = config('channel.domain');
-
-        $rand = rand(100, 999);
-        $params = [
-            'merchant'      => $config['merchantId'],
-            'businessCode'  => $config['businessCode'], // 业务代码网银, 当前选择哥伦比亚网银139
-            'orderNo'       => $order['order_no'],
-            'name'          => 'hms-cop',
-            'phone'         => $order['user_id'] . $rand,
-            'email'         => $order['user_id'] . $rand . '@hms-cop.com',
-            'amount'        => $order['money'],
-            'notifyUrl'     => $domain . $config['callback'],
-            'pageUrl'       => $pageUrl,
-            'bankCode'      => 'BANK',
-            'subject'       => 'hms-cop Recharge',
-        ];
-
-        $params = [
-            'merchant'      => '1009',
-            'businessCode'  => '1001', // 业务代码网银, 当前选择哥伦比亚网银139
-            'orderNo'       => 1722321107671,
-            'name'          => 'test',
-            'phone'         => '15998765432',
-            'email'         => '15998765432@163.com',
-            'amount'        => 200,
-            'notifyUrl'     => 'https://api.funpay.tv/test',
-            'pageUrl'       => 'https://api.funpay.tv/test',
-            'bankCode'      => 'BANK',
-            'subject'       => '测试测试',
-        ];
-
-        // 代收用秘钥
-        $params = Sign::rsaencrypt($params, $config['secret']);
-        // dd($params);
-        // 设置请求头
-        $header = [
-            CURLOPT_HTTPHEADER  => [
-                'Content-Type: application/json',
-            ]
-        ];
-
-        // $res = Http::post($apiUrl, $params, $header);
-        // $res = Http::post($apiUrl, json_encode($params), $header);
-        $res = Http::post($apiUrl, http_build_query($params), $header);
-        $res = json_decode($res, true);
-        dd($res);
-        // 成功返回支付链接
-        $payUrl = '';
-        if($res['code'] == 0){
-            $payUrl = $res['data']['orderData'];
-        }
-        return $payUrl;
-    }
-
-    /**
-     * funpay 提现通道
-     */
-    public static function funpayWithDraw($config, $order)
-    {
-        $apiUrl = $config['gate'] . $config['url'];
-
-        $domain = config('channel.domain');
-        
-        $arr = [
-            'PIX_CPF' => 'CPF',
-            'PIX_PHONE' => 'PHONE',
-            'PIX_EMAIL' => 'EMAIL',
-        ];
-        
-        $pix_type = $arr[$order->wallet->chave_pix] ?? 'CPF';
-
-        $pix = $order->wallet->pix ?? '';
-
-        $rand = rand(100, 999);
-        $params = [
-            'merchant'      => $config['merchantId'],
-            'businessCode'  => $config['businessCode'], // 业务代码网银, 当前选择哥伦比亚网银代付140
-            'orderNo'       => $order['order_no'],
-            'accName'       => 'hms-cop',
-            'phone'         => $order['user_id'] . $rand,
-            'accNo'         => $pix,
-            'orderAmount'   => $order['real_money'],
-            'bankCode'      => 'BANK',
-            'notifyUrl'     => $domain . $config['callback'],
-            'remake'       => 'hms-cop Withdraw',
-        ];
-
-        $params = Sign::rsaencrypt($params, $config['secret']);
-
-        // 设置请求头
-        $header = [
-            CURLOPT_HTTPHEADER  => [
-                'Content-Type: application/json',
-            ]
-        ];
-
-        $res = Http::post($apiUrl, $params, $header);
-        $res = json_decode($res, true);
-        
-        $code = 0;
-        $msg = $res['message'];
-        if($res['code'] == '0'){
-            $code = 1;
-        }
-
-        $retval = [
-            'code'  => $code,
-            'msg'   => $msg,
-        ];
-        return $retval;
-    }
-
-    /**
-     * funpay 查看代收
-     */
-    public static function funpayQuery($config, $order)
-    {
-        $apiUrl = $config['gate'] . '/singleQuery';
-
-         $params = [
-            'merNo'            => $config['merchantId'],
-            'merOrderNo'       => $order['order_no'],
-        ];
-
-        $params = Sign::rsaencrypt($params, $config['secret']);
-
-        // 设置请求头
-        $header = [
-            CURLOPT_HTTPHEADER  => [
-                'Content-Type: application/json',
-            ]
-        ];
-
-        $res = Http::post($apiUrl, $params, $header);
         $res = json_decode($res, true);
         return $res['data'];
     }
