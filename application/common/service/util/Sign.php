@@ -43,7 +43,7 @@ class Sign
             }
         }
         $str .= 'key=' . $key;
-        $str = str_replace('¤cy', '&currency', $str);
+        
         $sign = md5($str);
         return strtoupper($sign);
     }
