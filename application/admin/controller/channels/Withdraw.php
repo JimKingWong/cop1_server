@@ -65,7 +65,7 @@ class Withdraw extends Backend
 
             $admin = db('admin')->where('role', '>', 2)->column('nickname', 'id');
             $list = $this->model
-                    ->with(['user','wallet'])
+                    ->with(['user','bank'])
                     ->where($where)
                     ->order($sort, $order)
                     ->paginate($limit);
@@ -80,11 +80,10 @@ class Withdraw extends Backend
                 $row->user_total_bet = $row->user->userdata->total_bet;
 
 				$row->getRelation('user')->visible(['username', 'money', 'origin', 'role', 'remark']);
-				$row->getRelation('wallet')->visible(['name', 'area_code','phone_number','pix_type','chave_pix','cpf','pix','is_default']);
             }
 
             $withdraw = $this->model
-                ->with(['user','wallet'])
+                ->with(['user'])
                 ->where($where)
                 ->select();
 

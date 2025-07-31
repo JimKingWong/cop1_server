@@ -44,8 +44,6 @@ class Sign
         }
         $str .= 'key=' . $key;
 
-        $str = str_replace('&', '&amp;', $str);
-        
         $sign = md5($str);
         return strtoupper($sign);
     }

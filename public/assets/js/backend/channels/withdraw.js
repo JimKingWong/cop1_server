@@ -61,15 +61,16 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         },
                         {
                             field: 'wallet', 
-                            title: __('Wallet_id'),
+                            title: __('账号信息'),
                             operate: false,
                             formatter: function (value, row, index) {
                                 return `<div class="boxs">
                                             <div class="boxs-info">
-                                                <div><span>名字: </span>${row.wallet.name}</div>
-                                                <div><span>手机号: </span>${row.wallet.area_code} ${row.wallet.phone_number}</div>
-                                                <div><span>类型: </span>${row.wallet.chave_pix}</div>
-                                                <a href="javascript:" data-url="user/wallet/index?ids=${row.user_id}" class="dialogit" title="用户钱包信息" data-area=\'["80%", "100%"]\'><div><span>CPF/CNPJ: </span>${row.wallet.pix}</div></a>
+                                                <div><span>名字: </span>${row.bank.name}</div>
+                                                <div><span>手机号: </span>${row.bank.area_code} ${row.bank.phone_number}</div>
+                                                <div><span>银行编码: </span>${row.bank.bank_code}</div>
+                                                <div><span>银行名字: </span>${row.bank.bank_name}</div>
+                                                <div><span>银行账号: </span>${row.bank.bank_account}</div>
                                             </div>
                                         </div>`;
                             },

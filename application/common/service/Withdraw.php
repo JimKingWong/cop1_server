@@ -86,14 +86,6 @@ class Withdraw extends Base
             $this->error(__('请先绑定银行卡'));
         }
 
-        // // 黑名单的钱包cpf
-        // $black_wallet_pix = Wallet::where('pix', $wallet->pix)->where('status', 0)->column('pix');
-
-        // // 判断是否已拉黑
-        // if($wallet->status == 0 || in_array($wallet->pix, $black_wallet_pix)){
-        //     $this->error(__('您的CPF已被添加进黑名单, 无法正常提款, 联系客服处理!'));
-        // }
-
         // 查询相同CPF账号的用户
         $bank_account = $user_bank->bank_account;
         
@@ -148,6 +140,9 @@ class Withdraw extends Base
 
         $real_money = $money - $fee; // 实际到账金额
 
+        // 账号类型
+        $account_type = $user_bank->account_type;
+
         // 提现数据
         $withdrawData = [
             'admin_id'      => $user->admin_id,
@@ -158,7 +153,7 @@ class Withdraw extends Base
             'email'         => $user_bank->email,
             'name'          => $user_bank->name,
             'phone_number'  => $user_bank->phone_number,
-            'account_type'  => 0, // 默认手机号PHONE
+            'account_type'  => $account_type, 
             'bank_code'     => $user_bank->bank_code,
             'bank_name'     => $user_bank->bank_name,
             'money'         => $money,
