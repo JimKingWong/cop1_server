@@ -31,8 +31,6 @@ class Channel
             'merOrderNo'                => $order['order_no'],
             'orderAmount'               => $order['money'], 
             'nonceStr'                  => $nonceStr,
-            'customerAccount'           => '60872832',
-            'lastName'                  => $order['name'],
             'customerEmail'             => $order['email'],
             'customerName'              => $order['name'],
             'customerPhone'             => $order['phone_number'],
@@ -44,8 +42,9 @@ class Channel
         
         // 获取sign
         $data['sign'] = Sign::supeSign($data, $config['secret']);
+
         ksort($data);
-        // dd($apiUrl);
+        
         // 设置请求头
         $header = [
             CURLOPT_HTTPHEADER  => [
@@ -54,11 +53,7 @@ class Channel
         ];
 
         // 发送POST请求
-        // $res = Http::post($apiUrl, $data, $header);
         $res = Http::post($apiUrl, json_encode($data), $header);
-        dd($res);
-
-        // $res = Http::post($apiUrl, http_build_query($data), $header);
         $res = json_decode($res, true);
         dd($res);
 
