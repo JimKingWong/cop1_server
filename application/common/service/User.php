@@ -660,6 +660,7 @@ class User extends Base
         $area_code      = $this->request->post('area_code');
         $phone_number   = $this->request->post('phone_number');
         $email          = $this->request->post('email');
+        $account_type   = $this->request->post('account_type');
         $bank_code      = $this->request->post('bank_code');
         $bank_account   = $this->request->post('bank_account');
         $identityType   = $this->request->post('identityType');
@@ -709,11 +710,12 @@ class User extends Base
             'area_code'     => $area_code,
             'phone_number'  => $phone_number,
             'email'         => $email,
+            'account_type'  => $account_type,
             'bank_code'     => $bank_code,
             'bank_name'     => $bank_name,
             'bank_account'  => $bank_account,
-            'identityType' => $identityType,
-            'identityNo'   => $identityNo,
+            'identityType'  => $identityType,
+            'identityNo'    => $identityNo,
         ];
         if($user_bank){
             $result = $user_bank->save($data);
