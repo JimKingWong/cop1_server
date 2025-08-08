@@ -10,7 +10,7 @@ use app\common\service\util\Sign;
 use fast\Http;
 use think\Db;
 
-class Pgnew3 extends Base
+class Raspa extends Base
 {
     /**
      * 配置
@@ -20,8 +20,8 @@ class Pgnew3 extends Base
     /**
      * Es表名
      */
-    protected $gameRecord = 'pg_game_record';
-    
+    protected $gameRecord = 'raspa_game_record';
+
     /**
      * 厂商
      */
@@ -35,7 +35,7 @@ class Pgnew3 extends Base
     {
         parent::__construct();
 
-        $platform = Platform::where('code', $this->platform)->find();
+        $platform = Platform::where('code', $this->platform)->cache(true, 86400)->find();
 
         $this->config = $platform->config;
         

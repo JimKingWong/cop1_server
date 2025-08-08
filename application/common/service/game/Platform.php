@@ -428,6 +428,47 @@ class Platform extends Base
     }
 
     /**
+     * 获取raspa游戏链接
+     */
+    public function raspaLink($game)
+    {
+        if(!$game){
+            $this->error(__('请先选择游戏'));
+        }
+
+        $user_id = $this->auth->id;
+        $user = $this->GetSession($user_id);
+
+        $language = $this->language;
+
+        $apiUrl = $this->config['gameUrl'] . "/api/web/get_launch_url";
+        $data = [
+            "operator_token"        => $this->config['operator_token'],
+            "user_id"               => $user['user_id'],
+            "user_token"            => $user['token'],
+            "game_code"             => $game->game_id,
+            "language"              => $language,
+            "ts"                    => time(),
+            "currency"              => "BRL"
+        ];
+
+        $data['sign'] = Sign::common($data, $this->config['secret_key']);
+        $jsonData = json_encode($data);
+
+        // 设置请求头
+        $header = [
+            CURLOPT_HTTPHEADER  => [
+                'Content-Type: application/json',
+                'Content-Length: ' . strlen($jsonData)
+            ]
+        ];
+        $res = Http::post($apiUrl, $jsonData, $header);
+        
+        header("Cache-Control: no-cache, no-store, must-revalidate");
+        echo $res;
+    }
+
+    /**
      * 获取用户信息
      */
     public function GetSession($user_id)

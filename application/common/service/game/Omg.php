@@ -52,7 +52,7 @@ class Omg extends Base
         $this->gameUrl      = $this->config['gameUrl'];
 
         // 实例化模型
-        $this->model = new \app\common\model\game\Omg();
+        $this->model = new \app\common\model\game\Raspa();
     }
 
     /**
