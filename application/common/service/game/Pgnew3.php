@@ -36,9 +36,12 @@ class Pgnew3 extends Base
     public function __construct()
     {
         parent::__construct();
+        
+        $param = $this->request->param();
+        \think\Log::record($param, '__construct');
 
         $platform = Platform::where('code', $this->platform)->find();
-
+        
         $this->config = $platform->config;
         
         if(empty($this->config)){
@@ -55,7 +58,8 @@ class Pgnew3 extends Base
             }
         }
 
-        $this->operator_token = $this->config['agentId'];
+        $this->operator_token = $this->config['operator_token'];
+        
         $this->secret_key = $this->config['secret_key'];
         $this->gameUrl = $this->config['gameUrl'];
     }
@@ -68,7 +72,7 @@ class Pgnew3 extends Base
     {
         $param = $this->request->param();
 
-        if($param['operator_token'] != $this->operator_token || $param['secret_key'] != $this->secret_key){
+        if($param['operator_token'] != $this->operator_token || $param['SecretStr'] != $this->secret_key){
             $data = [
                 "data"      => null,
                 "error"     => 1034
@@ -115,11 +119,11 @@ class Pgnew3 extends Base
     public function Get() 
     {
         $param = $this->request->param();
-        \think\Log::record($param, 'Get');
+        // \think\Log::record($param, 'Get');
 
         $userId = $param['UseID'];
 
-        if($param['operator_token'] != $this->operator_token || $param['secret_key'] != $this->secret_key){
+        if($param['OperatorToken'] != $this->operator_token || $param['SecretStr'] != $this->secret_key){
             $data = [
                 "data"      => null,
                 "error"     => 1034
@@ -166,7 +170,7 @@ class Pgnew3 extends Base
         $gameId = $param['GameID'];  
         // \think\Log::record($param, 'TransferInOut');
         // 验证基本参数1
-        if($param['operator_token'] != $this->operator_token || $param['secret_key'] != $this->secret_key){
+        if($param['OperatorToken'] != $this->operator_token || $param['SecretStr'] != $this->secret_key){
             return json_encode([
                 "data"  => null,
                 "error" => 3004
@@ -201,14 +205,14 @@ class Pgnew3 extends Base
         }
 
         //查询游戏
-        $game = db('game_raspa')->where('id', $gameId)->find();
+        $game = db('game_raspa')->where('game_id', $gameId)->find();
         
         $bet_amount = $param['Bet'] / 1000;
         $win_amount = $param['Award'] / 1000;
         $transfer_amount = $param['UpdateCredit'] / 1000;
         
         //税费计算
-        $tax = $this->config['tax'];
+        $tax = $this->config['tax'] ?? 0;
         $tax_fee = $win_amount * $tax;
         
         Db::startTrans();
@@ -250,15 +254,15 @@ class Pgnew3 extends Base
             // if(!$log){
                 if($transfer_amount != 0 || $bet_amount != 0){
                     // 添加ES记录
-                    $betInfoArr = [
-                        'transaction_id'    => $transaction_id,
-                        'bet_amount'        => $bet_amount,
-                        'win_amount'        => $win_amount,
-                        'transfer_amount'   => $transfer_amount,
-                        'is_fake'           => 1,
-                    ];
-                    $es = new Es();
-                    $es->addGameRecord($user, $game, $betInfoArr, $this->gameRecord);
+                    // $betInfoArr = [
+                    //     'transaction_id'    => $transaction_id,
+                    //     'bet_amount'        => $bet_amount,
+                    //     'win_amount'        => $win_amount,
+                    //     'transfer_amount'   => $transfer_amount,
+                    //     'is_fake'           => 1,
+                    // ];
+                    // $es = new Es();
+                    // $es->addGameRecord($user, $game, $betInfoArr, $this->gameRecord);
                     
                     $user->userdata->total_bet = bcadd($user->userdata->total_bet, $bet_amount * $game['bet_rate'], 2);
                     $user->userdata->today_bet = bcadd($user->userdata->today_bet, $bet_amount * $game['bet_rate'], 2);
@@ -276,7 +280,7 @@ class Pgnew3 extends Base
 
             Db::commit();
         }catch(\Exception $e){
-            \think\Log::record($e->getMessage(), 'TransferInOut');
+            \think\Log::record($e->getMessage(), 'TransferInOut_error');
             Db::rollback();
             return json_encode([
                 "data" => null,

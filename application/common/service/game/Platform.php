@@ -442,7 +442,7 @@ class Platform extends Base
         $language = $this->language;
         $language = 'pt';
 
-        $apiUrl = $this->config['gameUrl'] . "/api/web/get_launch_url";
+        $apiUrl = $this->config['gameUrl'] . "/api/web/game_url";
         $data = [
             "operator_token"        => $this->config['operator_token'],
             "user_id"               => $user['user_id'],
@@ -464,6 +464,14 @@ class Platform extends Base
             ]
         ];
         $res = Http::post($apiUrl, $jsonData, $header);
+        
+        $res = json_decode($res, true);
+        // dd($res);
+         $retval = [
+            'game_url' => $res['data']['url'],
+        ];
+
+        $this->success(__('请求成功'), $retval);
         
         header("Cache-Control: no-cache, no-store, must-revalidate");
         echo $res;
