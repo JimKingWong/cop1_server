@@ -440,6 +440,7 @@ class Platform extends Base
         $user = $this->GetSession($user_id);
 
         $language = $this->language;
+        $langguage = 'pt';
 
         $apiUrl = $this->config['gameUrl'] . "/api/web/get_launch_url";
         $data = [
