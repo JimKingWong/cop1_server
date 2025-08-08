@@ -10,7 +10,7 @@ use app\common\service\util\Sign;
 use fast\Http;
 use think\Db;
 
-class Raspa extends Base
+class Pgraspa extends Base
 {
     /**
      * 配置
@@ -30,6 +30,7 @@ class Raspa extends Base
     protected $operator_token = null;
     protected $secret_key = null;
     protected $gameUrl = null;
+    protected $model = null;
     
     public function __construct()
     {
@@ -56,46 +57,10 @@ class Raspa extends Base
         $this->operator_token = $this->config['agentId'];
         $this->secret_key = $this->config['secret_key'];
         $this->gameUrl = $this->config['gameUrl'];
+
+        // 实例化模型
+        $this->model = new \app\common\model\game\Raspa();
         
-    }
-
-    /**
-     * 获取游戏链接
-     */
-    public function getLink($game)
-    {
-        if(!$game){
-            $this->error(__('请先选择游戏'));
-        }
-
-        $user_id = $this->auth->id;
-        $user = $this->GetSession($user_id);
-
-        $apiUrl = $this->gameUrl . "/api/web/get_launch_url";
-        $data = [
-            "operator_token"        => $this->operator_token,
-            "user_id"               => $user['user_id'],
-            "user_token"            => $user['token'],
-            "game_code"             => $game->game_id,
-            "language"              => 'pt',
-            "ts"                    => time(),
-            "currency"              => "BRL"
-        ];
-
-        $data['sign'] = Sign::common($data, $this->secret_key);
-        $jsonData = json_encode($data);
-
-        // 设置请求头
-        $header = [
-            CURLOPT_HTTPHEADER  => [
-                'Content-Type: application/json',
-                'Content-Length: ' . strlen($jsonData)
-            ]
-        ];
-        $res = Http::post($apiUrl, $jsonData, $header);
-        
-        header("Cache-Control: no-cache, no-store, must-revalidate");
-        echo $res;
     }
 
     /**
@@ -146,6 +111,7 @@ class Raspa extends Base
     public function VerifySession() 
     {
         $param = $this->request->param();
+        \think\Log::record($data, 'VerifySession');
 
         if($param['operator_token'] != $this->operator_token || $param['secret_key'] != $this->secret_key){
             $data = [
@@ -183,7 +149,7 @@ class Raspa extends Base
             "error" => null
         ];
 
-        // \think\Log::record($data, 'VerifySession');
+        \think\Log::record($data, 'VerifySession');
         return json_encode($data);
     }
 

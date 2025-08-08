@@ -63,6 +63,11 @@ class Game extends Model
         return $this->belongsTo('\app\common\model\game\Cq', 'g_id', 'id');
     }
 
+    public function gameraspa()
+    {
+        return $this->belongsTo('\app\common\model\game\Raspa', 'g_id', 'id');
+    }
+
     /**
      * 获取游戏服务类
      */

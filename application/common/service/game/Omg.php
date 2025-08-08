@@ -52,7 +52,7 @@ class Omg extends Base
         $this->gameUrl      = $this->config['gameUrl'];
 
         // 实例化模型
-        $this->model = new \app\common\model\game\Raspa();
+        $this->model = new \app\common\model\game\Omg();
     }
 
     /**
@@ -385,7 +385,6 @@ class Omg extends Base
             $transfer_amount = $data['money'];
             $bet_amount = 0;
             $win_amount = $data['money'];
-            
 
             $user->userdata->total_bet = bcsub($user->userdata->total_bet, $win_amount, 2);
             $user->userdata->today_bet = bcsub($user->userdata->today_bet, $win_amount, 2);

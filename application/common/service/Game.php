@@ -63,6 +63,7 @@ class Game extends Base
                 'game_jdb'      => [],
                 'game_pp'       => [4],
                 'game_cq'       => [],
+                'game_raspa'    => []
             ];
             $where['real_game_id'] = $row->game_id;
             $where['platform'] = ['in', $platformArr[$table_name]];
@@ -76,20 +77,21 @@ class Game extends Base
                 $game = $omg;
             }
         }
-        // dd($omg);
+        // dd($game);
 
         // omg分流
         if($table_name == 'game_omg'){
             $code = \app\common\model\game\Omg::omgCode($user);
             $map['code'] = $code;
         }
-
+        
         // 获取游戏服务
         $map['table_name'] = $table_name;
         $platform = $this->model::services($map);
         
         // 对应游戏服务实例
         $service = new \app\common\service\game\Platform($platform);
+        // dd($service);
 
         // 对应方法
         $method = $platform->method ?? 'omgLink';

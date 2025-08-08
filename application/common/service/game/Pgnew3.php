@@ -8,6 +8,7 @@ use app\common\service\util\Es;
 use app\common\service\util\Notice;
 use app\common\service\util\Sign;
 use fast\Http;
+use think\Cache;
 use think\Db;
 
 class Pgnew3 extends Base
@@ -30,6 +31,7 @@ class Pgnew3 extends Base
     protected $operator_token = null;
     protected $secret_key = null;
     protected $gameUrl = null;
+    protected $model = null;
     
     public function __construct()
     {
@@ -56,87 +58,6 @@ class Pgnew3 extends Base
         $this->operator_token = $this->config['agentId'];
         $this->secret_key = $this->config['secret_key'];
         $this->gameUrl = $this->config['gameUrl'];
-        
-    }
-
-    /**
-     * 获取游戏链接
-     */
-    public function getLink($game)
-    {
-        if(!$game){
-            $this->error(__('请先选择游戏'));
-        }
-
-        $user_id = $this->auth->id;
-        $user = $this->GetSession($user_id);
-
-        $apiUrl = $this->gameUrl . "/api/web/get_launch_url";
-        $data = [
-            "operator_token"        => $this->operator_token,
-            "user_id"               => $user['user_id'],
-            "user_token"            => $user['token'],
-            "game_code"             => $game->game_id,
-            "language"              => 'pt',
-            "ts"                    => time(),
-            "currency"              => "BRL"
-        ];
-
-        $data['sign'] = Sign::common($data, $this->secret_key);
-        $jsonData = json_encode($data);
-
-        // 设置请求头
-        $header = [
-            CURLOPT_HTTPHEADER  => [
-                'Content-Type: application/json',
-                'Content-Length: ' . strlen($jsonData)
-            ]
-        ];
-        $res = Http::post($apiUrl, $jsonData, $header);
-        
-        header("Cache-Control: no-cache, no-store, must-revalidate");
-        echo $res;
-    }
-
-    /**
-     * 获取用户信息
-     */
-    public function GetSession($user_id)
-    {
-        $cacheKey = 'pgnew3_' . $user_id;
-        $cachedData = cache($cacheKey);
-        if($cachedData){
-            return $cachedData;
-        }
-
-        $apiUrl = $this->gameUrl . "/api/web/user_session";
-        $data = [
-            "operator_token"    => $this->operator_token,
-            "user_id"           => $user_id,
-            "user_name"         => $user_id,
-            "ts"                => time(),
-            "currency"          => "BRL"
-        ];
-
-        $data['sign'] = Sign::common($data, $this->secret_key);
-        $jsonData = json_encode($data);
-
-        // 设置请求头
-        $header = [
-            CURLOPT_HTTPHEADER  => [
-                'Content-Type: application/json',
-                'Content-Length: ' . strlen($jsonData)
-            ]
-        ];
-        $res = Http::post($apiUrl, $jsonData, $header);
-        $res = json_decode($res, true);
-
-        if($res['status'] == 0 && isset($res['data'])){  
-            $data = $res['data'];  
-            //缓存7天
-            cache($cacheKey, $data, 3600 * 24 * 7);  
-            return $data;
-        } 
     }
 
     /**
@@ -183,7 +104,7 @@ class Pgnew3 extends Base
             "error" => null
         ];
 
-        // \think\Log::record($data, 'VerifySession');
+        \think\Log::record($data, 'VerifySession');
         return json_encode($data);
     }
 
@@ -194,6 +115,8 @@ class Pgnew3 extends Base
     public function Get() 
     {
         $param = $this->request->param();
+        \think\Log::record($param, 'Get');
+
         $userId = $param['UseID'];
 
         if($param['operator_token'] != $this->operator_token || $param['secret_key'] != $this->secret_key){
@@ -234,6 +157,7 @@ class Pgnew3 extends Base
         $es = new Es();
 
         $param = $this->request->param();
+        \think\Log::record($param, 'TransferInOut');
 
         // 交易电话
         $transaction_id = $param['Term'];
@@ -257,12 +181,27 @@ class Pgnew3 extends Base
             ]);
         }
         
-        //查询交易记录是否存在
-        $esLog = $es->searchByTransactionId($transaction_id, $this->gameRecord);
-        $log = count($esLog) > 0;
+        // //查询交易记录是否存在
+        // $esLog = $es->searchByTransactionId($transaction_id, $this->gameRecord);
+        // $log = count($esLog) > 0;
+
+         // 幂等检查
+        $check = Cache::store('redis')->get('TransferInOut_' . $transaction_id);
+        if($check){
+            $data = [
+                "data" => [
+                    "balance_amount"    => $user['money'] * 1000,
+                    "currency_code"     => "BRL",
+                    "updated_time"      => time() * 1000
+                ],
+                "error" => null
+            ];
+            
+            return json_encode($data);
+        }
 
         //查询游戏
-        $game = db('game_pg')->where('id', $gameId)->cache(true)->find();
+        $game = db('game_raspa')->where('id', $gameId)->find();
         
         $bet_amount = $param['Bet'] / 1000;
         $win_amount = $param['Award'] / 1000;
@@ -288,9 +227,9 @@ class Pgnew3 extends Base
                 Db::rollback();
                 return json_encode([
                     "data"  => [
-                        "balance_amount"    => $user['money']*1000,
+                        "balance_amount"    => $user['money'] * 1000,
                         "currency_code"     => "BRL",
-                        "updated_time"      => time()*1000
+                        "updated_time"      => time() * 1000
                     ],
                     "error" => 3202
                 ]);
@@ -300,15 +239,15 @@ class Pgnew3 extends Base
                 Db::rollback();
                 return json_encode([
                     "data" => [
-                        "balance_amount"    => $user['money']*1000,
+                        "balance_amount"    => $user['money'] * 1000,
                         "currency_code"     => "BRL",
-                        "updated_time"      => time()*1000
+                        "updated_time"      => time() * 1000
                     ],
                     "error" => 3202
                 ]);
             }
           
-            if(!$log){
+            // if(!$log){
                 if($transfer_amount != 0 || $bet_amount != 0){
                     // 添加ES记录
                     $betInfoArr = [
@@ -331,7 +270,10 @@ class Pgnew3 extends Base
                     $user->money = $money;
                     $user->save();
                 }
-            }
+            // }
+
+            Cache::store('redis')->set('TransferInOut_' . $transaction_id, $param, 3600);
+
             Db::commit();
         }catch(\Exception $e){
             \think\Log::record($e->getMessage(), 'TransferInOut');
@@ -347,9 +289,9 @@ class Pgnew3 extends Base
         
         $data = [
             "data" => [
-                "balance_amount"    => $user['money']*1000,
+                "balance_amount"    => $user['money'] * 1000,
                 "currency_code"     => "BRL",
-                "updated_time"      => time()*1000
+                "updated_time"      => time() * 1000
             ],
             "error" => null
         ];
