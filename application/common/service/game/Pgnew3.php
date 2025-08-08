@@ -97,8 +97,8 @@ class Pgnew3 extends Base
 
         $data = [
             "data" => [
-                "player_name"       => $this->config['prefix'] . $user['id'],
-                "nickname"          => $this->config['prefix'] . $user['id'],
+                "player_name"       => $user['id'],
+                "nickname"          => $user['id'],
                 "currency"          => "BRL"
             ],
             "error" => null
