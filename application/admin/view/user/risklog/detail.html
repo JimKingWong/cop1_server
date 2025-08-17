@@ -1,0 +1,27 @@
+<div class="panel panel-default panel-intro">
+
+
+    <div class="panel-heading">
+        {:build_heading(null,FALSE)}
+        <ul class="nav nav-tabs" data-field="status">
+            {foreach $tab as $key => $val}
+            <li class="{if $key == 'checkSameIPGroups'}active{/if}"><a href="#tab-{$key}" data-value="" data-toggle="tab">{$val}</a></li>
+            {/foreach}
+            <!-- <li class=""><a href="#tab-withdraw" data-value="" data-toggle="tab">提现</a></li> -->
+        </ul>
+    </div>
+
+    <div class="panel-body">
+        <div id="myTabContent" class="tab-content">
+            {foreach $tab as $key => $val}
+            <div class="tab-pane fade {if $key == 'checkSameIPGroups'}active in{/if}" id="tab-{$key}">
+                {foreach $data[$key] as $v}
+                {$v}
+                {/foreach}
+            </div>
+            {/foreach}
+            
+            
+        </div>
+    </div>
+</div>

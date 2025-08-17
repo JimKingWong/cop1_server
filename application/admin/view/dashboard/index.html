@@ -31,7 +31,7 @@
 <div class="row">
     <div class="col-xs-12">
         <div class="row">
-            <div class="col-xs-2" style="margin-bottom:15px;">
+            <div class="col-xs-6 col-sm-2" style="margin-bottom:15px;">
                 <div class="panel panel-default panel-intro panel-statistics">
                     <div class="panel-body">
                         <h3>玩家总数/已充值玩家</h3>
@@ -40,7 +40,7 @@
                 </div>
             </div>
       
-			<div class="col-xs-2" style="margin-bottom:15px;">
+			<div class="col-xs-6 col-sm-2" style="margin-bottom:15px;">
 			    <div class="panel panel-default panel-intro panel-statistics">
 			        <div class="panel-body">
 			            <h3>玩家余额</h3>
@@ -48,7 +48,7 @@
 			        </div>
 			    </div>
 			</div>
-			<div class="col-xs-2" style="margin-bottom:15px;">
+			<div class="col-xs-6 col-sm-2" style="margin-bottom:15px;">
 			    <div class="panel panel-default panel-intro panel-statistics">
 			        <div class="panel-body">
 			            <h3>有效玩家数</h3>
@@ -56,7 +56,7 @@
 			        </div>
 			    </div>
 			</div>
-			<div class="col-xs-2" style="margin-bottom:15px;">
+			<div class="col-xs-6 col-sm-2" style="margin-bottom:15px;">
 			    <div class="panel panel-default panel-intro panel-statistics">
 			        <div class="panel-body">
 			            <h3>博主余额</h3>
@@ -68,9 +68,12 @@
         </div>
     </div>
 </div>
+
+
 <div class="row">
     <div class="col-xs-12">
 		<div class="row wanlcard">
+
 			<div class="col-lg-3 col-xs-6">
 				<div class="small-box bg-card-blue">
 					<div class="inner">
@@ -81,10 +84,10 @@
 							<div class="ibox-content">
 
 								<div class="row">
-									<div class="col-md-6">
-										<h1 class="no-margins">{$retval.total.recharge_money}</h1>
-										<div class="font-bold"></i>
-											<small>总充值</small>
+								    <div class="col-md-6">
+										<h1 class="no-margins">{$retval.total.user_recharege_money}</h1>
+										<div class="font-bold">
+											<small>用户充值</small>
 										</div>
 									</div>
 									<div class="col-md-6">
@@ -94,11 +97,13 @@
 										</div>
 									</div>
 									<div class="col-md-6">
-										<h1 class="no-margins">{$retval.total.user_recharege_money}</h1>
-										<div class="font-bold">
-											<small>用户充值</small>
+										<h1 class="no-margins">{$retval.total.recharge_money}</h1>
+										<div class="font-bold"></i>
+											<small>总充值</small>
 										</div>
 									</div>
+								
+									
 								</div>
 							</div>
 						</div>
@@ -108,6 +113,7 @@
 					</div>
 				</div>
 			</div>
+
 			<div class="col-lg-3 col-xs-6">
 				<div class="small-box bg-card-red">
 					<div class="inner">
@@ -118,12 +124,13 @@
 							<div class="ibox-content">
 
 								<div class="row">
-									<div class="col-md-6">
-										<h1 class="no-margins">{$retval.total.withdraw_money}</h1>
-										<div class="font-bold"></i>
-											<small>总提现</small>
+								    <div class="col-md-6">
+										<h1 class="no-margins">{$retval.total.user_withdraw_money}</h1>
+										<div class="font-bold">
+											<small>用户提现</small>
 										</div>
 									</div>
+									
 									<div class="col-md-6">
 										<h1 class="no-margins">{$retval.total.bl_withdraw_money}</h1>
 										<div class="font-bold">
@@ -131,15 +138,15 @@
 										</div>
 									</div>
 									<div class="col-md-6">
-										<h1 class="no-margins">{$retval.total.user_withdraw_money}</h1>
-										<div class="font-bold">
-											<small>用户提现</small>
+										<h1 class="no-margins">{$retval.total.withdraw_money}</h1>
+										<div class="font-bold"></i>
+											<small>总提现</small>
 										</div>
 									</div>
 									<div class="col-md-6">
 										<h1 class="no-margins">{$retval.total.withdraw_rate}%</h1>
 										<div class="font-bold">
-											<small>提款率</small>
+											<small>玩家提款率</small>
 										</div>
 									</div>
 								
@@ -152,6 +159,7 @@
 					</div>
 				</div>
 			</div>
+
 			<div class="col-lg-3 col-xs-6">
 				<div class="small-box bg-card-violet">
 					<div class="inner">
@@ -162,12 +170,7 @@
 							<div class="ibox-content">
 
 								<div class="row">
-									<div class="col-md-6">
-										<h1 class="no-margins">{$retval.total.salary}</h1>
-										<div class="font-bold"></i>
-											<small>总工资</small>
-										</div>
-									</div>
+									
 									<div class="col-md-6">
 										<h1 class="no-margins">{$retval.total.bl_salary}</h1>
 										<div class="font-bold">
@@ -180,6 +183,18 @@
 											<small>工资退款</small>
 										</div>
 									</div>
+									<div class="col-md-6">
+										<h1 class="no-margins">{$retval.total.salary}</h1>
+										<div class="font-bold"></i>
+											<small>总工资</small>
+										</div>
+									</div>
+									<div class="col-md-6">
+										<h1 class="no-margins">{$retval.total.rechare_salary}</h1>
+										<div class="font-bold"></i>
+											<small>工资投产比</small>
+										</div>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -189,12 +204,13 @@
 					</div>
 				</div>
 			</div>
+
 			<div class="col-lg-3 col-xs-6">
 				<div class="small-box bg-card-primary">
 					<div class="inner">
 						<div class="panel-body">
 							<div class="ibox-title">
-								<h4>API费用 (不包含今日API费用)</h4>
+								<h4>系统费用 (不包含今日)</h4>
 							</div>
 							<div class="ibox-content">
 
@@ -206,7 +222,14 @@
 										</div>
 									</div>
 								</div>
-								
+								<div class="row">
+									<div class="col-md-6">
+										<h1 class="no-margins">{$retval.total.channel_fee}</h1>
+										<div class="font-bold"></i>
+											<small>通道费用</small>
+										</div>
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -215,6 +238,7 @@
 					</div>
 				</div>
 			</div>
+
 		</div>
 		
 	</div>	
@@ -226,7 +250,7 @@
 <div class="row">
     <div class="col-xs-12">
         <div class="row">
-            <div class="col-xs-2" style="margin-bottom:15px;">
+            <div class="col-xs-6 col-sm-2" style="margin-bottom:15px;">
                 <div class="panel panel-default panel-intro panel-statistics">
                     <div class="panel-body">
                         <h3>累计充值</h3>
@@ -235,7 +259,7 @@
                 </div>
             </div>
       
-			<div class="col-xs-2" style="margin-bottom:15px;">
+			<div class="col-xs-6 col-sm-2" style="margin-bottom:15px;">
 			    <div class="panel panel-default panel-intro panel-statistics">
 			        <div class="panel-body">
 			            <h3>累计提现</h3>
@@ -243,7 +267,8 @@
 			        </div>
 			    </div>
 			</div>
-			<div class="col-xs-2" style="margin-bottom:15px;">
+
+			<div class="col-xs-6 col-sm-2" style="margin-bottom:15px;">
 			    <div class="panel panel-default panel-intro panel-statistics">
 			        <div class="panel-body">
 			            <h3>累计api</h3>
@@ -251,7 +276,8 @@
 			        </div>
 			    </div>
 			</div>
-			<div class="col-xs-2" style="margin-bottom:15px;">
+
+			<div class="col-xs-6 col-sm-2" style="margin-bottom:15px;">
 			    <div class="panel panel-default panel-intro panel-statistics">
 			        <div class="panel-body">
 			            <h3>累计通道费用</h3>
@@ -259,7 +285,8 @@
 			        </div>
 			    </div>
 			</div>
-			<div class="col-xs-2" style="margin-bottom:15px;">
+
+			<div class="col-xs-6 col-sm-2" style="margin-bottom:15px;">
 			    <div class="panel panel-default panel-intro panel-statistics">
 			        <div class="panel-body">
 			            <h3>累计盈亏</h3>
@@ -267,7 +294,16 @@
 			        </div>
 			    </div>
 			</div>
-			<!-- <div class="col-xs-2" style="margin-bottom:15px;">
+
+			<div class="col-xs-6 col-sm-2" style="margin-bottom:15px;">
+			    <div class="panel panel-default panel-intro panel-statistics">
+			        <div class="panel-body">
+			            <h3>本月盈亏</h3>
+			            <h4>{$retval.total.profit_month}</h4>
+			        </div>
+			    </div>
+			</div>
+			<!-- <div class="col-xs-6 col-sm-2" style="margin-bottom:15px;">
 			    <div class="panel panel-default panel-intro panel-statistics">
 			        <div class="panel-body">
 			            <h3>API费用||通道费用</h3>
@@ -283,7 +319,8 @@
 <div class="row">
 	<div class="col-xs-12">
         <div class="row">
-            <div class="col-xs-2" style="margin-bottom:15px;">
+
+            <div class="col-xs-6 col-sm-2" style="margin-bottom:15px;">
                 <div class="panel panel-default panel-intro panel-statistics">
                     <div class="panel-body">
                         <h3>注册人数</h3>
@@ -291,7 +328,8 @@
                     </div>
                 </div>
             </div>
-			<div class="col-xs-2" style="margin-bottom:15px;">
+
+			<div class="col-xs-6 col-sm-2" style="margin-bottom:15px;">
 			    <div class="panel panel-default panel-intro panel-statistics">
 			        <div class="panel-body">
 			            <h3>充值人数</h3>
@@ -299,7 +337,8 @@
 			        </div>
 			    </div>
 			</div>
-            <div class="col-xs-2" style="margin-bottom:15px;">
+
+            <div class="col-xs-6 col-sm-2" style="margin-bottom:15px;">
                 <div class="panel panel-default panel-intro panel-statistics">
                     <div class="panel-body">
                         <h3>充值金额</h3>
@@ -307,7 +346,8 @@
                     </div>
                 </div>
             </div>
-            <div class="col-xs-2" style="margin-bottom:15px;">
+
+            <div class="col-xs-6 col-sm-2" style="margin-bottom:15px;">
                 <div class="panel panel-default panel-intro panel-statistics">
                     <div class="panel-body">
                         <h3>提现金额</h3>
@@ -316,7 +356,8 @@
                     </div>
                 </div>
             </div>
-			<div class="col-xs-2" style="margin-bottom:15px;">
+
+			<div class="col-xs-6 col-sm-2" style="margin-bottom:15px;">
 			    <div class="panel panel-default panel-intro panel-statistics">
 			        <div class="panel-body">
 			            <h3>活跃玩家</h3>
@@ -325,7 +366,7 @@
 			    </div>
 			</div>
 
-			<div class="col-xs-2" style="margin-bottom:15px;">
+			<div class="col-xs-6 col-sm-2" style="margin-bottom:15px;">
 			    <div class="panel panel-default panel-intro panel-statistics">
 			        <div class="panel-body">
 			            <h3>新玩家</h3>
@@ -334,7 +375,7 @@
 			    </div>
 			</div>
 
-			<div class="col-xs-2" style="margin-bottom:15px;">
+			<div class="col-xs-6 col-sm-2" style="margin-bottom:15px;">
 			    <div class="panel panel-default panel-intro panel-statistics">
 			        <div class="panel-body">
 			            <h3>新玩家复充人数</h3>
@@ -342,7 +383,8 @@
 			        </div>
 			    </div>
 			</div>
-			<div class="col-xs-2" style="margin-bottom:15px;">
+
+			<div class="col-xs-6 col-sm-2" style="margin-bottom:15px;">
 			    <div class="panel panel-default panel-intro panel-statistics">
 			        <div class="panel-body">
 			            <h3>老玩家复充人数</h3>
@@ -351,7 +393,7 @@
 			    </div>
 			</div>
 
-			<div class="col-xs-2" style="margin-bottom:15px;">
+			<div class="col-xs-6 col-sm-2" style="margin-bottom:15px;">
 			    <div class="panel panel-default panel-intro panel-statistics">
 			        <div class="panel-body">
 			            <h3>博主工资</h3>
@@ -359,7 +401,8 @@
 			        </div>
 			    </div>
 			</div>
-			<div class="col-xs-2" style="margin-bottom:15px;">
+
+			<div class="col-xs-6 col-sm-2" style="margin-bottom:15px;">
 			    <div class="panel panel-default panel-intro panel-statistics">
 			        <div class="panel-body">
 			            <h3>博主提现</h3>
@@ -368,7 +411,7 @@
 			    </div>
 			</div>
 
-			<div class="col-xs-2" style="margin-bottom:15px;">
+			<div class="col-xs-6 col-sm-2" style="margin-bottom:15px;">
 			    <div class="panel panel-default panel-intro panel-statistics">
 			        <div class="panel-body">
 			            <h3>博主退款</h3>
@@ -385,7 +428,8 @@
 <div class="row">
 	<div class="col-xs-12">
         <div class="row">
-            <div class="col-xs-2" style="margin-bottom:15px;">
+
+            <div class="col-xs-6 col-sm-2" style="margin-bottom:15px;">
                 <div class="panel panel-default panel-intro panel-statistics">
                     <div class="panel-body">
                         <h3>注册人数</h3>
@@ -393,7 +437,8 @@
                     </div>
                 </div>
             </div>
-			<div class="col-xs-2" style="margin-bottom:15px;">
+
+			<div class="col-xs-6 col-sm-2" style="margin-bottom:15px;">
 			    <div class="panel panel-default panel-intro panel-statistics">
 			        <div class="panel-body">
 			            <h3>充值人数</h3>
@@ -401,7 +446,8 @@
 			        </div>
 			    </div>
 			</div>
-            <div class="col-xs-2" style="margin-bottom:15px;">
+
+            <div class="col-xs-6 col-sm-2" style="margin-bottom:15px;">
                 <div class="panel panel-default panel-intro panel-statistics">
                     <div class="panel-body">
                         <h3>充值金额</h3>
@@ -409,7 +455,8 @@
                     </div>
                 </div>
             </div>
-            <div class="col-xs-2" style="margin-bottom:15px;">
+
+            <div class="col-xs-6 col-sm-2" style="margin-bottom:15px;">
                 <div class="panel panel-default panel-intro panel-statistics">
                     <div class="panel-body">
                         <h3>提现金额</h3>
@@ -418,7 +465,8 @@
                     </div>
                 </div>
             </div>
-			<div class="col-xs-2" style="margin-bottom:15px;">
+
+			<div class="col-xs-6 col-sm-2" style="margin-bottom:15px;">
 			    <div class="panel panel-default panel-intro panel-statistics">
 			        <div class="panel-body">
 			            <h3>活跃玩家</h3>
@@ -427,7 +475,7 @@
 			    </div>
 			</div>
 
-			<div class="col-xs-2" style="margin-bottom:15px;">
+			<div class="col-xs-6 col-sm-2" style="margin-bottom:15px;">
 			    <div class="panel panel-default panel-intro panel-statistics">
 			        <div class="panel-body">
 			            <h3>新玩家</h3>
@@ -436,7 +484,7 @@
 			    </div>
 			</div>
 
-			<div class="col-xs-2" style="margin-bottom:15px;">
+			<div class="col-xs-6 col-sm-2" style="margin-bottom:15px;">
 			    <div class="panel panel-default panel-intro panel-statistics">
 			        <div class="panel-body">
 			            <h3>新玩家复充人数</h3>
@@ -444,7 +492,8 @@
 			        </div>
 			    </div>
 			</div>
-			<div class="col-xs-2" style="margin-bottom:15px;">
+
+			<div class="col-xs-6 col-sm-2" style="margin-bottom:15px;">
 			    <div class="panel panel-default panel-intro panel-statistics">
 			        <div class="panel-body">
 			            <h3>老玩家复充人数</h3>
@@ -453,7 +502,7 @@
 			    </div>
 			</div>
 
-			<div class="col-xs-2" style="margin-bottom:15px;">
+			<div class="col-xs-6 col-sm-2" style="margin-bottom:15px;">
 			    <div class="panel panel-default panel-intro panel-statistics">
 			        <div class="panel-body">
 			            <h3>博主工资</h3>
@@ -461,7 +510,8 @@
 			        </div>
 			    </div>
 			</div>
-			<div class="col-xs-2" style="margin-bottom:15px;">
+
+			<div class="col-xs-6 col-sm-2" style="margin-bottom:15px;">
 			    <div class="panel panel-default panel-intro panel-statistics">
 			        <div class="panel-body">
 			            <h3>博主提现</h3>
@@ -470,7 +520,7 @@
 			    </div>
 			</div>
 
-			<div class="col-xs-2" style="margin-bottom:15px;">
+			<div class="col-xs-6 col-sm-2" style="margin-bottom:15px;">
 			    <div class="panel panel-default panel-intro panel-statistics">
 			        <div class="panel-body">
 			            <h3>博主退款</h3>
@@ -484,6 +534,7 @@
 </div>
 
 <div class="row wanllist">
+	
 	<div class="col-xs-12 col-sm-6">
 	    <div class="panel panel-default panel-intro panel-statistics">
 	        <div class="panel-body">

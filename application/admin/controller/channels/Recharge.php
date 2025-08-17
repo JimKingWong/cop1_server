@@ -41,7 +41,7 @@ class Recharge extends Backend
      */
     public function index()
     {
-        ini_set('memory_limit', '512M');
+        ini_set('memory_limit', '5096M');
         
         //当前是否为关联查询
         $this->relationSearch = true;
@@ -68,12 +68,12 @@ class Recharge extends Backend
 
             $channel = Channel::column('title,name', 'id');
             $admindata = db('admin_data')->column('invite_code', 'admin_id');
-            $list = $this->model
+            $query = $this->model
                     ->with(['user'])
-                    // ->with(['user','channel'])
                     ->where($where)
-                    ->where($map)
-                    ->order($sort, $order)
+                    ->where($map);
+
+            $list = $query->order($sort, $order)
                     ->paginate($limit);
 
             foreach ($list as $row) {
@@ -81,59 +81,19 @@ class Recharge extends Backend
                 $row->channel_title = $channel[$row->channel_id]['title'] ?? '';
                 $row->root_invite = $admindata[$row->admin_id] ?? '';
             }
-       
-             $recharge = $this->model
-                ->with(['user'])
-                ->where($where)
-                ->where($map)
-                ->select();
+     
+            $total_recharge = $query->with(['user'])->where($where)->where($map)->where('recharge.status', '1')->sum('recharge.money'); // 总充值金额
+            $total_recharge_num = $query->with(['user'])->where($where)->where($map)->count(); // 总充值笔数
+            $success_recharge = $query->with(['user'])->where($where)->where($map)->where('recharge.status', '1')->count(); // 成功充值笔数
 
-            $total_recharge = 0; // 总充值金额
-            $total_recharge_num = 0; // 总充值笔数
-            $success_recharge = 0; // 成功充值笔数
+            $today_recharge = $query->with(['user'])->where($where)->where($map)->whereTime('paytime', 'today')->where('recharge.status', '1')->sum('recharge.money'); // 今日充值金额
+            $today_recharge_num = $query->with(['user'])->where($where)->where($map)->whereTime('recharge.createtime', 'today')->count(); // 今日充值笔数
+            $today_success_recharge = $query->with(['user'])->where($where)->where($map)->whereTime('paytime', 'today')->where('recharge.status', '1')->count(); // 今日成功充值笔数
 
-            $today_recharge = 0; // 今日充值金额
-            $today_recharge_num = 0; // 今日充值笔数
-            $today_success_recharge = 0; // 今日成功充值笔数
+            $yestoday_recharge = $query->with(['user'])->where($where)->where($map)->whereTime('paytime', 'yesterday')->where('recharge.status', '1')->sum('recharge.money'); // 昨日充值金额
+            $yestoday_recharge_num = $query->with(['user'])->where($where)->where($map)->whereTime('recharge.createtime', 'yesterday')->count(); // 昨日充值笔数
+            $yestoday_success_recharge = $query->with(['user'])->where($where)->where($map)->whereTime('paytime', 'yesterday')->where('recharge.status', '1')->count(); // 昨日成功充值笔数
 
-            $yestoday_recharge = 0; // 昨日充值金额
-            $yestoday_recharge_num = 0; // 昨日充值笔数
-            $yestoday_success_recharge = 0; // 昨日成功充值笔数
-
-            $today_time = strtotime(date('Ymd'));
-            $yestoday_time = strtotime(date('Ymd', strtotime('-1 day')));
-            
-            foreach ($recharge as $row) {
-                $total_recharge_num ++;
-                if ($row->status == 1) {
-                    $total_recharge += $row->money;
-                    $success_recharge ++;
-                }
-
-                // 今日
-                if(strtotime($row->paytime) >= $today_time){
-                    if($row->status == 1){
-                        $today_recharge += $row->money;
-                        $today_success_recharge ++;
-                    }
-                }
-
-                if(strtotime($row->createtime) >= $today_time){
-                    $today_recharge_num ++;
-                }
-
-                // 昨日
-                if(strtotime($row->paytime) >= $yestoday_time && strtotime($row->paytime) < $today_time){
-                    if($row->status == 1){
-                        $yestoday_recharge += $row->money;
-                        $yestoday_success_recharge ++;
-                    }
-                }
-
-                if(strtotime($row->createtime) >= $yestoday_time && strtotime($row->createtime) < $today_time){
-                    $yestoday_recharge_num ++;
-                }
-            }
             $retval = [
                 'total_recharge'            => sprintf('%.2f', $total_recharge),
                 'total_recharge_num'        => $total_recharge_num,
@@ -152,4 +112,37 @@ class Recharge extends Backend
         return $this->view->fetch();
     }
 
+    /**
+     * 查询订单
+     */
+    public function detail($ids = null)
+    {
+        $row = $this->model->get($ids);
+        if (!$row) {
+            $this->error(__('No Results were found'));
+        }
+
+        $config = $row->channel->recharge_config;
+        $config = json_decode($config, true);
+        // dd($config);
+
+        $service = new \app\common\service\Channel();
+
+        $method = strtolower($row->channel->name) . 'RechargeQuery';
+        $res = $service->$method($config, $row);
+
+        $arr = [
+            'U2CPAY' => 'ref_cpf',
+            'CEPAY'  => 'real_cpf'
+        ];
+
+        $cpf = $res[$arr[$row->channel->name]] ?? '';
+        if($cpf){
+            // 保存
+            $row->cpf = $cpf;
+            $row->save();
+        }
+
+        return $this->view->fetch();
+    }
 }

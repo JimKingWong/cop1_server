@@ -2,6 +2,8 @@
 
 return [
     'Id'          => 'ID',
+    'Platform'    => '厂商',
+    'Platform 1'  => '刮刮卡',
     'Game_id'     => '游戏ID',
     'Game_name'   => '游戏名字',
     'Dir'         => '图片目录',

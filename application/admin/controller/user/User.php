@@ -210,6 +210,37 @@ class User extends Backend
     }
 
     /**
+     * 打码量倍数
+     */
+    public function typing($row, $params)
+    {
+        if($params['multiple'] < 0){
+            $this->error('请输入大于0的数字! ');
+        }
+        
+        // 假如是博主的话, 这条线的都跟随
+        if($row->role == 1){
+            $users = modelUser::where('is_test', 0)->where('admin_id', $row->admin_id)->field('id,parent_id,parent_id_str')->select();
+            $children = modelUser::getTeam($users, $row->id);
+
+            // $children = ModelUser::where([
+            //     ['EXP', Db::raw("FIND_IN_SET(". $row->id .", parent_id_str)")]
+            // ])->select();
+            foreach($children as $child){
+                if($child->usersetting){
+                    $child->usersetting->multiple = $params['multiple'];
+                    $child->usersetting->save();
+                }
+            }
+        }else{
+            if($row->usersetting){
+                $row->usersetting->multiple = $params['multiple'];
+                $row->usersetting->save();
+            }
+        }
+    }
+
+    /**
      * 设置rtp
      */
     public function rtp($row, $params)
@@ -447,7 +478,7 @@ class User extends Backend
         if($check['code'] == 0){
             $this->error($check['msg']);
         }
-        
+        // dd($check);
         // 一对多的
         $arr = [
             '\app\common\model\Recharge', '\app\common\model\Withdraw',
@@ -559,6 +590,42 @@ class User extends Backend
                     }
                 }
 
+                // 他的下级
+                $users = modelUser::where([
+                    ['EXP', Db::raw("FIND_IN_SET(". $row->id .", parent_id_str)")]
+                ])->field('id,admin_id,parent_id_str')->select();
+                
+                // 业务员的业绩
+                $total_recharge = $row->userdata->total_recharge;
+                $total_withdraw = $row->userdata->total_withdraw;
+                foreach($users as $val){
+                    $total_recharge += $val->userdata->total_recharge;
+                    $total_withdraw += $val->userdata->total_withdraw;
+
+                    $val->parent_id_str = $row->parent_id_str . ',' . $row->id;
+                    $val->admin_id = $check['data']['admin_id'];
+                    $val->save();
+                }
+                // dump($total_withdraw);
+                // dd($total_recharge);
+
+                $preAdmin = Admin::where('id', $row->admin_id)->find();
+                if($preAdmin){
+                    // 原来的业务员的业绩减去
+                    $preAdmin->admindata->recharge_amount -= $total_recharge;
+                    $preAdmin->admindata->withdraw_amount -= $total_withdraw;
+                    $preAdmin->admindata->save();
+                }
+
+                // 业务员的业绩加上
+                $admin = Admin::where('id', $check['data']['admin_id'])->find();
+                if($admin){
+                    $admin->admindata->recharge_amount += $total_recharge;
+                    $admin->admindata->withdraw_amount += $total_withdraw;
+                    $admin->admindata->save();
+                }
+                
+                Db::commit();
             }catch(Exception $e){
                 Db::rollback();
                 $this->error($e->getMessage());

@@ -11,6 +11,7 @@
             <li class="{:$auth->check('user/user/unbind')?'':'hide'}"><a href="#tab-unbind" data-value="" data-toggle="tab">掉绑</a></li>
             <li class="{:$auth->check('user/user/commission')?'':'hide'}"><a href="#tab-commission" data-value="" data-toggle="tab">充值分佣设置</a></li>
             <li class="{:$auth->check('user/user/open')?'':'hide'}"><a href="#tab-open" data-value="" data-toggle="tab">开通博主账号</a></li>
+            <li class="{:$auth->check('user/user/typing')?'':'hide'}"><a href="#tab-typing" data-value="" data-toggle="tab">打码量倍数</a></li>
             
         </ul>
     </div>
@@ -109,14 +110,21 @@
             <div class="tab-pane fade " id="tab-risk">
                 <div class="widget-body no-padding">
                      <div class="alert alert-info-light" style="margin-bottom:10px;">
-                        <b class="text-red">提示: 下三级的都会设置为刷子</b> 
+                        <b class="text-red">提示: 优质博主可以先用高返奖池推一段时间后改去低奖池或者默认</b> 
                     </div>
                     <form id="develop-form" class="develop-form form-horizontal" role="form" data-toggle="validator" method="POST" action="{:url('user.user/setting?type=risk&ids=' . $row['id'])}">
                         <div class="form-group">
-                            <label for="c-risk" class="control-label col-xs-12 col-sm-2">{:__('刷子')}:</label>
-                            <div class="col-xs-6 col-sm-4">
-                                {:build_radios('row[is_risk]', ['0'=>__('否'), '1'=>__('是')], $row['usersetting']['is_risk'])}
-                            </div>
+                            <label for="c-risk" class="control-label col-xs-12 col-sm-2">{:__('奖池选择')}:</label>
+                             {if $auth->role < 2}
+                               <div class="col-xs-6 col-sm-4">
+                                    {:build_radios('row[is_risk]', ['0'=>__('默认奖池'), '1'=>__('刷子奖池'), '2'=>__('高返奖奖池(推优质博主)'), '3'=>__('低返奖奖池(返奖率较低)')], $row['usersetting']['is_risk'])}
+                                </div>
+                            {/if}
+                            {if $auth->role >= 2}
+                               <div class="col-xs-6 col-sm-4">
+                                    {:build_radios('row[is_risk]', ['0'=>__('默认奖池'),  '2'=>__('高返奖奖池(推优质博主)'), '3'=>__('低返奖奖池(返奖率较低)')], $row['usersetting']['is_risk'])}
+                                </div>
+                            {/if}
                         </div>
                    
                         <div class="form-group">
@@ -270,7 +278,35 @@
                 </div>
             </div>
 
+            <!-- 打码量倍数 -->
+            <div class="tab-pane fade" id="tab-typing">
+                <div class="widget-body no-padding">
+                    <form id="develop-form" class="develop-form form-horizontal" role="form" data-toggle="validator" method="POST" action="{:url('user.user/setting?type=typing&ids=' . $row['id'])}">
 
+                        <div class="alert alert-info-light" style="margin-bottom:10px;">
+                            <b class="text-red">提示: </b> <br>
+                            1. 输入大于0的数字, 如输入2, 则打码量为2倍 <br>
+                            2. 如果是博主, 则当前博主这条线的打码量倍数都会跟随博主 <br>
+                            3. 如果是用户, 则当前用户下的子用户的打码量倍数都会跟随用户 <br>
+                        </div>
+                        <div class="form-group">
+                            <label for="c-multiple" class="control-label col-xs-12 col-sm-2">{:__('打码量倍数')}:</label>
+                            <div class="col-xs-12 col-sm-4">
+                                <input id="c-multiple" class="form-control" name="row[multiple]" type="number" value="{$row.usersetting.multiple}" min="0" placeholder="请输入大于0的数字">
+                            </div>
+                        </div>
+                        
+
+                        <div class="form-group">
+                            <label class="control-label col-xs-12 col-sm-2"></label>
+                            <div class="col-xs-12 col-sm-8">
+                                <button type="submit" class="btn btn-success btn-embossed ">确定</button>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
 
 
 

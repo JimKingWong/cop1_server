@@ -3,11 +3,9 @@
 namespace app\admin\controller\game;
 
 use app\common\controller\Backend;
-
 use app\admin\model\game\Cate;
 use app\admin\model\game\Games;
 use fast\Tree;
-
 
 /**
  * 游戏列管理
@@ -30,6 +28,7 @@ class Raspa extends Backend
     {
         parent::_initialize();
         $this->model = new \app\admin\model\game\Raspa;
+        $this->view->assign("platformList", $this->model->getPlatformList());
         $this->view->assign("typeList", $this->model->getTypeList());
         $this->view->assign("isWorksList", $this->model->getIsWorksList());
         $this->view->assign("statusList", $this->model->getStatusList());

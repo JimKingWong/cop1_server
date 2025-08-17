@@ -12,7 +12,7 @@ use app\common\service\util\Es;
  */
 class Record extends Backend
 {
-    protected $noNeedRight = ['omgrecord', 'jdbrecord'];
+    protected $noNeedRight = ['omgrecord', 'jdbrecord', 'otherrecord'];
 
     public function _initialize()
     {
@@ -128,6 +128,9 @@ class Record extends Backend
 
         // 后台所有部门的id
         $adminIds = \app\admin\model\department\Admin::getChildrenAdminIds($this->auth->id, true);
+        if($this->auth->role < 2){
+            array_push($adminIds, 0);
+        }
         
         $condition = [
             // 必要条件
@@ -175,4 +178,74 @@ class Record extends Backend
         return json($result);
     }
 
+     /**
+     * 查看
+     *
+     * @return string|Json
+     * @throws \think\Exception
+     * @throws DbException
+     */
+    public function otherrecord()
+    {
+        ini_set('memory_limit', '1024M');
+        //设置过滤方法
+        $this->request->filter(['strip_tags', 'trim']);
+        if (false === $this->request->isAjax()) {
+            return $this->view->fetch();
+        }
+
+        $filter = $this->request->get("filter", '');
+        $filter = json_decode($filter, true);
+
+        // 后台所有部门的id
+        $adminIds = \app\admin\model\department\Admin::getChildrenAdminIds($this->auth->id, true);
+        if($this->auth->role < 2){
+            array_push($adminIds, 0);
+        }
+        
+        $condition = [
+            // 必要条件
+            [
+                'type' => 'terms',
+                'field' => 'admin_id',
+                'value' =>  $adminIds,
+            ],
+        ];
+
+        $fieldArr = ['platform', 'transaction_id', 'game_id', 'user_id'];
+        foreach($fieldArr as $val){
+            if(isset($filter[$val]) && $filter[$val] != ''){
+                $condition[] = [
+                    'type' => 'term',
+                    'field' => $val,
+                    'value' =>  $filter[$val],
+                ];
+            }
+        }
+
+        if(isset($filter['createtime']) && $filter['createtime'] != ''){
+            list($starttime, $endtime) = explode(' - ', $filter['createtime']);
+            $condition[] = [
+                'type' => 'range',
+                'field' => 'createtime',
+                'value' => [
+                    'gte' => strtotime($starttime),
+                    'lte' => strtotime($endtime),
+                ]       
+            ];
+        }
+      
+        // dd($condition);
+        list($where, $sort, $order, $offset, $limit) = $this->buildparams();
+
+        $service = new Es();
+        
+        $list = $service->record('other_game_record', $condition, $offset, $limit);
+        foreach($list['list'] as $key => $val){
+            $list['list'][$key]['createtime'] = datetime($val['createtime']);
+        }
+        
+        $result = ['total' => $list['total'], 'rows' => $list['list']];
+        return json($result);
+    }
 }

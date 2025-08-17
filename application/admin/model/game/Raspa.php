@@ -26,6 +26,7 @@ class Raspa extends Model
 
     // 追加属性
     protected $append = [
+        'platform_text',
         'type_text',
         'is_works_text',
         'status_text'
@@ -43,6 +44,11 @@ class Raspa extends Model
     }
 
     
+    public function getPlatformList()
+    {
+        return ['1' => __('Platform 1')];
+    }
+
     public function getTypeList()
     {
         return ['0' => __('Type 0'), '1' => __('Type 1'), '2' => __('Type 2'), '3' => __('Type 3')];
@@ -56,6 +62,14 @@ class Raspa extends Model
     public function getStatusList()
     {
         return ['0' => __('Status 0'), '1' => __('Status 1')];
+    }
+
+
+    public function getPlatformTextAttr($value, $data)
+    {
+        $value = $value ?: ($data['platform'] ?? '');
+        $list = $this->getPlatformList();
+        return $list[$value] ?? '';
     }
 
 

@@ -93,12 +93,23 @@ class Admin extends Backend
             $filter = $this->request->get("filter", '');
             $filter = (array)json_decode($filter, true);
             $filter_w = [];
+            $map = [];
 
             if (isset($filter['department_id'])) {
                 $department_id = $filter['department_id'];
                 unset($filter['department_id']);
                 $this->request->get(['filter' => json_encode($filter)]);
             }
+
+            if (isset($filter['invite_code'])) {
+                $invite_code = $filter['invite_code'];
+                unset($filter['invite_code']);
+                $map['invite_code'] = ['like', "%{$invite_code}%"];
+                $admin_id = db('admin_data')->where($map)->value('admin_id');
+                $filter_w['id'] = $admin_id;
+                $this->request->get(['filter' => json_encode($filter)]);
+            }
+
             if ($department_id) {
                 if (!in_array($department_id,array_column($this->allDepartment,'id'))){
                     $this->error("您所选的部门没有权限");
@@ -275,7 +286,7 @@ class Admin extends Backend
                 $this->error('邀请码只能是6位!!! ');
             }
 
-            if($row->admindata->invite_code != $invite_code){
+            if($invite_code && $row->admindata->invite_code != $invite_code){
                 $checkInviteCode = db('admin_data')->where('invite_code', $invite_code)->find();
                 if($checkInviteCode){
                     $this->error('邀请码已存在!!! ');

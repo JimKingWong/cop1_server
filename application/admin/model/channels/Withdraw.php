@@ -79,8 +79,9 @@ class Withdraw extends Model
     {
         return $this->belongsTo('app\common\model\UserData', 'user_id', 'user_id', [], 'LEFT')->setEagerlyType(0);
     }
-    public function bank()
+
+    public function wallet()
     {
-        return $this->belongsTo('app\common\model\UserBank', 'user_bank_id', 'id', [], 'LEFT')->setEagerlyType(0);
+        return $this->belongsTo('app\admin\model\user\Wallet', 'wallet_id', 'id', [], 'LEFT')->setEagerlyType(0);
     }
 }

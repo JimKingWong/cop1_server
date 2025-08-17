@@ -37,7 +37,7 @@ class Platform extends Backend
             'game_pp'       => 'pp游戏表',
             'game_cp'       => 'cp游戏表',
             'game_cq'       => 'cq游戏表',
-            'game_raspa'    => 'raspa游戏表',
+            'game_raspa'    => 'raspa游戏表'
         ];
         $this->assign('table_list', $tableArr);
     }

@@ -17,12 +17,12 @@
                 <div class="widget-body no-padding">
                     <div id="toolbar" class="toolbar">
                         <a href="javascript:;" class="btn btn-primary btn-refresh" title="{:__('Refresh')}" ><i class="fa fa-refresh"></i> </a>
-                        <!-- <a href="javascript:;" class="btn btn-success btn-add {:$auth->check('game/rasoa/add')?'':'hide'}" title="{:__('Add')}" ><i class="fa fa-plus"></i> {:__('Add')}</a> -->
-                        <a href="javascript:;" class="btn btn-success btn-edit btn-disabled disabled {:$auth->check('game/rasoa/edit')?'':'hide'}" title="{:__('Edit')}" ><i class="fa fa-pencil"></i> {:__('Edit')}</a>
-                        <a href="javascript:;" class="btn btn-danger btn-del btn-disabled disabled {:$auth->check('game/rasoa/del')?'':'hide'}" title="{:__('Delete')}" ><i class="fa fa-trash"></i> {:__('Delete')}</a>
+                        <!-- <a href="javascript:;" class="btn btn-success btn-add {:$auth->check('game/raspa/add')?'':'hide'}" title="{:__('Add')}" ><i class="fa fa-plus"></i> {:__('Add')}</a> -->
+                        <a href="javascript:;" class="btn btn-success btn-edit btn-disabled disabled {:$auth->check('game/raspa/edit')?'':'hide'}" title="{:__('Edit')}" ><i class="fa fa-pencil"></i> {:__('Edit')}</a>
+                        <a href="javascript:;" class="btn btn-danger btn-del btn-disabled disabled {:$auth->check('game/raspa/del')?'':'hide'}" title="{:__('Delete')}" ><i class="fa fa-trash"></i> {:__('Delete')}</a>
                         
 
-                        <div class="dropdown btn-group {:$auth->check('game/raspa/multi')?'':'hide'}">
+                         <div class="dropdown btn-group {:$auth->check('game/raspa/multi')?'':'hide'}">
                             <a class="btn btn-primary btn-more dropdown-toggle btn-disabled disabled" data-toggle="dropdown">{:__('是否上架')}</a>
                             <ul class="dropdown-menu text-left" role="menu">
                                 {foreach name="statusList" item="vo"}
@@ -42,12 +42,11 @@
                         
                         <a href="javascript:;" class="btn btn-info btn-patchadd btn-disabled disabled {:$auth->check('game/raspa/patchadd')?'':'hide'}" title="{:__('归类游戏')}" >{:__('归类游戏')}</a>
 
-
-                        <!-- <a class="btn btn-success btn-recyclebin btn-dialog {:$auth->check('game/rasoa/recyclebin')?'':'hide'}" href="game/rasoa/recyclebin" title="{:__('Recycle bin')}"><i class="fa fa-recycle"></i> {:__('Recycle bin')}</a> -->
+                        <!-- <a class="btn btn-success btn-recyclebin btn-dialog {:$auth->check('game/raspa/recyclebin')?'':'hide'}" href="game/raspa/recyclebin" title="{:__('Recycle bin')}"><i class="fa fa-recycle"></i> {:__('Recycle bin')}</a> -->
                     </div>
                     <table id="table" class="table table-striped table-bordered table-hover table-nowrap"
-                           data-operate-edit="{:$auth->check('game/rasoa/edit')}"
-                           data-operate-del="{:$auth->check('game/rasoa/del')}"
+                           data-operate-edit="{:$auth->check('game/raspa/edit')}"
+                           data-operate-del="{:$auth->check('game/raspa/del')}"
                            width="100%">
                     </table>
                 </div>

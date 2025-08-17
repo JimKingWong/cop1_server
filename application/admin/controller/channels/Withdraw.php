@@ -64,10 +64,11 @@ class Withdraw extends Backend
             list($where, $sort, $order, $offset, $limit) = $this->buildparams();
 
             $admin = db('admin')->where('role', '>', 2)->column('nickname', 'id');
-            $list = $this->model
-                    ->with(['user','bank'])
-                    ->where($where)
-                    ->order($sort, $order)
+            $query = $this->model
+                    ->with(['user','wallet'])
+                    ->where($where);
+
+            $list = $query->order($sort, $order)
                     ->paginate($limit);
 
             foreach ($list as $row) {
@@ -80,57 +81,34 @@ class Withdraw extends Backend
                 $row->user_total_bet = $row->user->userdata->total_bet;
 
 				$row->getRelation('user')->visible(['username', 'money', 'origin', 'role', 'remark']);
+				$row->getRelation('wallet')->visible(['name', 'area_code','phone_number','pix_type','chave_pix','cpf','pix','is_default']);
             }
+            
+            $total_withdraw = $query->with(['user','wallet'])->where($where)->where('withdraw.status', '1')->sum('withdraw.money'); // 总提现金额
+            $total_withdraw_num = $query->with(['user','wallet'])->where($where)->count(); // 总提现笔数
+            $success_withdraw = $query->with(['user','wallet'])->where($where)->where('withdraw.status', '1')->count(); // 成功提现笔数
 
-            $withdraw = $this->model
-                ->with(['user'])
-                ->where($where)
-                ->select();
+            $today_withdraw = $query->with(['user','wallet'])->where($where)->where('withdraw.status', '1')->whereTime('paytime', 'today')->sum('withdraw.money'); // 今日提现金额
+            $today_withdraw_num = $query->with(['user','wallet'])->where($where)->whereTime('withdraw.createtime', 'today')->count(); // 今日提现笔数
+            $today_success_withdraw = $query->with(['user','wallet'])->where($where)->where('withdraw.status', '1')->whereTime('paytime', 'today')->count(); // 今日成功提现笔数
 
-            $total_withdraw = 0; // 总提现金额
-            $total_withdraw_num = count($withdraw); // 总提现笔数
-            $success_withdraw = 0; // 成功提现笔数
+            $yestoday_withdraw = $query->with(['user','wallet'])->where($where)->where('withdraw.status', '1')->whereTime('paytime', 'yesterday')->sum('withdraw.money'); // 昨日提现金额
+            $yestoday_withdraw_num = $query->with(['user','wallet'])->where($where)->whereTime('withdraw.createtime', 'yesterday')->count(); // 昨日提现笔数
+            $yestoday_success_withdraw = $query->with(['user','wallet'])->where($where)->where('withdraw.status', '1')->whereTime('paytime', 'yesterday')->count(); // 昨日成功提现笔数
 
-            $today_withdraw = 0; // 今日提现金额
-            $today_withdraw_num = 0; // 今日提现笔数
-            $today_success_withdraw = 0; // 今日成功提现笔数
 
-            $yestoday_withdraw = 0; // 昨日提现金额
-            $yestoday_withdraw_num = 0; // 昨日提现笔数
-            $yestoday_success_withdraw = 0; // 昨日成功提现笔数
+            // $total_withdraw = 0; // 总提现金额
+            // $total_withdraw_num =0; // 总提现笔数
+            // $success_withdraw = 0; // 成功提现笔数
 
-            $today_time = strtotime(date('Ymd'));
-            $yestoday_time = strtotime(date('Ymd', strtotime('-1 day')));
-            foreach ($withdraw as $row) {
-                if ($row->status == 1) {
-                    $total_withdraw += $row->money;
-                    $success_withdraw ++;
-                }
+            // $today_withdraw = 0; // 今日提现金额
+            // $today_withdraw_num = 0; // 今日提现笔数
+            // $today_success_withdraw = 0; // 今日成功提现笔数
 
-                // 今日
-                if(strtotime($row->paytime) >= $today_time){
-                    if($row->status == 1){
-                        $today_withdraw += $row->money;
-                        $today_success_withdraw ++;
-                    }
-                }
+            // $yestoday_withdraw = 0; // 昨日提现金额
+            // $yestoday_withdraw_num = 0; // 昨日提现笔数
+            // $yestoday_success_withdraw = 0; // 昨日成功提现笔数
 
-                if(strtotime($row->createtime) >= $today_time){
-                    $today_withdraw_num ++;
-                }
-
-                // 昨日
-                if(strtotime($row->paytime) >= $yestoday_time && strtotime($row->paytime) < $today_time){
-                    if($row->status == 1){
-                        $yestoday_withdraw += $row->money;
-                        $yestoday_success_withdraw ++;
-                    }
-                }
-
-                if(strtotime($row->createtime) >= $yestoday_time && strtotime($row->createtime) < $today_time){
-                    $yestoday_withdraw_num ++;
-                }
-            }
             $retval = [
                 'total_withdraw'            => sprintf('%.2f', $total_withdraw),
                 'total_withdraw_num'        => $total_withdraw_num,
@@ -152,6 +130,11 @@ class Withdraw extends Backend
         return $this->view->fetch();
     }
     
+    
+    
+    
+    
+
     /**
      * 查看凭证
      */
@@ -190,8 +173,7 @@ class Withdraw extends Backend
             $tradeFieldArr = [
                 'CEPAY'         => 'transaction_id',
                 'OUROPAGO'      => 'endToEndId',
-                'U2CPAY'        => 'orderNo',
-                'SUPEPAY'       => 'supefinaOrderId'
+                'U2CPAY'        => 'orderNo'
             ];
 
             $keyArr = array_keys($urlArr);
@@ -368,7 +350,6 @@ class Withdraw extends Backend
         // 调用对应支付通道函数
         $method = trim(strtolower($channel->name)) . 'Withdraw';
        
-        $row->channel_code = '12'; // 代付通道 先默认12
         $res = ServiceChannel::$method($config, $row);
         // dd($res);
         if($res['code'] == 0){
