@@ -7,11 +7,14 @@ use app\common\model\Admin;
 use app\common\model\game\Omg;
 use app\common\model\Mydata;
 use app\common\model\Recharge;
+use app\common\model\risk\Task;
+use app\common\model\risk\TaskLog;
 use app\common\model\User;
 use app\common\model\Withdraw;
 use app\common\service\util\Es;
 use app\common\service\util\Notice;
 use app\common\service\util\Redis;
+use app\common\service\util\Risk;
 use app\common\service\util\Startup;
 use think\Response;
 
@@ -34,6 +37,44 @@ class Index extends Api
     }
 
     /**
+     * 创建任务
+     */
+    public function checkRisk()
+    {
+        $user = User::where('id', 30042155)->find();
+        Risk::checkRiskByRole($user);
+    }
+
+    /**
+     * 执行风险检测
+     */
+    public function doCheckRisk()
+    {
+        set_time_limit(0); // 取消执行时间限制
+        ini_set('memory_limit', '1024M'); // 调整内存限制
+        $list = TaskLog::where('status', 0)->select();
+        
+        $task_ids = [];
+        foreach($list as $key => $item){
+            $task_ids[] = $item->task_id;
+            // 执行风险检测
+            // if($key == 0){
+                Risk::{$item['method']}($item);
+            // }
+        }
+
+        $task_ids = array_unique($task_ids);
+
+        // 更新任务数据
+        $task = Task::whereIn('id', $task_ids)->select();
+        foreach($task as $item){
+            $item->num += 1; // 已完成
+            $item->lasttime = datetime(time());
+            $item->save();
+        }
+    }
+
+    /**
      * 修正业务员数据
      */
     public function daybookadmin()
@@ -53,7 +94,7 @@ class Index extends Api
         array_push($admin_ids, 0);
 
         // 过去几天, 修改这个参数
-        $day = 3;
+        $day = 1;
         // 昨天的数据
         $starttime = date('Y-m-d 00:00:00', strtotime('-'. $day .' day'));
         $endtime = date('Y-m-d 23:59:59', strtotime('-'. $day .' day'));
@@ -411,11 +452,9 @@ class Index extends Api
         // $service->deleteIndex('jdb_game_record');
         // $this->success('ok');
 
-        $starttime = date('Y-m-d 00:00:00');
-        $endtime = date('Y-m-d 23:59:59');
-        // 昨天的数据
-        // $starttime = date('Y-m-d 00:00:00', strtotime('-1 day'));
-        // $endtime = date('Y-m-d 23:59:59', strtotime('-1 day'));
+        $date = -1;
+        $starttime = date('Y-m-d 00:00:00', strtotime($date . ' day'));
+        $endtime = date('Y-m-d 23:59:59', strtotime($date . ' day'));
 
         $condition = [
                 // 用户id搜索
@@ -440,11 +479,11 @@ class Index extends Api
                 // ],
 
                 // admin_id搜索
-                // [
-                //     'type' => 'term',
-                //     'field' => 'admin_id',
-                //     'value' => 0,
-                // ],
+                [
+                    'type' => 'term',
+                    'field' => 'admin_id',
+                    'value' => 8,
+                ],
                 [
                     'type' => 'range',
                     'field' => 'createtime',
@@ -452,20 +491,28 @@ class Index extends Api
                         'gte' => strtotime($starttime),
                         'lte' => strtotime($endtime),
                     ]
-                ]
+                ],
+                // [
+                //     'type' => 'range',
+                //     'field' => 'win_amount',
+                //     'value' => [
+                //         'gte' => 3000,
+                //         'lte' => 100000,
+                //     ]
+                // ]
         ];
         // dd($condition);
         // 纯列表
-        // $list = $service->multiSearch('omg_game_record', $condition);
+        // $list = $service->multiSearch('jdb_game_record', $condition);
         // 根据platform分组聚合
-        $list = $service->groupAggregation('omg_game_record', $condition, 'game_id', ['win_amount', 'bet_amount', 'transfer_amount']);
+        $list = $service->groupAggregation('jdb_game_record', $condition, 'game_id', ['win_amount', 'bet_amount', 'transfer_amount']);
 
-        // $omg_win_amount = array_sum(array_column($list, 'win_amount_sum'));
-        // $omg_bet_amount = array_sum(array_column($list, 'bet_amount_sum'));
-        // $game_api_fee = config('channel.game_api_fee');
-        // $omg_api = bcmul($omg_bet_amount - $omg_win_amount, $game_api_fee, 2);
+        $omg_win_amount = array_sum(array_column($list, 'win_amount_sum'));
+        $omg_bet_amount = array_sum(array_column($list, 'bet_amount_sum'));
+        $game_api_fee = config('channel.game_api_fee');
+        $omg_api = bcmul($omg_bet_amount - $omg_win_amount, $game_api_fee, 2);
 
-        // dd($omg_api);
+        dd($omg_api);
 
         // $list = $service->groupAggregation('omg_game_record', $condition, 'platform', ['bet_amount']);
        

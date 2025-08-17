@@ -175,6 +175,7 @@ return [
     '游戏配置不完整, 缺少%s配置'                => 'Incomplete game configuration, missing %s settings',
     '获取游戏链接失败'                        => 'Failed to get game link',
     '您已被禁止玩游戏'                        => 'You are banned from playing games',
+    '游戏维护中'    => 'Game is under maintenance',
 
     '宝箱不存在'                                => 'Treasure chest not found',
     '未达到领取条件'                            => 'Requirements not met',

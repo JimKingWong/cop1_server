@@ -46,4 +46,15 @@ class Withdraw extends Api
         $serivce = new \app\common\service\Withdraw;
         $serivce->record();
     }
+
+    /**
+     * 提现详情
+     * @ApiMethod (GET)
+     * @ApiParams (name="id", type="int", required=true, description="提现记录ID")
+     */
+    public function detail()
+    {
+        $serivce = new \app\common\service\Withdraw;
+        $serivce->detail();
+    }
 }

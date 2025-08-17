@@ -54,11 +54,6 @@ class Game extends Api
     public function startup()
     {
         $service = new \app\common\service\Game();
-
-        if($this->auth->is_test == 1){
-            // 测试号调用测试启动游戏
-            $service->testStartup();
-        }
         $service->startup();
     }
 

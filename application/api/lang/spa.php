@@ -175,6 +175,7 @@ return [
     '游戏配置不完整, 缺少%s配置' => 'Configuración incompleta: falta %s',
     '获取游戏链接失败' => 'Error al obtener enlace de juego',
     '您已被禁止玩游戏' => 'Se te ha prohibido jugar el juego.',
+    '游戏维护中' => 'El juego está en mantenimiento.',
 
     '宝箱不存在' => 'Cofre no disponible',
     '宝箱已领取' => 'Cofre reclamado',

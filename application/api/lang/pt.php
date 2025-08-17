@@ -176,6 +176,7 @@ return [
     '游戏配置不完整, 缺少%s配置' => 'A configuração do jogo está incompleta. Falta a configuração de %s',
     '获取游戏链接失败' => 'Falha na obtenção do link do jogo',
     '您已被禁止玩游戏' => 'Você foi banido do jogo',
+    '游戏维护中'    => 'O jogo está em manutenção',
 
     '宝箱不存在' => 'O baú não existe',
     '未达到领取条件' => 'Você não atingiu os critérios para receber',

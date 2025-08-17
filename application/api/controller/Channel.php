@@ -35,7 +35,7 @@ class Channel extends Api
     }
 
     /**
-     * fun充值回调
+     * fun 充值回调
      */
     public function funpay_recharge()
     {
@@ -45,7 +45,7 @@ class Channel extends Api
     }
 
     /**
-     * fun提现回调
+     * fun 提现回调
      */
     public function funpay_withdraw()
     {
@@ -55,7 +55,7 @@ class Channel extends Api
     }
 
     /**
-     * u2c充值回调
+     * u2c 充值回调
      */
     public function u2cpay_recharge()
     {
@@ -65,7 +65,7 @@ class Channel extends Api
     }
 
     /**
-     * u2c提现回调
+     * u2c 提现回调
      */
     public function u2cpay_withdraw()
     {
@@ -75,7 +75,7 @@ class Channel extends Api
     }
 
     /**
-     * ce充值回调
+     * ce 充值回调
      */
     public function cepay_recharge()
     {
@@ -85,7 +85,7 @@ class Channel extends Api
     }
 
     /**
-     * ce提现回调
+     * ce 提现回调
      */
     public function cepay_withdraw()
     {
@@ -113,5 +113,4 @@ class Channel extends Api
         // 控制器返回
         return $service->ouropago_withdraw();
     }
-
 }

@@ -3,7 +3,8 @@
 namespace app\api\controller;
 
 use app\common\controller\Api;
-
+use app\common\service\util\Risk;
+use think\Db;
 /**
  * 示例接口
  * @ApiInternal
@@ -17,7 +18,7 @@ class Demo extends Api
     //如果接口已经设置无需登录,那也就无需鉴权了
     //
     // 无需登录的接口,*表示全部
-    protected $noNeedLogin = ['test', 'test1','getMyData'];
+    protected $noNeedLogin = ['test', 'test1','getMyData','month'];
     // 无需鉴权的接口,*表示全部
     protected $noNeedRight = ['test2'];
 
@@ -51,18 +52,332 @@ class Demo extends Api
      */
     public function test1()
     {
-        $url = 'https://hms-fortunapg.bet/?invite_code=b1b3a0%F0%9F%8D%80#/index';
-        $res = $this->extractIdFromUrl($url);
-        var_dump($res);
+       // 1. 获取所有主管的 admin_id 和 nickname
+$zhuguanList = Db::name('admin')
+    ->where('role', 2)
+    ->field('id, nickname')
+    ->select();
+
+// 2. 获取昨天的日期
+$yesterday = date('Y-m-d', strtotime('-1 day'));
+
+// 3. 初始化报表数据
+$reportData = [];
+foreach ($zhuguanList as $zhuguan) {
+    $teamAdminIds = \app\admin\model\department\Admin::getChildrenAdminIds($zhuguan['id'], true);
+    
+    $stats = Db::name('daybookadmin')
+        ->where('admin_id', 'in', $teamAdminIds)
+        ->where('date', $yesterday)
+        ->field([
+            'SUM(salary) as salary',
+            'SUM(recharge_amount) as recharge_amount',
+            'SUM(withdraw_amount) as withdraw_amount',
+            'SUM(transfer_amount) as transfer_amount',
+            'SUM(api_amount) as api_amount',
+            'SUM(channel_fee) as channel_fee',
+            'SUM(profit_and_loss) as profit_and_loss',
+            'SUM(register_user) as register_user',
+            'SUM(recharge_user) as recharge_user',
+        ])
+        ->find() ?: [
+            'salary' => 0,
+            'recharge_amount' => 0,
+            'withdraw_amount' => 0,
+            'transfer_amount' => 0,
+            'api_amount' => 0,
+            'channel_fee' => 0,
+            'profit_and_loss' => 0,
+            'register_user' => 0,
+            'recharge_user' => 0,
+        ];
+    
+    $reportData[] = [
+        'admin_id' => $zhuguan['id'],
+        'nickname' => $zhuguan['nickname'],
+        'stats' => $stats
+    ];
+}
+
+// 4. 生成HTML表格
+$html = <<<HTML
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>主管团队昨日统计报表</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .total-row {
+            font-weight: bold;
+            background-color: #e6f7ff;
+        }
+    </style>
+</head>
+<body>
+    <h2>主管团队昨日统计报表</h2>
+    <p>统计日期：{$yesterday}</p>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>主管ID</th>
+                <th>主管昵称</th>
+                <th>工资</th>
+                <th>充值金额</th>
+                <th>提现金额</th>
+                <th>充提差额</th>
+                <th>API费用</th>
+                <th>渠道费用</th>
+                <th>盈亏</th>
+                <th>注册人数</th>
+                <th>充值人数</th>
+            </tr>
+        </thead>
+        <tbody>
+HTML;
+
+// 添加各行数据
+$totals = [
+    'salary' => 0,
+    'recharge_amount' => 0,
+    'withdraw_amount' => 0,
+    'transfer_amount' => 0,
+    'api_amount' => 0,
+    'channel_fee' => 0,
+    'profit_and_loss' => 0,
+    'register_user' => 0,
+    'recharge_user' => 0,
+];
+
+foreach ($reportData as $item) {
+    $html .= <<<HTML
+            <tr>
+                <td>{$item['admin_id']}</td>
+                <td>{$item['nickname']}</td>
+                <td>{$item['stats']['salary']}</td>
+                <td>{$item['stats']['recharge_amount']}</td>
+                <td>{$item['stats']['withdraw_amount']}</td>
+                <td>{$item['stats']['transfer_amount']}</td>
+                <td>{$item['stats']['api_amount']}</td>
+                <td>{$item['stats']['channel_fee']}</td>
+                <td>{$item['stats']['profit_and_loss']}</td>
+                <td>{$item['stats']['register_user']}</td>
+                <td>{$item['stats']['recharge_user']}</td>
+            </tr>
+HTML;
+    
+    // 计算总计
+    foreach ($totals as $key => $value) {
+        $totals[$key] += $item['stats'][$key];
+    }
+}
+
+// 添加总计行
+$html .= <<<HTML
+            <tr class="total-row">
+                <td colspan="2">总计</td>
+                <td>{$totals['salary']}</td>
+                <td>{$totals['recharge_amount']}</td>
+                <td>{$totals['withdraw_amount']}</td>
+                <td>{$totals['transfer_amount']}</td>
+                <td>{$totals['api_amount']}</td>
+                <td>{$totals['channel_fee']}</td>
+                <td>{$totals['profit_and_loss']}</td>
+                <td>{$totals['register_user']}</td>
+                <td>{$totals['recharge_user']}</td>
+            </tr>
+HTML;
+
+$html .= <<<HTML
+        </tbody>
+    </table>
+</body>
+</html>
+HTML;
+
+return $html;
         
-        $url = 'https://hms-fortunapg.bet/?invite_code=c5699175&amp;fbclid=PAZXh0bgNhZW0CMTEAAadMWVJB7FeZ8OIQ-x3uLa7g2mEPw8_ufIyb0ubzpa2J2LRy-TofUG7GJEjtHw_aem_iuF9ZvY8JcXfhd0EU-bsjQ#/index';
-        $res = $this->extractIdFromUrl($url);
-        var_dump($res);
-        
-        $url = 'https://hms-fortunapg.bet/?invite_code=d199d47a&amp;fbclid=PAZXh0bgNhZW0CMTEAAacpWxjyJdX-GDeGmelnJ8Itse79C-I9zdsRY7cZ-yLGcgDyEw_Xf13lTg5yhw_aem_i25krpA3haTdX0YT-nQMKQ#/index';
-        $res = $this->extractIdFromUrl($url);
-        var_dump($res);
-        // $this->success('返回成功', ['action' => 'test1']);
+    }
+    
+    public function month(){
+        // 1. 获取本月起始和结束日期
+$firstDayOfMonth = date('Y-m-01');
+$lastDayOfMonth = date('Y-m-t');
+$currentMonth = date('Y-m');
+
+// 2. 获取所有主管的 admin_id 和 nickname
+$zhuguanList = Db::name('admin')
+    ->where('role', 2)
+    ->field('id, nickname')
+    ->select();
+
+// 3. 初始化报表数据
+$reportData = [];
+foreach ($zhuguanList as $zhuguan) {
+    $teamAdminIds = \app\admin\model\department\Admin::getChildrenAdminIds($zhuguan['id'], true);
+    
+    // 查询本月统计数据
+    $stats = Db::name('daybookadmin')
+        ->where('admin_id', 'in', $teamAdminIds)
+        ->whereBetween('date', [$firstDayOfMonth, $lastDayOfMonth])
+        ->field([
+            'SUM(salary) as salary',
+            'SUM(recharge_amount) as recharge_amount',
+            'SUM(withdraw_amount) as withdraw_amount',
+            'SUM(transfer_amount) as transfer_amount',
+            'SUM(api_amount) as api_amount',
+            'SUM(channel_fee) as channel_fee',
+            'SUM(profit_and_loss) as profit_and_loss',
+            'SUM(register_user) as register_user',
+            'SUM(recharge_user) as recharge_user',
+        ])
+        ->find() ?: [
+            'salary' => 0,
+            'recharge_amount' => 0,
+            'withdraw_amount' => 0,
+            'transfer_amount' => 0,
+            'api_amount' => 0,
+            'channel_fee' => 0,
+            'profit_and_loss' => 0,
+            'register_user' => 0,
+            'recharge_user' => 0,
+        ];
+    
+    $reportData[] = [
+        'admin_id' => $zhuguan['id'],
+        'nickname' => $zhuguan['nickname'],
+        'stats' => $stats
+    ];
+}
+
+// 4. 计算总计
+$totals = [
+    'salary' => 0,
+    'recharge_amount' => 0,
+    'withdraw_amount' => 0,
+    'transfer_amount' => 0,
+    'api_amount' => 0,
+    'channel_fee' => 0,
+    'profit_and_loss' => 0,
+    'register_user' => 0,
+    'recharge_user' => 0,
+];
+
+foreach ($reportData as $item) {
+    foreach ($totals as $key => $value) {
+        $totals[$key] += $item['stats'][$key];
+    }
+}
+
+// 5. 生成HTML表格
+$html = <<<HTML
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>主管团队本月统计报表</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .total-row {
+            font-weight: bold;
+            background-color: #e6f7ff;
+        }
+        .text-right {
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <h2>主管团队本月统计报表</h2>
+    <p>统计周期：{$firstDayOfMonth} 至 {$lastDayOfMonth}</p>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>主管ID</th>
+                <th>主管昵称</th>
+                <th class="text-right">工资</th>
+                <th class="text-right">充值金额</th>
+                <th class="text-right">提现金额</th>
+                <th class="text-right">转账金额</th>
+                <th class="text-right">API费用</th>
+                <th class="text-right">渠道费用</th>
+                <th class="text-right">盈亏</th>
+                <th>注册人数</th>
+                <th>充值人数</th>
+            </tr>
+        </thead>
+        <tbody>
+HTML;
+
+// 添加各行数据
+foreach ($reportData as $item) {
+    $html .= <<<HTML
+            <tr>
+                <td>{$item['admin_id']}</td>
+                <td>{$item['nickname']}</td>
+                <td class="text-right">¥{$item['stats']['salary']}</td>
+                <td class="text-right">¥{$item['stats']['recharge_amount']}</td>
+                <td class="text-right">¥{$item['stats']['withdraw_amount']}</td>
+                <td class="text-right">¥{$item['stats']['transfer_amount']}</td>
+                <td class="text-right">¥{$item['stats']['api_amount']}</td>
+                <td class="text-right">¥{$item['stats']['channel_fee']}</td>
+                <td class="text-right">¥{$item['stats']['profit_and_loss']}</td>
+                <td>{$item['stats']['register_user']}</td>
+                <td>{$item['stats']['recharge_user']}</td>
+            </tr>
+HTML;
+}
+
+// 添加总计行
+$html .= <<<HTML
+            <tr class="total-row">
+                <td colspan="2">总计</td>
+                <td class="text-right">¥{$totals['salary']}</td>
+                <td class="text-right">¥{$totals['recharge_amount']}</td>
+                <td class="text-right">¥{$totals['withdraw_amount']}</td>
+                <td class="text-right">¥{$totals['transfer_amount']}</td>
+                <td class="text-right">¥{$totals['api_amount']}</td>
+                <td class="text-right">¥{$totals['channel_fee']}</td>
+                <td class="text-right">¥{$totals['profit_and_loss']}</td>
+                <td>{$totals['register_user']}</td>
+                <td>{$totals['recharge_user']}</td>
+            </tr>
+HTML;
+
+$html .= <<<HTML
+        </tbody>
+    </table>
+</body>
+</html>
+HTML;
+
+return $html;
     }
     
     public function extractIdFromUrl($url) 
