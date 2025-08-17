@@ -34,6 +34,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'max_money', title: __('最大充值金额'), operate: false},
                         {field: 'status', title: __('Status'), searchList: {"0":__('Status 0'),"1":__('Status 1')}, formatter: Table.api.formatter.toggle},
                         {field: 'state', title: __('State'), searchList: {"0":__('State 0'),"1":__('State 1')}, formatter: Table.api.formatter.toggle},
+                        {field: 'remark', title: __('备注'), operate: 'LIKE'},
                         {field: 'is_default_withdraw', title: __('默认自动代付'), searchList: {"0":__('否'),"1":__('是')}, formatter: Table.api.formatter.normal},
                         {field: 'weigh', title: __('Weigh'), operate: false},
                         {field: 'createtime', title: __('Createtime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false},

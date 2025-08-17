@@ -2,7 +2,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
 
     var Controller = {
         index: function () {
-             // 初始化表格参数配置
+            // 初始化表格参数配置
             Table.api.init();
             
             //绑定事件
@@ -95,6 +95,40 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
 
                 // 为表格绑定事件
                 Table.api.bindevent(jdbrecord_table);
+            },
+
+            otherrecord: function () {
+          
+                var otherrecord_table = $("#otherrecord_table");
+
+                // 初始化表格
+                otherrecord_table.bootstrapTable({
+                    url: 'game/record/otherrecord',
+                    pk: 'id',
+                    toolbar: '#toolbar3',
+                    sortName: 'weigh',
+                    fixedColumns: true,
+                    searchFormVisible: true,
+                    search: false,
+                    fixedRightNumber: 1,
+                    columns: [
+                        [
+                            {field: 'user_id', title: __('UID'), formatter: Table.api.formatter.search},
+                            {field: 'game_id', title: __('游戏ID'), class: 'autocontent', formatter: Table.api.formatter.search},
+                            {field: 'image', title: __('游戏ICON'), operate: false, events: Table.api.events.image, formatter: Table.api.formatter.image},
+                            {field: 'transaction_id', title: __('交易ID')},
+                            {field: 'transfer_amount', title: __('输赢金额'), operate: false},
+                            {field: 'bet_amount', title: __('下注金额'), operate: false},
+                            {field: 'win_amount', title: __('派彩金额'), operate: false},
+                            {field: 'balance', title: __('下注完余额'), operate: false},
+                            {field: 'platform', title: __('厂商'), searchList: {"1":__('刮刮卡')}, formatter: Table.api.formatter.normal},
+                            {field: 'createtime', title: __('Createtime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false},
+                        ]
+                    ],
+                });
+
+                // 为表格绑定事件
+                Table.api.bindevent(otherrecord_table);
             },
         },
         api: {

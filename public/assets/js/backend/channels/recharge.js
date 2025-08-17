@@ -45,7 +45,53 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'status', title: __('Status'), searchList: {"0":__('Status 0'),"1":__('Status 1'),"2":__('Status 2')}, formatter: Table.api.formatter.status},
                         {field: 'createtime', title: __('Createtime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false},
                         {field: 'paytime', title: __('Paytime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false},
-                        
+                        // {
+                        //     field: 'operate', 
+                        //     title: __('Operate'), 
+                        //     table: table, 
+                        //     events: Table.api.events.operate, 
+                        //     buttons: [
+                        //         // {
+                        //         //     name: 'detail',
+                        //         //     title: __('查看订单'),
+                        //         //     text: __('查看订单'),
+                        //         //     classname: 'btn btn-xs btn-info btn-dialog',
+                        //         //     url: 'channels/recharge/detail',
+                        //         //     // hidden: function (row, value, index) {
+                        //         //     //     return row.status == 1 ? false : true;
+                        //         //     // },
+                        //         //     extend: 'data-area=\'["40%","40%"]\'',
+                        //         //     callback: function (data) {
+                        //         //         Layer.alert("接收到回传数据：" + JSON.stringify(data), {title: "回传数据"});
+                        //         //     }
+                        //         // },
+                              
+                        //         // {
+                        //         //     name: 'notify',
+                        //         //     title: __('通知成功'),
+                        //         //     text: __('通知成功'),
+                        //         //     classname: 'btn btn-xs btn-warning btn-magic btn-ajax',
+                        //         //     confirm: '确认通知成功 (平台已通知但未处理的单子)？',
+                        //         //     url: 'channels/recharge/notify',
+                        //         //     hidden: function (row, value, index) {
+                        //         //         return row.status == 4 ? false : true;
+                        //         //     },
+                        //         //     success: function (data, ret) {
+                        //         //         Layer.alert(ret.msg);
+                        //         //         $(".btn-refresh").trigger("click");
+                        //         //         //如果需要阻止成功提示，则必须使用return false;
+                        //         //         //return false;
+                        //         //     },
+                        //         //     error: function (data, ret) {
+                        //         //         console.log(data, ret);
+                        //         //         Layer.alert(ret.msg);
+                        //         //         return false;
+                        //         //     }
+                        //         // },
+                               
+                        //     ],
+                        //     formatter: Table.api.formatter.operate
+                        // }
                     ]
                 ],
                 responseHandler: function (data) {

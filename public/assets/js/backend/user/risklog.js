@@ -5,13 +5,13 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
             // 初始化表格参数配置
             Table.api.init({
                 extend: {
-                    index_url: 'user/signin/index' + location.search,
-                    add_url: 'user/signin/add',
-                    edit_url: 'user/signin/edit',
-                    del_url: 'user/signin/del',
-                    multi_url: 'user/signin/multi',
-                    import_url: 'user/signin/import',
-                    table: 'user_signin_log',
+                    index_url: 'user/risklog/index' + location.search,
+                    add_url: 'user/risklog/add',
+                    edit_url: 'user/risklog/edit',
+                    del_url: 'user/risklog/del',
+                    multi_url: 'user/risklog/multi',
+                    import_url: 'user/risklog/import',
+                    table: 'risk_task_log',
                 }
             });
 
@@ -22,14 +22,19 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 url: $.fn.bootstrapTable.defaults.extend.index_url,
                 pk: 'id',
                 sortName: 'id',
+                fixedColumns: true,
+                fixedRightNumber: 1,
                 columns: [
                     [
-                        {field: 'user_id', title: __('User_id')},
+                        {field: 'admin_id', title: __('Admin_id')},
+                        {field: 'user_id', title: __('博主id')},
                         {field: 'user.username', title: __('User.username'), operate: 'LIKE'},
-                        {field: 'days', title: __('Days'), sortable: true},
-                        {field: 'money', title: __('Money'), operate:'BETWEEN'},
-                        {field: 'type', title: __('Type'), searchList: {"0":__('Type 0'),"1":__('Type 1')}, formatter: Table.api.formatter.normal},
+                        {field: 'method_intro', title: __('检测'), operate: 'LIKE'},
+                        {field: 'result_intro', title: __('结果'), operate: 'LIKE'},
+                        {field: 'status', title: __('Status'), searchList: {"0":__('Status 0'),"1":__('Status 1')}, formatter: Table.api.formatter.status},
+                        {field: 'is_pass', title: __('Is_pass'), searchList: {"0":__('Is_pass 0'),"1":__('Is_pass 1')}, formatter: Table.api.formatter.normal},
                         {field: 'createtime', title: __('Createtime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false},
+                        {field: 'updatetime', title: __('Updatetime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false},
                     ]
                 ]
             });

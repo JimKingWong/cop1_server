@@ -47,6 +47,10 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                         <span class="info-value">${row.nickname || '-'}</span>
                                     </div>
                                     <div class="info-line">
+                                        <span class="info-label">邀请码：</span>
+                                        <span class="info-value">${row.admindata.invite_code || '-'}</span>
+                                    </div>
+                                    <div class="info-line">
                                         <span class="info-label">状态：</span>
                                         <span class="info-value">${Table.api.formatter.status(row.status, '', 'status')}</span>
                                     </div>
@@ -113,6 +117,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                     }
                 },
                 {field: 'nickname', title: __('Nickname'), operate: "LIKE", visible: false},
+                {field: 'invite_code', title: __('邀请码'), operate: "LIKE", visible: false},
                 {field: 'status', title: __("Status"), searchList: {"normal":__('Normal'),"hidden":__('离职')}, formatter: Table.api.formatter.status, visible: false},
                 {
                     field: 'department_id',
