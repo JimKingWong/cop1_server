@@ -423,6 +423,14 @@ class Platform extends Base
         ];
         $res = Http::post($apiUrl, $jsonData, $header);
         
+        $res = json_decode($res, true);
+
+        $retval = [
+            'game_url' => $res['data']['url'],
+        ];
+
+        $this->success(__('请求成功'), $retval);
+        
         header("Cache-Control: no-cache, no-store, must-revalidate");
         echo $res;
     }
@@ -464,17 +472,13 @@ class Platform extends Base
             ]
         ];
         $res = Http::post($apiUrl, $jsonData, $header);
-        
         $res = json_decode($res, true);
-        // dd($res);
-         $retval = [
+
+        $retval = [
             'game_url' => $res['data']['url'],
         ];
 
         $this->success(__('请求成功'), $retval);
-        
-        header("Cache-Control: no-cache, no-store, must-revalidate");
-        echo $res;
     }
 
     /**

@@ -9,7 +9,7 @@ use app\common\service\util\Notice;
 use think\Cache;
 use think\Db;
 
-class Pgnew3 extends Base
+class Raspa extends Base
 {
     /**
      * 配置
@@ -24,7 +24,7 @@ class Pgnew3 extends Base
     /**
      * 厂商
      */
-    protected $platform = 'pgnew3';
+    protected $platform = 'pgraspa';
 
     protected $operator_token = null;
     protected $secret_key = null;
@@ -53,7 +53,6 @@ class Pgnew3 extends Base
         }
 
         $this->operator_token = $this->config['operator_token'];
-        
         $this->secret_key = $this->config['secret_key'];
         $this->gameUrl = $this->config['gameUrl'];
         
@@ -66,7 +65,7 @@ class Pgnew3 extends Base
     public function VerifySession() 
     {
         $param = $this->request->param();
-
+        \think\Log::record($param, 'VerifySession_raspa');
         if($param['OperatorToken'] != $this->operator_token || $param['SecretStr'] != $this->secret_key){
             $data = [
                 "data"      => null,
@@ -103,7 +102,7 @@ class Pgnew3 extends Base
             "error" => null
         ];
 
-        \think\Log::record($data, 'VerifySession');
+        // \think\Log::record($data, 'VerifySession');
         return json_encode($data);
     }
 
@@ -114,10 +113,8 @@ class Pgnew3 extends Base
     public function Get() 
     {
         $param = $this->request->param();
-        // \think\Log::record($param, 'Get');
-
         $userId = $param['UseID'];
-
+        
         if($param['OperatorToken'] != $this->operator_token || $param['SecretStr'] != $this->secret_key){
             $data = [
                 "data"      => null,
@@ -127,6 +124,7 @@ class Pgnew3 extends Base
         }
 
         $user = \app\common\model\User::where('id', $userId)->find();
+        
         if(!$user){
             $data = [
                 "data"      => null,
@@ -136,6 +134,7 @@ class Pgnew3 extends Base
         }
 
         $money = $user['money'] * 1000;
+        
         $data = [
             "data" => [
                 "balance_amount"        => (int)$money,
@@ -144,6 +143,7 @@ class Pgnew3 extends Base
             ],
             "error" => null
         ];
+        
         return json_encode($data);
     }
 
@@ -153,9 +153,10 @@ class Pgnew3 extends Base
      */
     public function TransferInOut() 
     {
+        // $es = new Es();
 
         $param = $this->request->param();
-        \think\Log::record($param, 'TransferInOut');
+        \think\Log::record($param, 'TransferInOut111');
 
         // 交易电话
         $transaction_id = $param['Term'];
@@ -178,7 +179,7 @@ class Pgnew3 extends Base
                 "error" => 3004
             ]);
         }
-        
+   
         // 幂等检查
         $check = Cache::store('redis')->get('TransferInOut_' . $transaction_id);
         if($check){
@@ -195,7 +196,7 @@ class Pgnew3 extends Base
         }
 
         //查询游戏
-        $game = db('game_omg')->where('game_id', $gameId)->find();
+        $game = db('game_raspa')->where('game_id', $gameId)->find();
         
         $bet_amount = $param['Bet'] / 1000;
         $win_amount = $param['Award'] / 1000;
@@ -263,6 +264,7 @@ class Pgnew3 extends Base
                 $user->money = $money;
                 $user->save();
             }
+
             Cache::store('redis')->set('TransferInOut_' . $transaction_id, $param, 3600);
 
             Db::commit();

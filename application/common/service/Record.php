@@ -353,6 +353,25 @@ class Record extends Base
         // $where['platform'] = $platformKey;
         // $list = $es->searchByDate($gameRecord, $where, $starttime, $endtime);
         $list = $es->multiSearch($gameRecord, $condition);
+        if($platform == 'PG'){
+            $linshi_pg = $es->multiSearch('other_game_record', $condition); // 临时用这个表
+            $list = array_merge($list, $linshi_pg);
+            
+            usort($list, function($a, $b) {
+                // 如果createtime不存在，则使用paytime
+                $timeA = $a['createtime'];
+                $timeB = $b['createtime'];
+                
+                // 降序排序（最新的在前）
+                if ($timeA == $timeB) {
+                    return 0;
+                }
+                return ($timeA > $timeB) ? -1 : 1;
+                
+                // 如果需要升序排序（最旧的在前），使用下面的代码
+                // return ($timeA < $timeB) ? -1 : 1;
+            });
+        }
         // dd($list);
 
         foreach($list as $key => $val){

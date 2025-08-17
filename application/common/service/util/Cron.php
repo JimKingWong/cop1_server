@@ -8,6 +8,8 @@ use app\common\model\MoneyLog;
 use app\common\model\Mydata;
 use app\common\model\Recharge;
 use app\common\model\RewardLog;
+use app\common\model\risk\Task;
+use app\common\model\risk\TaskLog;
 use app\common\model\User;
 use app\common\model\Withdraw;
 use app\common\service\Channel as ServiceChannel;
@@ -18,6 +20,43 @@ use think\Db;
  */
 class Cron
 {
+    /**
+     * 风控检测
+     */
+    public function risk()
+    {
+        set_time_limit(0); // 取消执行时间限制
+        ini_set('memory_limit', '1024M'); // 调整内存限制
+        $list = TaskLog::where('status', 0)->select();
+        if(empty($list)){
+            echo "没有待执行的风控任务". "\n"; return;
+        }
+
+        Db::startTrans();
+        try {
+            $task_ids = [];
+            foreach($list as $item){
+                $task_ids[] = $item->task_id;
+                // 执行风险检测
+                Risk::{$item['method']}($item);
+            }
+
+            $task_ids = array_unique($task_ids);
+            // \Think\log::record($task_ids, 'risk_id');
+            // 更新任务数据
+            $task = Task::whereIn('id', $task_ids)->select();
+            foreach($task as $item){
+                $item->num += 1; // 已完成
+                $item->lasttime = datetime(time());
+                $item->save();
+            }
+            Db::commit();
+        }catch (\Exception $e) {
+            
+            Db::rollback();
+            echo "风控检测失败: " . $e->getMessage() . "\n"; return;
+        }
+    }
 
     /**
      * 设置奖池号码
@@ -179,7 +218,7 @@ class Cron
         $repeat_recharge_money = 0;
         // 充值总金额
         $recharge_money = 0;
-        $recharges = Recharge::whereTime('createtime', [$starttime, $endtime])
+        $recharges = Recharge::whereTime('paytime', [$starttime, $endtime])
             ->where('status', 1)
             ->field("user_id,count(id) count,sum(money) money")
             ->group('user_id')
@@ -203,7 +242,7 @@ class Cron
         $withdraw_money = 0;
         // 博主提现金额
         $blogger_withdraw_money = 0;
-        $withdraws = Withdraw::whereTime('createtime', [$starttime, $endtime])
+        $withdraws = Withdraw::whereTime('paytime', [$starttime, $endtime])
             ->where('status', 1)
             ->where('is_virtual', 0)
             ->field("user_id,sum(money) money")
@@ -266,8 +305,16 @@ class Cron
             $bet_amount += $val['bet_amount_sum'];
         }
 
+        $otherGroupSearch = $es->groupAggregation('other_game_record', $condition, 'platform', ['win_amount', 'bet_amount']);
+        $other_user_lost = 0;
+        foreach($otherGroupSearch as $val){
+            $other_user_lost += $val['bet_amount_sum'] - $val['win_amount_sum'];
+
+            $bet_amount += $val['bet_amount_sum'];
+        }
+
         // 客损
-        $user_lost = $omg_user_lost + $jdb_user_lost;
+        $user_lost = $omg_user_lost + $jdb_user_lost + $other_user_lost;
         echo '客损: ' . $user_lost. "\n";
 
         // API费用
@@ -351,7 +398,7 @@ class Cron
         // 博主充值金额
         $blogger_recharge_money = 0;
         
-        $recharges = Recharge::whereTime('createtime', 'today')
+        $recharges = Recharge::whereTime('paytime', 'today')
             ->where('status', '1')
             ->field("user_id,count(id) count,sum(money) money")
             ->group('user_id')
@@ -379,7 +426,7 @@ class Cron
         $withdraw_money = 0;
         // 博主提现金额
         $blogger_withdraw_money = 0;
-        $withdraws = Withdraw::whereTime('createtime', 'today')
+        $withdraws = Withdraw::whereTime('paytime', 'today')
             ->where('status', '1')
             ->where('is_virtual', 0)
             ->field("user_id,sum(money) money")
@@ -398,7 +445,7 @@ class Cron
         
         $member_withdraw_money = Withdraw::alias('w')
         ->join('ga_user u', 'w.user_id = u.id')
-        ->whereTime('w.createtime', 'today')
+        ->whereTime('w.paytime', 'today')
         ->where('w.status', '1')
         ->where('w.is_virtual', 0)
         ->where('u.role', 0)
@@ -559,6 +606,27 @@ class Cron
             $smartsoft_rtp = round($smartsoft_win_amount / $smartsoft_bet_amount * 100, 2);
         }
 
+        // 其他游戏的
+        $otherGroupSearch = $es->groupAggregation('other_game_record', $condition, 'platform', ['win_amount', 'bet_amount']);
+        // 刮刮卡
+        $raspa_bet_amount = isset($otherGroupSearch[1]) ? $otherGroupSearch[1]['bet_amount_sum'] : 0;
+        $raspa_win_amount = isset($otherGroupSearch[1]) ? $otherGroupSearch[1]['win_amount_sum'] : 0;
+        $raspa_user_lost = $raspa_bet_amount - $raspa_win_amount;
+        if($raspa_bet_amount == 0) {  
+            $raspa_rtp = 0;  
+        } else {  
+            $raspa_rtp = round($raspa_win_amount / $raspa_bet_amount * 100, 2);
+        }
+
+        $pg_linshi_bet_amount = isset($otherGroupSearch[2]) ? $otherGroupSearch[2]['bet_amount_sum'] : 0;
+        $pg_linshi_win_amount = isset($otherGroupSearch[2]) ? $otherGroupSearch[2]['win_amount_sum'] : 0;
+        $pg_linshi_user_lost = $pg_linshi_bet_amount - $pg_linshi_win_amount;
+        if($pg_linshi_bet_amount == 0) {  
+            $pg_linshi_rtp = 0;  
+        } else {  
+            $pg_linshi_rtp = round($pg_linshi_win_amount / $pg_linshi_bet_amount * 100, 2);
+        }
+
         echo 'OMG下注 ' . $omg_bet_amount . ' 派彩 ' . $omg_win_amount . ' 客损 ' . $omg_user_lost . "\n";
         echo 'PG下注 ' . $pg_bet_amount . ' 派彩 ' . $pg_win_amount . ' 客损 ' . $pg_user_lost . "\n";
         echo 'PP下注 ' . $pp_bet_amount . ' 派彩 ' . $pp_win_amount . ' 客损 ' . $pp_user_lost . "\n";
@@ -569,6 +637,8 @@ class Cron
         echo 'SPRIBE下注 ' . $spribe_bet_amount . ' 派彩 ' . $spribe_win_amount . ' 客损 ' . $spribe_user_lost . "\n";
         echo 'AMB下注 ' . $amb_bet_amount . ' 派彩 ' . $amb_win_amount . ' 客损 ' . $amb_user_lost . "\n";
         echo 'SMARTSOFT下注 ' . $smartsoft_bet_amount . ' 派彩 ' . $smartsoft_win_amount . ' 客损 ' . $smartsoft_user_lost . "\n";
+        echo '刮刮卡下注 ' . $raspa_bet_amount . ' 派彩 ' . $raspa_win_amount . ' 客损 ' . $raspa_user_lost . "\n";
+        echo 'pg临时下注 ' . $pg_linshi_bet_amount . ' 派彩 ' . $pg_linshi_win_amount . ' 客损 ' . $pg_linshi_user_lost . "\n";
 
 
         // 客损 = omg客损 + jdb旗下的供应商客损 后面补PG官方的
@@ -635,6 +705,8 @@ class Cron
         $str .= "SPRIBE游戏: 下注 $spribe_bet_amount 派彩  $spribe_win_amount 客损 $spribe_user_lost RTP: $spribe_rtp%\n";
         $str .= "AMB游戏: 下注 $amb_bet_amount 派彩  $amb_win_amount 客损 $amb_user_lost RTP: $amb_rtp%\n";
         $str .= "SMARTSOFT游戏: 下注 $smartsoft_bet_amount 派彩  $smartsoft_win_amount 客损 $smartsoft_user_lost RTP: $smartsoft_rtp%\n";
+        $str .= "刮刮卡: 下注 $raspa_bet_amount 派彩  $raspa_win_amount 客损 $raspa_user_lost RTP: $raspa_rtp%\n";
+        $str .= "PG临时: 下注 $pg_linshi_bet_amount 派彩  $pg_linshi_win_amount 客损 $pg_linshi_user_lost RTP: $pg_linshi_rtp%\n";
         $str .= "注册人数: $user_count \n";
         $str .= "注册且充值人数: $register_recharge_users \n";
         $str .= "复充人数: $repeat_recharge_users \n";
@@ -658,8 +730,9 @@ class Cron
         $str .= "PG流水奖励: $pgReward \n";
         $str .= "玩家亏损返水: $lossRebate \n";
         $str .= "玩家首充奖励: $firstRecharge \n";
-        $str .= "-----活动----- \n";
-        
+        $str .= "-----统计----- \n";
+        $str .= "充值金额: $recharge_money \n";
+        $str .= "提现金额: $withdraw_money \n";
         $str .= "通道费用: $channel_fee \n";
         $str .= "API费用: $game_api_fee \n";
         $str .= "今日盈利: $profit \n";
@@ -917,8 +990,14 @@ class Cron
                 $jdb_win_amount = array_sum(array_column($jdbGroupSearch, 'win_amount_sum'));
                 $jdb_bet_amount = array_sum(array_column($jdbGroupSearch, 'bet_amount_sum'));
                 $jdb_api = bcmul($jdb_bet_amount - $jdb_win_amount, $game_api_fee, 2);
-                
-                $api_fee = bcadd($omg_api, $jdb_api, 2);
+
+                $otherGroupSearch = $es->groupAggregation('other_game_record', $condition[$key], 'platform', ['win_amount', 'bet_amount']);
+
+                $other_win_amount = array_sum(array_column($otherGroupSearch, 'win_amount_sum'));
+                $other_bet_amount = array_sum(array_column($otherGroupSearch, 'bet_amount_sum'));
+                $other_api = bcmul($other_bet_amount - $other_win_amount, $game_api_fee, 2);
+
+                $api_fee = $omg_api + $jdb_api + $other_api;
                 $api_fee = abs($api_fee);
 
                 $recharge_amount = $recharge[$admin_id] ?? 0;

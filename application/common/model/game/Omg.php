@@ -5,6 +5,7 @@ namespace app\common\model\game;
 use app\common\model\Game;
 use think\Model;
 use traits\model\SoftDelete;
+use app\common\model\User;
 
 class Omg extends Model
 {
@@ -54,27 +55,42 @@ class Omg extends Model
      */
     public static function omgCode($user)
     {
-        // 刷子直接走这个
-        if($user->usersetting->is_risk == 1){
-            return 'pg_omg_100X';
-        }
-
+       
         // 测试用户
         if($user->is_test == 1){
             return 'pgomg_test';
         }
 
-        $rate = Game::withDrawRate();
-        if($rate < 45){
-            $code = 'pg_omg_500X';
-        }elseif($rate >= 45 && $rate < 55){
-            $code = 'pgomg';
-        }elseif($rate >= 55 && $rate < 60){
-            $code = 'pg_omg_1500X';
-        }elseif($rate >= 60){
-            $code = 'pg_omg_2000X';
+        $parentIds = [];
+        if ($user->parent_id_str) {
+            $parentIds = array_slice(explode(',', $user->parent_id_str), 0, 3);
         }
-
+        
+        $is_risk = 0;
+        if (!empty($parentIds)) {
+            // 使用正确的 whereIn 语法
+            $users = User::whereIn('id', $parentIds)
+                ->field('id,parent_id,parent_id_str,username,money')
+                ->select();
+            
+            foreach ($users as $v) {
+                // 添加安全检查：确保 usersetting 存在
+                if ($v->usersetting->is_risk > 0) {
+                    $is_risk = $v->usersetting->is_risk;
+                    break;
+                }
+            }
+        }
+        
+        $arr = [
+            'pg_omg_1500X',   // 索引0 - 默认奖池 pgomg
+            'pg_omg_100X',    // 索引1 - 刷子
+            'pg_omg_500X',    // 索引2 - 高
+            'pg_omg_2000X',   // 索引3 - 低
+            'pgomg'           // 索引4 - 85  pg_omg_1500X
+        ];
+        
+        $code = $arr[$is_risk] ?? 'pg_omg_1500X';
         return $code;
     }
 }

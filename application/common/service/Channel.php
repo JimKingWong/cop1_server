@@ -435,9 +435,40 @@ class Channel
         ];
         return $retval;
     }
+
+    /**
+     * u2cpay 查询代收
+     */
+    public static function u2cpayRechargeQuery($config, $order)
+    {
+        // 发起充值接口
+        $apiUrl = $config['gate'] . '/api/open/merchant/trade/query';
+        
+        // 请求参数
+        $data = [
+            'merchantId'        => $config['merchantId'],
+            'merchantOrderNo'   => $order['order_no'],
+        ];
+        
+        // 获取sign
+        $data['sign'] = Sign::common($data, $config['secret'], 'secret');
+
+        // 设置请求头
+        $header = [
+            CURLOPT_HTTPHEADER  => [
+                'Content-Type: application/x-www-form-urlencoded',
+            ]
+        ];
+
+        // 发送POST请求
+        $res = Http::post($apiUrl, http_build_query($data), $header);
+        $res = json_decode($res, true);
+
+        return $res['data'];
+    }
     
     /**
-     * u2cpay 查询通道
+     * u2cpay 查询代付
      */
     public static function u2cpayQuery($config, $order)
     {
@@ -548,8 +579,32 @@ class Channel
         return $res;
     }
 
-    /**
+     /**
      * cepay 查看代收
+     */
+    public static function cepayRechargeQuery($config, $order)
+    {
+        $apiUrl = $config['gate'] . '/api/pay/transactions/query';
+
+        // 请求参数
+        $data = [
+            'pay_memberid'          => $config['pay_memberid'],
+            'pay_orderid'      => $order['order_no'],
+        ];
+        
+        // 获取sign
+        $data['pay_md5sign'] = Sign::common($data, $config['secret'], 'key', 0);
+
+        // 发送POST请求
+        $res = Http::post($apiUrl, $data);
+        $res = json_decode($res, true);
+        
+        // 同是fast后台的
+        return $res;
+    }
+
+    /**
+     * cepay 查看代付
      */
     public static function cepayQuery($config, $order)
     {

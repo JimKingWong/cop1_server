@@ -54,6 +54,12 @@ class Game extends Base
         // 对应游戏
         $game = $row->$tableModel;
 
+        $testBanGame = ['game_jdb', 'game_raspa'];
+
+        if($user->is_test == 1 && in_array($row->table_name, $testBanGame)){
+            $this->error(__('游戏维护中'));
+        }
+
         // 如果不是omg表的游戏, 先找到对应在omg表的游戏
         if($row->table_name != 'game_omg'){
             $platformArr = [
@@ -77,21 +83,35 @@ class Game extends Base
                 $game = $omg;
             }
         }
-        // dd($game);
+        // dd($omg);
 
         // omg分流
         if($table_name == 'game_omg'){
+            
+            // $omgs = \app\common\model\game\Omg::where('game_id', $row->game_id)->find();
+            // // dd($tableModel);
+            // if($omgs['platform'] == '2'){
+                
+            //     $platform = $this->model::services(['code' => 'pgnew3']);
+            //     // 对应游戏服务实例
+            //     $service = new \app\common\service\game\Platform($platform);
+            //     // dd($omgs);
+            //     $service->pgnew3Link($omgs);
+            //     exit;
+                
+            // }
+            
             $code = \app\common\model\game\Omg::omgCode($user);
             $map['code'] = $code;
+          
         }
-        
+
         // 获取游戏服务
         $map['table_name'] = $table_name;
         $platform = $this->model::services($map);
         
         // 对应游戏服务实例
         $service = new \app\common\service\game\Platform($platform);
-        // dd($service);
 
         // 对应方法
         $method = $platform->method ?? 'omgLink';
@@ -104,15 +124,23 @@ class Game extends Base
      */
     public function testStartup()
     {
-        // 传id
+         // 传id
         $game_id = $this->request->get('game_id');
         $row = $this->model->where('id', $game_id)->find();
         if(!$row){
             $this->error(__('游戏不存在'));
         }
 
+        $user = $this->auth->getUser();
+        if($user->usersetting->game_status == 0){
+            $this->error(__('您已被禁止玩游戏'));
+        }
+
+        // 对应表名
+        $table_name = $row->table_name;
+
         // 关联对应的游戏模型
-        $tableModel = str_replace('_', '', $row->table_name);
+        $tableModel = str_replace('_', '', $table_name);
         // 对应游戏
         $game = $row->$tableModel;
 
@@ -125,24 +153,47 @@ class Game extends Base
                 'game_jdb'      => [],
                 'game_pp'       => [4],
                 'game_cq'       => [],
+                'game_raspa'    => []
             ];
             $where['real_game_id'] = $row->game_id;
-            $where['platform'] = ['in', $platformArr[$row->table_name]];
+            $where['platform'] = ['in', $platformArr[$table_name]];
             // dd($where);
             $omg = \app\common\model\game\Omg::where($where)->find();
             // 找的到就用omg表的游戏
             if($omg){
+                $table_name = 'game_omg';
+
                 // 重新赋值游戏
                 $game = $omg;
             }
         }
-        // dd($game->toarray());
+        // dd($omg);
+
+        // omg分流
+        if($table_name == 'game_omg'){
+            
+            // $omgs = \app\common\model\game\Omg::where('game_id', $row->game_id)->find();
+            // // dd($tableModel);
+            // if($omgs['platform'] == '2'){
+                
+            //     $platform = $this->model::services(['code' => 'pgnew3']);
+            //     // 对应游戏服务实例
+            //     $service = new \app\common\service\game\Platform($platform);
+            //     // dd($omgs);
+            //     $service->pgnew3Link($omgs);
+            //     exit;
+                
+            // }
+            
+            $code = \app\common\model\game\Omg::omgCode($user);
+            $map['code'] = $code;
+          
+        }
 
         // 获取游戏服务
-        $map['code'] = 'pgomg_test';
+        $map['table_name'] = $table_name;
         $platform = $this->model::services($map);
-        // dd($platform->toarray());
-
+        
         // 对应游戏服务实例
         $service = new \app\common\service\game\Platform($platform);
 

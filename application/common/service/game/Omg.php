@@ -29,7 +29,8 @@ class Omg extends Base
     {
         parent::__construct();
 
-        $platform = Platform::where('code', $this->platform)->cache(true, 86400)->find();
+        // 默认使用这个
+        $platform = Platform::where('code', $this->platform)->find();
         
         $this->config = $platform->config;
         

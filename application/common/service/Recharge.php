@@ -125,7 +125,7 @@ class Recharge extends Base
         $where['user_id'] = $user->id;
         $list = $this->model->where($where)->field($fields)->order('id desc')->select();
         foreach($list as $val){
-            $val->status_text = $val->status == 0 ? __('未支付') : __('已支付');
+            $val->status_text = $val->status == 0 ? __('待支付') : __('已支付');
         }
 
         $retval = [
@@ -198,14 +198,25 @@ class Recharge extends Base
             }
         }
 
-        // 获取站点信息
-        $multiple = \app\common\model\Site::where('url', $this->origin)->value('multiple');
-
         $user_bank = \app\common\model\UserBank::where('user_id', $user->id)->find();
         if(!$user_bank){
             $this->error(__('请先绑定银行卡'));
         }
-        
+
+        // 获取站点信息
+        $multiple = \app\common\model\Site::where('url', $this->origin)->value('multiple');
+        if($user->usersetting->multiple){
+            $multiple = $user->usersetting->multiple;
+        }else{
+            $parent_multiple = db('user_setting')->where('user_id', $user->parent_id)->value('multiple');
+            // 如果父级用户倍数存在，则使用父级用户倍数
+            if($parent_multiple){
+                $multiple = $parent_multiple;
+                $user->usersetting->multiple = $parent_multiple; // 设置当前用户的倍数
+                $user->usersetting->save();
+            }
+        }
+        // dd($parent_multiple);
         // 订单数据
         $orderData = [
             'admin_id'            => $user->admin_id,

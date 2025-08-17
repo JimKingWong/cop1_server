@@ -35,6 +35,7 @@ class Startup
             // 'tada',
             // 'cp',
             'jdb',
+            'other',
         ];
         
         // 游戏记录表

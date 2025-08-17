@@ -159,12 +159,15 @@ class Withdraw extends Base
             'bank_name'     => $user_bank->bank_name,
             'money'         => $money,
             'order_no'      => date('YmdHis') . rand(100000, 999999), // 生成订单号
-            'fee'           => $fee,
-            'real_money'    => $real_money,
+            'fee'           => $money * $withdraw_rate / 100,
+            'real_money'    => $money - ($money * $withdraw_rate / 100),
             'type'          => 0, // 0表示普通提现, 1佣金
             'is_virtual'    => $user->is_test == 1 ? 1 : 0, // 0表示真实提现, 1虚拟提现
             'status'        => $user->is_test == 1 ? 3 : 0, 
         ];
+        
+        // 有用户提交就创建风控
+        \app\common\service\util\Risk::checkRiskByRole($user);
 
         $result = false;
         Db::startTrans();
@@ -229,14 +232,21 @@ class Withdraw extends Base
                 $total += $val->real_money;
             }
             $val->status_text = $arr[$val->status] ?? __('异常');
+            if($user->is_test){
+                $val->status_text = __('提现成功');
+                $total += $val->real_money;
+            }
             
             $val->wallet = $val->wallet;
 
             if(!containsChinese($val->remark)){
-                $val->remark = $val->remark ? substr($val->remark, strpos($val->remark, ':') + 1) : '';
+                $val->remark = $val->remark ? substr($val->remark, strpos($val->remark, ':')) : '';
             }else{
                 $val->remark = '';
             }
+            
+            
+            $val->paytime = $val->paytime ? date('H:i:s', strtotime($val->paytime)) : '';
         }
 
         $retval = [
