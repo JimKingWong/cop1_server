@@ -26,7 +26,7 @@ class Notice
      */
     public static function handlingGameAwards($user, $game, $bet_money, $win_money, $platform)
     {
-        if($win_money < 3000){
+        if($win_money < 3000 * 1000){
             return;
         }
 
