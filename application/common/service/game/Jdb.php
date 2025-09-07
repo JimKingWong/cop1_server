@@ -438,7 +438,7 @@ class Jdb extends Base
                 "err_text"  => "Failed"
             ]);
         }
-    $user = \app\common\model\User::where('id', $params['uid'])->find();
+        $user = \app\common\model\User::where('id', $params['uid'])->find();
         if(!$user){
             return json_encode([
                 "status"    => '7501',
@@ -521,7 +521,7 @@ class Jdb extends Base
             ]);
         }
 
-    $user = \app\common\model\User::where('id', $params['uid'])->find();
+        $user = \app\common\model\User::where('id', $params['uid'])->find();
         if(!$user){
             return json_encode([
                 "status"        => '7501',
@@ -641,7 +641,7 @@ class Jdb extends Base
         }
         $transfer_amount = $params['netWin'];
         $win_amount = $params['win'];
-        $bet_amount = $params['bet'];
+        $bet_amount = 0;
         $validBet = $params['validBet'];
 
         // 税费计算
@@ -670,7 +670,7 @@ class Jdb extends Base
             // 添加ES记录
             $betInfoArr = [
                 'transaction_id'    => $params['transferId'],
-                'bet_amount'        => $params['bet'],
+                'bet_amount'        => $bet_amount,
                 'win_amount'        => $params['win'],
                 'transfer_amount'   => $params['netWin'],
                 'is_fake'           => 0,
@@ -1086,8 +1086,7 @@ class Jdb extends Base
             ]);
         }
 
-         $user_id = str_replace('hermesgame', '', $params['uid']);
-    $user = \app\common\model\User::where('id', $params['uid'])->find();
+        $user = \app\common\model\User::where('id', $params['uid'])->find();
         if(!$user){
             return json_encode([
                 "status"    => '7501',

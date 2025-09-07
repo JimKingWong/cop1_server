@@ -452,10 +452,11 @@ class Index extends Api
         // $service->deleteIndex('jdb_game_record');
         // $this->success('ok');
 
-        $date = -1;
+        $date = -0;
         $starttime = date('Y-m-d 00:00:00', strtotime($date . ' day'));
         $endtime = date('Y-m-d 23:59:59', strtotime($date . ' day'));
-
+        
+        // dd($starttime);
         $condition = [
                 // 用户id搜索
                 // [
@@ -479,11 +480,11 @@ class Index extends Api
                 // ],
 
                 // admin_id搜索
-                [
-                    'type' => 'term',
-                    'field' => 'admin_id',
-                    'value' => 8,
-                ],
+                // [
+                //     'type' => 'term',
+                //     'field' => 'admin_id',
+                //     'value' => 8,
+                // ],
                 [
                     'type' => 'range',
                     'field' => 'createtime',
@@ -503,16 +504,16 @@ class Index extends Api
         ];
         // dd($condition);
         // 纯列表
-        // $list = $service->multiSearch('jdb_game_record', $condition);
+        $list = $service->multiSearch('jdb_game_record', $condition);
         // 根据platform分组聚合
-        $list = $service->groupAggregation('jdb_game_record', $condition, 'game_id', ['win_amount', 'bet_amount', 'transfer_amount']);
+        // $list = $service->groupAggregation('jdb_game_record', $condition, 'game_id', ['win_amount', 'bet_amount', 'transfer_amount']);
 
-        $omg_win_amount = array_sum(array_column($list, 'win_amount_sum'));
-        $omg_bet_amount = array_sum(array_column($list, 'bet_amount_sum'));
-        $game_api_fee = config('channel.game_api_fee');
-        $omg_api = bcmul($omg_bet_amount - $omg_win_amount, $game_api_fee, 2);
+        // $omg_win_amount = array_sum(array_column($list, 'win_amount_sum'));
+        // $omg_bet_amount = array_sum(array_column($list, 'bet_amount_sum'));
+        // $game_api_fee = config('channel.game_api_fee');
+        // $omg_api = bcmul($omg_bet_amount - $omg_win_amount, $game_api_fee, 2);
 
-        dd($omg_api);
+        dd($list);
 
         // $list = $service->groupAggregation('omg_game_record', $condition, 'platform', ['bet_amount']);
        
