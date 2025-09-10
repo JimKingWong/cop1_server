@@ -35,7 +35,7 @@ class Recharge extends Base
     {
         // 获取充值配置
         $config = RechargeConfig::where('status', 1)
-            ->field('id,min_money,max_money,typing_amount,gift_amount')
+            ->field('id,min_money,max_money,typing_amount,gift_amount,gift_percent')
             ->cache(true)
             ->order('weigh asc')
             ->select();
