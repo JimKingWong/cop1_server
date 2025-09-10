@@ -193,7 +193,7 @@ class Recharge extends Base
         foreach($configList as $val){
             if($money >= $val['min_money'] && $money < $val['max_money']){
                 $recharge_config_id = $val['id'];
-                // $gift_amount = $val['gift_amount']; // 赠送先不开
+                $gift_amount = $val['gift_percent'] * $money; 
                 break;
             }
         }
