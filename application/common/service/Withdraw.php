@@ -160,7 +160,7 @@ class Withdraw extends Base
             'money'         => $money,
             'order_no'      => date('YmdHis') . rand(100000, 999999), // 生成订单号
             'fee'           => $money * $withdraw_rate / 100,
-            'real_money'    => $money - ($money * $withdraw_rate / 100),
+            'real_money'    => $real_money,
             'type'          => 0, // 0表示普通提现, 1佣金
             'is_virtual'    => $user->is_test == 1 ? 1 : 0, // 0表示真实提现, 1虚拟提现
             'status'        => $user->is_test == 1 ? 3 : 0, 
