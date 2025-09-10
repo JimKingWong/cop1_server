@@ -50,6 +50,7 @@ class Recharge extends Base
             foreach($config as $v){
                 if($val['money'] >= $v['min_money'] && $val['money'] < $v['max_money']){
                     $list[$key]['gift_amount'] = $v['gift_amount']; // 暂时不需要
+                    $list[$key]['gift_percent'] = $v['gift_percent']; // 暂时不需要
                 }
             }
         }
