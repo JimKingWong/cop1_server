@@ -35,6 +35,9 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                 }
                             });
                         }
+
+                        let invite_code = row.admindata ? row.admindata.invite_code : '-';
+1
                         return `
                             <div class="account-info-center">
                                 <div class="info-container">
@@ -48,7 +51,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                     </div>
                                     <div class="info-line">
                                         <span class="info-label">邀请码：</span>
-                                        <span class="info-value">${row.admindata.invite_code || '-'}</span>
+                                        <span class="info-value">${invite_code || '-'}</span>
                                     </div>
                                     <div class="info-line">
                                         <span class="info-label">状态：</span>

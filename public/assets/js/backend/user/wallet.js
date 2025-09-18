@@ -6,6 +6,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
             Table.api.init({
                 extend: {
                     index_url: 'user/wallet/index' + location.search,
+                    edit_url: 'user/wallet/edit',
                     multi_url: 'user/wallet/multi',
                     table: 'user_wallet',
                 }
@@ -53,13 +54,13 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'status', title: __('状态'), searchList: {"0":__('拉黑'),"1":__('正常')}, formatter: Table.api.formatter.toggle},
                         {field: 'createtime', title: __('Createtime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false},
                         {field: 'updatetime', title: __('Updatetime'), operate:'RANGE', addclass:'datetimerange', autocomplete:false},
-                        // {
-                        //     field: 'operate', 
-                        //     title: __('Operate'), 
-                        //     table: table, 
-                        //     events: Table.api.events.operate, 
-                        //     formatter: Table.api.formatter.operate
-                        // }
+                        {
+                            field: 'operate', 
+                            title: __('Operate'), 
+                            table: table, 
+                            events: Table.api.events.operate, 
+                            formatter: Table.api.formatter.operate
+                        }
                     ]
                 ],
                 queryParams: function (params) {

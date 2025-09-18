@@ -418,7 +418,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'template'], function
 
                             let langArr = {
                                 'cn': {
-                                    'checkout_lang': '切换语音',
+                                    'checkout_lang': '切换语言',
                                     'salary': '博主工资',
                                     'commission': '系统佣金',
                                     'valid_users': '博主邀请有效用户'
@@ -510,7 +510,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'template'], function
 
                             let langArr = {
                                 'cn': {
-                                    'checkout_lang': '切换语音',
+                                    'checkout_lang': '切换语言',
                                     'salary': '博主工资',
                                     'commission': '系统佣金',
                                     'valid_users': '博主邀请有效用户'

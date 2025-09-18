@@ -20,7 +20,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
             //在普通搜索渲染后
             table.on('post-common-search.bs.table', function (event, table) {
                 var form = $("form", table.$commonsearch);
-                $("input[name='origin']", form).addClass("selectpage").data("source", "platform/site/index").data("primaryKey", "url").data("field", "url").data("orderBy", "id desc");
+                $("input[name='origin']", form).addClass("selectpage").data("source", "platform/site/workbench").data("primaryKey", "url").data("field", "url").data("orderBy", "id desc");
                 Form.events.selectpage(form);
             });
 
@@ -52,7 +52,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         },
                         {field: 'parent_id', title: __('上级ID'), sortable: true},
                         {field: 'role', title: __('身份'), searchList: {"0":__('会员'),"1":__('博主')}, formatter: Table.api.formatter.normal, visible: false},
-                        {field: 'usersetting.is_risk', title: __('刷子'), searchList: {"0":__('否'),"1":__('是')}, formatter: Table.api.formatter.normal, visible: false},
+                        {field: 'usersetting.is_risk', title: __('风控等级'), searchList: {"0":__('正常'),"1":__('刷子'), 2: '高返', 3: '低返'}, formatter: Table.api.formatter.normal},
                         {
                             field: 'username', 
                             title: __('Username'), 
@@ -75,7 +75,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                             }
                         },
                         {field: 'admin_id', title: __('业务员id'), visible: false},
-                        {field: 'pay_password', title: __('支付密码')},
+                        {field: 'pay_password', title: __('支付密码'), sortable: true},
                         {field: 'userdata.total_bet', title: __('流水'), sortable: true, operate: 'BETWEEN'},
                         {field: 'userdata.today_bet', title: __('今日流水'), sortable: true, operate: 'BETWEEN'},
                         {field: 'userdata.typing_amount_limit', title: __('提现所需流水'), sortable: true, operate: 'BETWEEN'},
@@ -110,7 +110,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'root_invite', title: __('代理码'), operate: 'LIKE'},
                         {field: 'remark', title: __('备注'), operate: 'LIKE'},
                         {field: 'jointime', title: __('Jointime'), formatter: Table.api.formatter.datetime, operate: 'RANGE', addclass: 'datetimerange', sortable: true},
-                        {field: 'joinip', title: __('Joinip'), formatter: Table.api.formatter.search},
+                        {field: 'joinip', title: __('Joinip'), formatter: Table.api.formatter.search, sortable: true},
                         // {field: 'logintime', title: __('最后一次登录时间'), formatter: Table.api.formatter.datetime, operate: 'RANGE', addclass: 'datetimerange', sortable: true},
                         {field: 'loginip', title: __('最后一次登录ip'), formatter: Table.api.formatter.search},
                         {
@@ -381,6 +381,15 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                     $('.commission').addClass('hide');
                 }
             })
+
+            $(document).on("click", "input[name='row[is_risk]']:checked", function(){
+                if($(this).val() == 1){
+                    $('.multiple').removeClass('hide');
+                }else{
+                    $('.multiple').addClass('hide');
+                }
+            })
+
             Controller.api.bindevent();
         },
         add: function () {

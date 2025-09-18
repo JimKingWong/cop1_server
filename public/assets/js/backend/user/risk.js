@@ -26,9 +26,22 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                     [
                         {checkbox: true},
                         {field: 'id', title: __('Id')},
-                        {field: 'user.username', title: __('User.username'), operate: 'LIKE'},
-                        {field: 'admin_id', title: __('Admin_id')},
+                        {field: 'user.origin', title: __('站点')},
                         {field: 'user_id', title: __('User_id')},
+                        {field: 'user.parent_id', title: __('PID')},
+                        {
+                            field: 'user.username', 
+                            title: __('Username'), 
+                            operate: 'LIKE',
+                            formatter: function (value, row, index) {
+                                // 所属部门
+                                let department = row.department_name;
+                                
+                                let str  = `<span>${department} ${row.admin_id}</span><br />`
+                                    str += `<span>${value}</span>`
+                                return str;
+                            }
+                        },
                         // {field: 'is_problem', title: __('异常'), searchList: {"0":__('无'),"1":__('是')}, operate: false},
                         {field: 'status', title: __('状态'), searchList: {"0":__('监控'),"1":__('已审核')}, formatter: Table.api.formatter.normal},
                         {field: 'num', title: __('Num')},

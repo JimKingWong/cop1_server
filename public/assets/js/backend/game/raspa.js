@@ -25,7 +25,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 fixedColumns: true,
                 fixedRightNumber: 1,
                 columns: [
-                    [
+                     [
                         {checkbox: true},
                         {field: 'id', title: __('Id')},
                         {field: 'game_id', title: __('Game_id'), operate: 'LIKE'},
@@ -44,7 +44,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 ]
             });
 
-            $(document).on("click", ".btn-patchadd", function () {
+             $(document).on("click", ".btn-patchadd", function () {
                 //如果操作全部则ids可以置为空
                 var ids = Table.api.selectedids(table);
                 // console.log(ids);
@@ -114,6 +114,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
             // 为表格绑定事件
             Table.api.bindevent(table);
         },
+
         patchadd: function () {
             Controller.api.bindevent();
         },

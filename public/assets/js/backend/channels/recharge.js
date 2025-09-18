@@ -39,7 +39,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         // {field: 'channel.name', title: __('通道名称'), operate: 'LIKE', table: table, class: 'autocontent', formatter: Table.api.formatter.content, visible: false},
                         {field: 'order_no', title: __('Order_no'), operate: 'LIKE'},
                         {field: 'cpf', title: __('CPF'), operate: 'LIKE'},
-                        {field: 'money', title: __('Money'), operate:'BETWEEN'},
+                        {field: 'money', title: __('Money'), operate:'BETWEEN', sortable: true},
                         {field: 'real_amount', title: __('Real_amount'), operate:'BETWEEN'},
                         {field: 'real_pay_amount', title: __('Real_pay_amount'), operate:'BETWEEN'},
                         {field: 'status', title: __('Status'), searchList: {"0":__('Status 0'),"1":__('Status 1'),"2":__('Status 2')}, formatter: Table.api.formatter.status},
