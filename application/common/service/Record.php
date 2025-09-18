@@ -151,7 +151,7 @@ class Record extends Base
             // ]);
         foreach($list as $val){
             $val->memo = __($val->memo);
-            $val->money = $val->after - $val->before > 0 ? '+' . $val->money : '-' . $val->money;
+            $val->money = $val->after - $val->before > 0 ? '+' . $val->money : $val->money;
             $val->createtime = date('Y-m-d H:i:s', $val->createtime);
         }
 
@@ -159,8 +159,8 @@ class Record extends Base
         $bonus = RewardLog::where($where)->sum('money');
         
         unset($where['type']);
-        $total_recharge = Recharge::where($where)->sum('money');
-        $total_withdraw = Withdraw::where($where)->sum('money');
+        $total_recharge = Recharge::where($where)->where('status', '1')->sum('money');
+        $total_withdraw = Withdraw::where($where)->where('status', '1')->sum('money');
         $retval = [
             'dictionary'        => $dictionary,
             'bonus'             => $bonus,

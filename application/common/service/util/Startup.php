@@ -123,6 +123,7 @@ class Startup
         }
     }
     
+
     /**
      * 清理数据库数据
      */
@@ -135,7 +136,7 @@ class Startup
             'admin_log', 'box_record', 'daybookadmin', 'daybookblogger', 'letter', 'letter_read', 
             'mydata', 'prize_log', 'recharge', 'user', 'user_collect_log', 'user_data', 'user_info',
             'user_money_log', 'user_reward_log', 'user_setting', 'user_signin_log', 'user_turntable_log',
-            'user_vip_log', 'user_wallet', 'withdraw'
+            'user_vip_log', 'user_wallet', 'withdraw', 'risk_task', 'risk_task_log'
         ];
         foreach($needClear as $v){
             Db::query('TRUNCATE TABLE ' . $prefix . $v);

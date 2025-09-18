@@ -407,6 +407,8 @@ class Jdb extends Base
             "balance"   => $user['money'],
             "err_text"  => "OK"
         ];
+
+        \think\Log::record(json_encode($data), 'JDB_TransferInOut_return');
         return json_encode($data);
     }
 

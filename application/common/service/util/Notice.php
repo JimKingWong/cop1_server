@@ -17,6 +17,9 @@ class Notice
                 'Content-Type: application/x-www-form-urlencoded',
             ]
         ];
+        $res = http_post($apiUrl, $params);
+        return $res;
+        
         $res = Http::post($apiUrl, http_build_query($params), $header);
         return $res;
     }

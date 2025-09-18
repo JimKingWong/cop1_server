@@ -104,7 +104,7 @@ class Risk
         if(!$bloggerUserId){
             return;
         }
-
+        
         // 检查该博主是否有创建风险检测任务
         $riskTask = Task::where('user_id', $bloggerUserId)->find();
 
@@ -118,8 +118,8 @@ class Risk
                 $data = [];
                 foreach(self::$jobs as $job => $val){
                     $data[] = [
-                        'admin_id'      => $user->admin_id,
-                        'user_id'       => $user->id,
+                        'admin_id'      => $riskTask->admin_id,
+                        'user_id'       => $riskTask->user_id,
                         'task_id'       => $riskTask->id,
                         'method'        => $job,
                         'method_intro'  => $val['intro'],
@@ -137,7 +137,7 @@ class Risk
             // 创建风险检测任务
             $task_id = db('risk_task')->insertGetId([
                 'admin_id'      => $user['admin_id'],
-                'user_id'       => $user['id'],
+                'user_id'       => $bloggerUserId,
                 'createtime'    => datetime(time()),
             ]);
 
@@ -145,7 +145,7 @@ class Risk
             foreach(self::$jobs as $job => $val){
                 $data[] = [
                     'admin_id'      => $user->admin_id,
-                    'user_id'       => $user->id,
+                    'user_id'       => $bloggerUserId,
                     'task_id'       => $task_id,
                     'method'        => $job,
                     'method_intro'  => $val['intro'],
@@ -171,9 +171,7 @@ class Risk
     {
         $user = User::where('id', $log['user_id'])->field('id,admin_id,origin')->find();
 
-        // 老高组单独群
-        $department_ids = db('department')->where('id|parent_id', 31)->column('id');
-        $admin_ids = db('department_admin')->where('department_id', 'in', $department_ids)->column('admin_id');
+        
 
         $origin = $user->origin;
         $admin_nickname = $user->admin->nickname;
@@ -194,23 +192,50 @@ class Risk
 
         if($is_test == 1){
             $params = [
-                'chat_id'  => 7104843880,
-                'text'  => $message,
+                'chat_id'   => 7104843880,
+                'text'      => $message,
             ];
             $apiUrl = "https://api.telegram.org/bot7593152406:AAGQc3rjkIXo1PlxCF4HEhTdSxPapAyAYDc/sendMessage";
         }else{
-            if(in_array($log['admin_id'], $admin_ids)){
-                $params = [
-                    'chat_id'       => -4815691008,
-                    'text'          => $message,
-                ];
+            $chat_id = db('admin')->where('id', $log['admin_id'])->value('chat_id');
 
-            }else{
-                $params = [
-                    'chat_id'       => -4850275893,
-                    'text'          => $message,
-                ];
+            // 老高组单独群
+            $department_ids = db('department')->where('id|parent_id', 31)->column('id');
+            $admin_ids = db('department_admin')->where('department_id', 'in', $department_ids)->column('admin_id');
+
+            if(!$chat_id){
+                if(in_array($log['admin_id'], $admin_ids)){
+                    $chat_id = -4815691008;
+                }else{
+                    $chat_id = -4850275893;
+                }
             }
+
+            $params = [
+                'chat_id'       => $chat_id,
+                'text'          => $message,
+            ];
+            // if($chat_id){
+            //     $params = [
+            //         'chat_id'       => $chat_id,
+            //         'text'          => $message,
+            //     ];
+            // }else{
+                
+            //     if(in_array($log['admin_id'], $admin_ids)){
+            //         $params = [
+            //             'chat_id'       => -4815691008,
+            //             'text'          => $message,
+            //         ];
+
+            //     }else{
+            //         $params = [
+            //             'chat_id'       => -4850275893,
+            //             'text'          => $message,
+            //         ];
+            //     }
+            // }
+            
             $apiUrl = "https://api.telegram.org/bot7120074308:AAGKWlR5XQ0MySxca2vup1MmMYW3mJ8vUjU/sendMessage";
         }
 

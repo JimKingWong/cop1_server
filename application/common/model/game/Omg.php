@@ -60,16 +60,12 @@ class Omg extends Model
         if($user->is_test == 1){
             return 'pgomg_test';
         }
+ 
+        $is_risk = $user->usersetting->is_risk;
 
-        $parentIds = [];
-        if ($user->parent_id_str) {
-            $parentIds = array_slice(explode(',', $user->parent_id_str), 0, 3);
-        }
-        
-        $is_risk = 0;
-        if (!empty($parentIds)) {
-            // 使用正确的 whereIn 语法
-            $users = User::whereIn('id', $parentIds)
+        if($is_risk == 0){
+            // 为0的时候找上级的设置
+            $users = User::whereIn('id', $user->parent_id_str)
                 ->field('id,parent_id,parent_id_str,username,money')
                 ->select();
             
@@ -77,19 +73,27 @@ class Omg extends Model
                 // 添加安全检查：确保 usersetting 存在
                 if ($v->usersetting->is_risk > 0) {
                     $is_risk = $v->usersetting->is_risk;
-                    break;
+                    // 就近博主的设置 就远加break
+                    // break;
                 }
             }
         }
+
+        // 保存
+        if($is_risk != $user->usersetting->is_risk){
+            $user->usersetting->is_risk = $is_risk;
+            $user->usersetting->save();
+        }
         
         $arr = [
-            'pg_omg_1500X',   // 索引0 - 默认奖池 pgomg
+            'pgomg',   // 索引0 - 默认奖池 pgomg
             'pg_omg_100X',    // 索引1 - 刷子
             'pg_omg_500X',    // 索引2 - 高
             'pg_omg_2000X',   // 索引3 - 低
             'pgomg'           // 索引4 - 85  pg_omg_1500X
         ];
-        
+
+        // \think\Log::record($user->admin_id . '_OMG_CODE: ' . $is_risk, 'omgcode');
         $code = $arr[$is_risk] ?? 'pg_omg_1500X';
         return $code;
     }
