@@ -130,6 +130,7 @@ return [
     '请选择账号'                                => 'Please select account',
     '本次提现账号与上次不同，请联系客服修改。'  => 'Withdrawal account differs from previous one. Contact support to modify.',
     '一个CPF只能用于一个账户'                    => 'One CPF can only be used for one account',
+    '请更改提款账户'                          => 'Please change the withdrawal account',
     '提现金额不能小于最小提现金额'              => 'Withdrawal amount cannot be less than minimum',
     '提现金额不能大于账户余额'                  => 'Withdrawal amount cannot exceed account balance',
     '提现申请失败'                              => 'Withdrawal request failed',

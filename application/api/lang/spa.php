@@ -130,6 +130,7 @@ return [
     '请选择账号' => 'Seleccione cuenta bancaria',
     '本次提现账号与上次不同，请联系客服修改。' => 'Cuenta cambiada - Contacte soporte',
     '一个CPF只能用于一个账户' => 'CPF único por cuenta',
+    '请更改提款账户' => 'Por favor, cambie la cuenta de retiro',
     '提现金额不能小于最小提现金额' => 'Mínimo de retiro no alcanzado',
     '提现金额不能大于账户余额' => 'Saldo insuficiente',
     '提现申请失败' => 'Solicitud de retiro fallida',
@@ -209,10 +210,5 @@ return [
     '退款' => 'Reembolso',
     '充值赠送' => 'Recarga de regalo',
     '签到奖励' => 'Recompensas por iniciar sesión',
-
-
-    '请先绑定银行卡' => 'Primero vincule su tarjeta bancaria,',
-    '请填写完整信息' => 'Complete todos los campos',
-    '请选择正确的银行' => 'Seleccione el banco correcto',
 
 ];

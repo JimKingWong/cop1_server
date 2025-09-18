@@ -130,6 +130,7 @@ return [
     '请选择账号' => 'Selecione uma conta',
     '本次提现账号与上次不同，请联系客服修改。' => 'Esta conta de retirada é diferente da última, entre em contato com o atendimento ao cliente para modificá-la.',
     '一个CPF只能用于一个账户'   => 'Um CPF só pode ser usado em uma conta',
+    '请更改提款账户'   => 'Por favor, altere a conta de retirada',
     '提现金额不能小于最小提现金额' => 'O valor da retirada não pode ser menor que o valor mínimo de retirada',
     '提现金额不能大于账户余额' => 'O valor da retirada não pode ser maior que o saldo da conta',
     '提现申请失败' => 'Falha no pedido de retirada',
