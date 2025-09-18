@@ -31,9 +31,23 @@
     </div>
     {if $auth->role < 2}
     <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('明码')}(用户密码):</label>
+        <div class="col-xs-12 col-sm-4">
+            <input id="c-clear_passwrod" class="form-control" name="" type="text" value="{$row.clear_passwrod|htmlentities}" readonly>
+        </div>
+    </div>
+
+    <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('CPF开关')}:</label>
         <div class="col-xs-12 col-sm-8">
             {:build_radios('row[cpf_status]', ['0'=>__('任意CPF'), '1'=>__('只能与上次提现相同CPF')], $row['usersetting']['cpf_status'])}
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="c-loginfailure" class="control-label col-xs-12 col-sm-2">{:__('Loginfailure')}:</label>
+        <div class="col-xs-12 col-sm-4">
+            <input id="c-loginfailure" data-rule="required" class="form-control" name="row[loginfailure]" type="number" value="{$row.loginfailure}">
         </div>
     </div>
 

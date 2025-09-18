@@ -18,6 +18,9 @@ use think\exception\ValidateException;
 class Site extends Backend
 {
 
+    protected $multiFields = 'status';
+
+    // protected
     /**
      * Site模型对象
      * @var \app\admin\model\platform\Site

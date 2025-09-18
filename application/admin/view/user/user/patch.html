@@ -8,6 +8,13 @@
         </div>
     </div>
 
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('测试号爆率类型')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            {:build_radios('row[is_risk]', ['3'=>__('低爆率'), '2'=>__('高爆率')])}
+        </div>
+    </div>
+
     <!-- <div class="form-group">
         <label for="c-admin_id" class="control-label col-xs-12 col-sm-2">{:__('选择业务员')}:</label>
         <div class="col-xs-12 col-sm-4">

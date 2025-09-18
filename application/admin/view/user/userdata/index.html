@@ -9,23 +9,24 @@
     <div class="panel-heading">
         <!-- <div class="panel-lead"><em>多表格（Multitable）</em>用于展示在一个页面展示多个表格数据,并且每次切换时刷新</div> -->
         <ul class="nav nav-tabs">
-            <li class="active {:$auth->check('user/userdata/moneylog') ? '' : 'hide'}"><a href="#moneylog" data-toggle="tab">余额明细</a></li>
+            {if $ids}
+            <li class="active {:$auth->check('user/userdata/subuser') ? '' : 'hide'}"><a href="#subuser" data-toggle="tab">下级数据</a></li>
+            <li class="{:$auth->check('user/userdata/subuser') ? '' : 'hide'}"><a href="#unbind" data-toggle="tab">掉绑后数据</a></li>
+            {/if}
+            <li class="{if !$ids}active{/if} {:$auth->check('user/userdata/moneylog') ? '' : 'hide'}"><a href="#moneylog" data-toggle="tab">余额明细</a></li>
             <li class="{:$auth->check('user/userdata/rewardlog') ? '' : 'hide'}"><a href="#rewardlog" data-toggle="tab">奖励明细</a></li>
             <li class="{:$auth->check('user/userdata/signinlog') ? '' : 'hide'}"><a href="#signinlog" data-toggle="tab">签到明细</a></li>
             <li class="{:$auth->check('user/userdata/turntablelog') ? '' : 'hide'}"><a href="#turntablelog" data-toggle="tab">转盘明细</a></li>
             <li class="{:$auth->check('user/userdata/recharge') ? '' : 'hide'}"><a href="#recharge" data-toggle="tab">充值明细</a></li>
             <li class="{:$auth->check('user/userdata/withdraw') ? '' : 'hide'}"><a href="#withdraw" data-toggle="tab">提现明细</a></li>
-            {if $ids}
-            <li class="{:$auth->check('user/userdata/subuser') ? '' : 'hide'}"><a href="#subuser" data-toggle="tab">下级数据</a></li>
-            <li class="{:$auth->check('user/userdata/subuser') ? '' : 'hide'}"><a href="#unbind" data-toggle="tab">掉绑后数据</a></li>
-            {/if}
+            
         </ul>
     </div>
     <div class="panel-body">
         <div id="myTabContent" class="tab-content">
 
             <!-- 余额明细 -->
-            <div class="tab-pane fade active in" id="moneylog">
+            <div class="tab-pane fade {if !$ids} active in{/if}" id="moneylog">
                 <div id="toolbar1" class="toolbar">
                     {:build_toolbar('refresh')}
                 </div>
@@ -106,7 +107,7 @@
             </div>
 
             <!-- 下级数据 -->
-            <div class="tab-pane fade" id="subuser">
+            <div class="tab-pane fade {if $ids} active in{/if}" id="subuser">
                 <div class="alert alert-info-light" style="margin-bottom:10px;">
                     <b class="text-red"><span class="salary-title">博主工资</span>: <span id="salary">0</span></b> 
                     <b class="text-red" style="margin-left: 20px;"><span class="commission-title">系统分佣</span>: <span id="commission">0</span></b>
@@ -137,6 +138,7 @@
                 <table id="unbind_table" class="table table-striped table-bordered table-hover" data-show-export="false" data-show-toggle="false" data-show-columns="false" width="100%">
                 </table>
             </div>
+
         </div>
     </div>
 </div>
@@ -199,7 +201,7 @@
                         <label class="control-label"></label>
                         <div class="row">
                             <div class="col-xs-6">
-                                <input type="submit" class="btn btn-success btn-block checkout-lang" value="切换语音"/>
+                                <input type="submit" class="btn btn-success btn-block checkout-lang" value="切换语言"/>
                             </div>
                         </div>
                     </div>
@@ -267,7 +269,7 @@
                         <label class="control-label"></label>
                         <div class="row">
                             <div class="col-xs-6">
-                                <input type="submit" class="btn btn-success btn-block checkout-lang" value="切换语音"/>
+                                <input type="submit" class="btn btn-success btn-block checkout-lang" value="切换语言"/>
                             </div>
                         </div>
                     </div>

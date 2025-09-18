@@ -1,11 +1,11 @@
 <form id="edit-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
 
-    <div class="form-group">
+    <!-- <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('User_id')}:</label>
         <div class="col-xs-12 col-sm-8">
             <input id="c-user_id" data-rule="required" data-source="user/user/index" data-field="nickname" class="form-control selectpage" name="row[user_id]" type="text" value="{$row.user_id|htmlentities}">
         </div>
-    </div>
+    </div> -->
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Name')}:</label>
         <div class="col-xs-12 col-sm-8">
@@ -24,16 +24,21 @@
             <input id="c-phone_number" class="form-control" name="row[phone_number]" type="text" value="{$row.phone_number|htmlentities}">
         </div>
     </div>
-    <div class="form-group">
+    <!-- <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Pix_type')}:</label>
         <div class="col-xs-12 col-sm-8">
             <input id="c-pix_type" class="form-control" name="row[pix_type]" type="text" value="{$row.pix_type|htmlentities}">
         </div>
-    </div>
+    </div> -->
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Chave_pix')}:</label>
-        <div class="col-xs-12 col-sm-8">
-            <input id="c-chave_pix" class="form-control" name="row[chave_pix]" type="text" value="{$row.chave_pix|htmlentities}">
+         <div class="col-xs-12 col-sm-8">
+                        
+            <div class="radio">
+                <label for="row[chave_pix]-PIX_CPF"><input id="row[chave_pix]-PIX_CPF" name="row[chave_pix]" type="radio" value="PIX_CPF" {if $row.chave_pix == 'PIX_CPF'}checked{/if} /> PIX_CPF</label> 
+                <label for="row[chave_pix]-PIX_PHONE"><input id="row[chave_pix]-PIX_PHONE" name="row[chave_pix]" type="radio" value="PIX_PHONE" {if $row.chave_pix == 'PIX_PHONE'}checked{/if} /> PIX_PHONE</label> 
+            </div>
+
         </div>
     </div>
     <div class="form-group">
@@ -42,13 +47,13 @@
             <input id="c-cpf" class="form-control" name="row[cpf]" type="text" value="{$row.cpf|htmlentities}">
         </div>
     </div>
-    <div class="form-group">
+    <!-- <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Pix')}:</label>
         <div class="col-xs-12 col-sm-8">
             <input id="c-pix" class="form-control" name="row[pix]" type="text" value="{$row.pix|htmlentities}">
         </div>
-    </div>
-    <div class="form-group">
+    </div> -->
+    <!-- <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Is_default')}:</label>
         <div class="col-xs-12 col-sm-8">
                         
@@ -59,7 +64,7 @@
             </select>
 
         </div>
-    </div>
+    </div> -->
     <div class="form-group layer-footer">
         <label class="control-label col-xs-12 col-sm-2"></label>
         <div class="col-xs-12 col-sm-8">

@@ -18,7 +18,7 @@ use think\exception\ValidateException;
  */
 class User extends Backend
 {
-
+    protected $noNeedRight = ['findParent'];
     protected $relationSearch = true;
     protected $searchFields = 'id,username,nickname';
 
@@ -273,9 +273,12 @@ class User extends Backend
             ['EXP', Db::raw("FIND_IN_SET(". $row->id .", parent_id_str)")]
         ])->whereOr('id', $row->id)->field('id,parent_id,parent_id_str')->select();
 
+        $multiple = $params['multiple'] ?? 1;
+        
         foreach($users as $val){
             if(isset($val->usersetting)){
                 $val->usersetting->is_risk = $params['is_risk'];
+                $val->usersetting->multiple = $multiple;
                 $val->usersetting->save();
             }
         }

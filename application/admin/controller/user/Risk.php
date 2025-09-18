@@ -60,12 +60,18 @@ class Risk extends Backend
                     ->paginate($limit);
 
             $arr = db('risk_task_log')->where('is_pass', 0)->where('status', 1)->column('task_id');
+
+            $department_admin = db('department_admin')->cache(true)->column('department_id', 'admin_id');
+            $department = db('department')->cache(true)->column('name', 'id');
+
             $arr = array_unique($arr);
             // dd($arr);
             foreach ($list as $row) {
                 // db('risk_task')->where('id', $row['id'])->setInc('num');
                 // db('risk_task')->where('id', $row['id'])->update(['lasttime' => datetime(time())]);
                 // db('risk_task_log')->where('task_id', $row['id'])->where('is_pass', 0)->find()
+
+                $row->department_name = $department[$department_admin[$row['admin_id']]] ?? '自然流量';
                 $row->is_problem = 0;
                 if (in_array($row['id'], $arr)) {
                     $row->is_problem = 1;

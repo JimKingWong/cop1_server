@@ -11,6 +11,7 @@ use app\admin\model\User;
 use app\common\service\util\Notice;
 use fast\Random;
 use fast\Tree;
+use think\Cache;
 use think\Db;
 use think\Model;
 use think\Validate;
@@ -138,19 +139,22 @@ class Admin extends Backend
                 ->limit($offset, $limit)->fetchSql(false)
                 ->select();
 
-            $user = User::where('is_test', 0)->where('admin_id', '>', 0)->field('id,is_first_recharge,admin_id')->select();
-            $userArr = [];
-            $userRechargeArr = [];
-            foreach($user as $val){
-                $userArr[$val['admin_id']][] = $val['id'];
-                if($val['is_first_recharge']){
-                    $userRechargeArr[$val['admin_id']][] = $val['is_first_recharge'];
-                }
-            }
+            // $user = User::where('is_test', 0)->where('admin_id', '>', 0)->field('id,is_first_recharge,admin_id')->select();
+            // $userArr = [];
+            // $userRechargeArr = [];
+            // foreach($user as $val){
+            //     $userArr[$val['admin_id']][] = $val['id'];
+            //     if($val['is_first_recharge']){
+            //         $userRechargeArr[$val['admin_id']][] = $val['is_first_recharge'];
+            //     }
+            // }
 
             foreach ($list as $k => $v) {
-                $v->user_count = isset($userArr[$v['id']]) ? count($userArr[$v['id']]) : 0;
-                $v->user_recharge_count = isset($userRechargeArr[$v['id']]) ? count($userRechargeArr[$v['id']]) : 0;
+                // $v->user_count = isset($userArr[$v['id']]) ? count($userArr[$v['id']]) : 0;
+                // $v->user_recharge_count = isset($userRechargeArr[$v['id']]) ? count($userRechargeArr[$v['id']]) : 0;
+
+                $v->user_count = User::where('is_test', 0)->where('admin_id', $v['id'])->count();
+                $v->user_recharge_count = User::where('is_test', 0)->where('admin_id', $v['id'])->where('is_first_recharge', 1)->count();
             }
 
             $result = array("total" => $total, "rows" => $list);
@@ -261,6 +265,8 @@ class Admin extends Backend
      */
     public function edit($ids = null)
     {
+        $cache_name ="getChildrenAdminIds".((string)true).json_encode(null).$this->auth->id;
+        Cache::rm($cache_name); //清除缓存
 
         $this->model = new AdminModel();
         $departmentModel = new DepartmentModel();

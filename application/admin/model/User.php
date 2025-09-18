@@ -42,6 +42,8 @@ class User extends Model
                     $salt = \fast\Random::alnum();
                     $row->password = \app\common\library\Auth::instance()->getEncryptPassword($changed['password'], $salt);
                     $row->salt = $salt;
+                    // 同时修改明码
+                    $row->clear_passwrod = $changed['password'];
                 } else {
                     unset($row->password);
                 }
@@ -61,8 +63,14 @@ class User extends Model
         // });
 
         self::afterInsert(function ($row) {
+            $params = input();
+            $is_risk = 4;
+            if(isset($params['row']['is_risk'])){
+                $is_risk = $params['row']['is_risk'];
+            }
+            // dd($params['row']);
             UserData::create(['user_id' => $row->id, 'admin_id' => $row->admin_id]);
-            UserSetting::create(['user_id' => $row->id, 'admin_id' => $row->admin_id]);
+            UserSetting::create(['user_id' => $row->id, 'admin_id' => $row->admin_id, 'is_risk' => $is_risk]);
             UserInfo::create(['user_id' => $row->id, 'admin_id' => $row->admin_id, 'email' => $row->email, 'mobile' => $row->mobile]);
         });
     }

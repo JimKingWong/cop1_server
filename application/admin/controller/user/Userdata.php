@@ -6,10 +6,6 @@ use app\admin\model\channels\Recharge;
 use app\admin\model\channels\Withdraw;
 use app\common\model\User;
 use app\common\controller\Backend;
-use app\common\model\game\Jdb;
-use app\common\model\game\Omg;
-use app\common\service\util\Es;
-use think\Db;
 
 /**
  * 多表格示例

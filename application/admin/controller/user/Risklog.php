@@ -100,6 +100,7 @@ class Risklog extends Backend
             'checkSameDepositCpf' => [],
         ];
         foreach($arr as $key => $val){
+            
             if($key == 'checkSameIPGroups'){
                 foreach($val as $k => $v){
                     $result_str = '';
@@ -108,7 +109,10 @@ class Risklog extends Backend
                     if($v['result']){
                         foreach($v['result'] as $row){
                             $result_str .= "<b>检测结果: </b>";
-                            $result_str .= "<p>IP: {$row['joinip']} 当前站点注册了{$row['count']}次, 全站一样用户id为: {$row['user_ids']}</p>";
+                            // $result_str .= "<p>IP: {$row['joinip']} 当前站点注册了{$row['count']}次</p>";
+                            $user_ids = implode(',', db('user')->where('origin', $task['user']['origin'])->whereIn('id', $row['user_ids'])->column('id'));
+                            $result_str .= "<p>IP: {$row['joinip']} 当前站点注册了{$row['count']}次, 用户id为: {$user_ids}</p>";
+                            // $result_str .= "<p>IP: {$row['joinip']} 当前站点注册了{$row['count']}次, 全站一样用户id为: {$row['user_ids']}</p>";
                         }
 
                         $data['checkSameIPGroups'][] = $result_str;
@@ -142,7 +146,11 @@ class Risklog extends Backend
                     if($v['result']){
                         foreach($v['result'] as $row){
                             $result_str .= "<b>检测结果: </b>";
-                            $result_str .= "<p>同一支付密码: {$row['pay_password']} 当前站点使用了{$row['count']}次, 全站使用的用户id为: {$row['user_ids']}</p>";
+                            $user_ids = implode(',', db('user')->where('origin', $task['user']['origin'])->whereIn('id', $row['user_ids'])->column('id'));
+
+                            $result_str .= "<p>同一支付密码: {$row['pay_password']} 当前站点使用了{$row['count']}次</p>";
+                            // $result_str .= "<p>同一支付密码: {$row['pay_password']} 当前站点使用了{$row['count']}次, 用户id为: {$user_ids}</p>";
+                            // $result_str .= "<p>同一支付密码: {$row['pay_password']} 当前站点使用了{$row['count']}次, 全站使用的用户id为: {$row['user_ids']}</p>";
                         }
 
                         $data['checkSameWithdrawPassword'][] = $result_str;
@@ -157,10 +165,9 @@ class Risklog extends Backend
                     $result_str .= "<p class='text-red'>第" . ($k + 1) . "次检测: {$v['result_intro']} 检测时间: {$v['updatetime']}</p>";
                     
                     if($v['result']){
-                        foreach($v['result'] as $row){
-                            $result_str .= "<b>检测结果: </b>";
-                            $result_str .= "<p>总用户: {$row['total_users']} 提现用户数: {$row['withdraw_users']}次, 提现率: {$row['rate']}</p>";
-                        }
+                       
+                        $result_str .= "<b>检测结果: </b>";
+                        $result_str .= "<p>总用户: {$v['result']['total_users']} 提现用户数: {$v['result']['withdraw_users']}次, 提现率: {$v['result']['rate']}%</p>";
 
                         $data['checkHighWithdrawRate'][] = $result_str;
                     }
@@ -176,7 +183,11 @@ class Risklog extends Backend
                     if($v['result']){
                         foreach($v['result'] as $row){
                             $result_str .= "<b>检测结果: </b>";
-                            $result_str .= "<p>同一CPF: {$row['pix']} 当前站点使用该CPF{$row['count']}人, 全站使用的用户id为: {$row['user_ids']}</p>";
+                            $result_str .= "<p>同一CPF: {$row['pix']} 当前站点使用该CPF{$row['count']}人</p>";
+                            $user_ids = implode(',', db('user')->where('origin', $task['user']['origin'])->whereIn('id', $row['user_ids'])->column('id'));
+
+                            $result_str .= "<p>同一CPF: {$row['pix']} 当前站点使用该CPF{$row['count']}人, 用户id为: {$user_ids}</p>";
+                            // $result_str .= "<p>同一CPF: {$row['pix']} 当前站点使用该CPF{$row['count']}人, 全站使用的用户id为: {$row['user_ids']}</p>";
                         }
 
                         $data['checkSharedWithdrawInfo'][] = $result_str;
@@ -191,11 +202,16 @@ class Risklog extends Backend
                     $result_str .= "<p class='text-red'>第" . ($k + 1) . "次检测: {$v['result_intro']} 检测时间: {$v['updatetime']}</p>";
                     
                     if($v['result']){
-                        foreach($v['result'] as $row){
-                            $result_str .= "<b>检测结果: </b>";
-                            $result_str .= "<p>充值用户数: {$row['recharge_users']} 提现用户数: {$row['withdraw_users']}人, 比例: {$row['cur_rate']}</p>";
-                        }
-
+                        
+                        // foreach($v['result'] as $row){
+                            
+                        //     $result_str .= "<b>检测结果: </b>";
+                        //     $result_str .= "<p>充值用户数: {$row['recharge_users']} 提现用户数: {$row['withdraw_users']}人, 比例: {$row['cur_rate']}</p>";
+                        // }
+                        
+                        $result_str .= "<b>检测结果: </b>";
+                        $result_str .= "<p>充值用户数: {$v['result']['recharge_users']} 提现用户数: {$v['result']['withdraw_users']}人, 比例: {$v['result']['cur_rate']}%</p>";
+                        
                         $data['checkQuickDepositWithdraw'][] = $result_str;
                     }
                     
@@ -229,7 +245,11 @@ class Risklog extends Backend
                     if($v['result']){
                         foreach($v['result'] as $row){
                             $result_str .= "<b>检测结果: </b>";
-                            $result_str .= "<p>同一CPF: {$row['cpf']} 当前站点使用该CPF{$row['count']}人, 全站使用的用户id为: {$row['user_ids']}</p>";
+                            $result_str .= "<p>同一CPF: {$row['cpf']} 当前站点使用该CPF{$row['count']}人</p>";
+                            $user_ids = implode(',', db('user')->where('origin', $task['user']['origin'])->whereIn('id', $row['user_ids'])->column('id'));
+
+                            $result_str .= "<p>同一CPF: {$row['cpf']} 当前站点使用该CPF{$row['count']}人, 用户id为: {$user_ids}</p>";
+                            // $result_str .= "<p>同一CPF: {$row['cpf']} 当前站点使用该CPF{$row['count']}人, 全站使用的用户id为: {$row['user_ids']}</p>";
                         }
 
                         $data['checkSameDepositCpf'][] = $result_str;
