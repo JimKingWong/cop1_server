@@ -184,4 +184,15 @@ class User extends Api
         $service = new \app\common\service\User();
         $service->rank();
     }
+    
+    /**
+     * 添加银行卡
+     */
+    public function addbank()
+    {
+        $service = new \app\common\service\User();
+        $service->addbank();
+    }
+    
+    
 }

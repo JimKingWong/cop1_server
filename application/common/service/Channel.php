@@ -263,7 +263,7 @@ class Channel
         $params = [
             'countryId'                 => $config['countryId'],
             'currency'                  => $config['currency'],
-            'payProduct'                => $order['channel_code'],
+            'payProduct'                => $order['channel_code'] ?: '12',
             'merId'                     => $config['merchantId'],
             'merOrderNo'                => $order['order_no'],
             'orderAmount'               => $order['money'], 
@@ -279,15 +279,16 @@ class Channel
             'account'                   => $order['account'],
             'bankId'                    => $order['bank_code'],
             'bankName'                  => $order['bank_name'],
-            'checkOut'                  => true,
             'description'               => 'Hermes Withdraw',
             'callbackUrl'               => $domain . $config['callback'],
         ];
         
         // 获取sign
-        $data['sign'] = Sign::supeSign($params, $config['secret']);
-        // dd($data);
+       // 获取sign
+        $params['sign'] = Sign::supeSign($params, $config['secret']);
 
+        ksort($params);
+        // dd($params);
         // 设置请求头
         $header = [
             CURLOPT_HTTPHEADER  => [
@@ -296,8 +297,9 @@ class Channel
         ];
 
         // 发送POST请求
-        $res = Http::post($apiUrl, json_encode($data), $header);
+        $res = Http::post($apiUrl, json_encode($params), $header);
         $res = json_decode($res, true);
+        // dd($res);
         
         $code = 0;
         $msg = $res['msg'] ?? '未知错误';
