@@ -184,7 +184,7 @@ class Channel
         $params = [
             'countryId'                 => $config['countryId'],
             'currency'                  => $config['currency'],
-            'payProduct'                => $order['channel_code'],
+            'payProduct'                => (string)$order['channel_code'],
             'merId'                     => $config['merchantId'],
             'merOrderNo'                => $order['order_no'],
             'orderAmount'               => $order['money'], 
@@ -197,6 +197,7 @@ class Channel
             'description'               => 'Hermes Recharge',
             'callbackUrl'               => $domain . $config['callback'],
         ];
+        // dd($params);
         
         // 获取sign
         $params['sign'] = Sign::supeSign($params, $config['secret']);
@@ -217,7 +218,7 @@ class Channel
 
         // 成功返回支付链接
         $payUrl = '';
-        if($res['code'] == 200){
+        if(isset($res['code']) && $res['code'] == 200){
             $payUrl = $res['data']['url'];
         }
         return $payUrl;

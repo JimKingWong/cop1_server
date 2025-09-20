@@ -166,7 +166,7 @@ class Recharge extends Base
         // 支付方式
         $paymethod_config = $channel->paymethod_config;
         $paymethod_config_keys = array_keys($paymethod_config);
-        
+        // dd($paymethod_config);
         if(!in_array($channel_code, $paymethod_config_keys)){
             // 支付方式不存在
             $this->error(__('充值配置不存在'));
@@ -243,7 +243,7 @@ class Recharge extends Base
         $method = trim(strtolower($channel->name)) . 'Recharge';
         
         $res = ServiceChannel::$method($config, $orderData);
-
+        // dd($res);
         if(!$res){
             // 调用支付通道失败
             $this->error(__('调用支付渠道失败'));
