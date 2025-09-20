@@ -29,7 +29,7 @@
                         function updateBrazilTime() {
                             const bxtimeElement = document.getElementById("bxtime");
                             const brazilTime = new Date().toLocaleString("chinese", {
-                                timeZone: "America/Sao_Paulo",
+                                timeZone: "America/Bogota",
                                 year: "numeric",
                                 month: "2-digit",
                                 day: "2-digit",
@@ -38,7 +38,7 @@
                                 second: "2-digit",
                                 hour12:false
                             });
-                            bxtimeElement.textContent = "{:__('Brazil time')}" +":" + brazilTime;
+                            bxtimeElement.textContent = "哥伦比亚" +":" + brazilTime;
                         }
                 
                         // 每秒更新一次时间
