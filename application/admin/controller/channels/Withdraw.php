@@ -65,7 +65,7 @@ class Withdraw extends Backend
 
             $admin = db('admin')->where('role', '>', 2)->column('nickname', 'id');
             $query = $this->model
-                    ->with(['user','wallet'])
+                    ->with(['user'])
                     ->where($where);
 
             $list = $query->order($sort, $order)
@@ -84,17 +84,17 @@ class Withdraw extends Backend
 				$row->getRelation('wallet')->visible(['name', 'area_code','phone_number','pix_type','chave_pix','cpf','pix','is_default']);
             }
             
-            $total_withdraw = $query->with(['user','wallet'])->where($where)->where('withdraw.status', '1')->sum('withdraw.money'); // 总提现金额
-            $total_withdraw_num = $query->with(['user','wallet'])->where($where)->count(); // 总提现笔数
-            $success_withdraw = $query->with(['user','wallet'])->where($where)->where('withdraw.status', '1')->count(); // 成功提现笔数
+            $total_withdraw = $query->with(['user'])->where($where)->where('withdraw.status', '1')->sum('withdraw.money'); // 总提现金额
+            $total_withdraw_num = $query->with(['user'])->where($where)->count(); // 总提现笔数
+            $success_withdraw = $query->with(['user'])->where($where)->where('withdraw.status', '1')->count(); // 成功提现笔数
 
-            $today_withdraw = $query->with(['user','wallet'])->where($where)->where('withdraw.status', '1')->whereTime('paytime', 'today')->sum('withdraw.money'); // 今日提现金额
-            $today_withdraw_num = $query->with(['user','wallet'])->where($where)->whereTime('withdraw.createtime', 'today')->count(); // 今日提现笔数
-            $today_success_withdraw = $query->with(['user','wallet'])->where($where)->where('withdraw.status', '1')->whereTime('paytime', 'today')->count(); // 今日成功提现笔数
+            $today_withdraw = $query->with(['user'])->where($where)->where('withdraw.status', '1')->whereTime('paytime', 'today')->sum('withdraw.money'); // 今日提现金额
+            $today_withdraw_num = $query->with(['user'])->where($where)->whereTime('withdraw.createtime', 'today')->count(); // 今日提现笔数
+            $today_success_withdraw = $query->with(['user'])->where($where)->where('withdraw.status', '1')->whereTime('paytime', 'today')->count(); // 今日成功提现笔数
 
-            $yestoday_withdraw = $query->with(['user','wallet'])->where($where)->where('withdraw.status', '1')->whereTime('paytime', 'yesterday')->sum('withdraw.money'); // 昨日提现金额
-            $yestoday_withdraw_num = $query->with(['user','wallet'])->where($where)->whereTime('withdraw.createtime', 'yesterday')->count(); // 昨日提现笔数
-            $yestoday_success_withdraw = $query->with(['user','wallet'])->where($where)->where('withdraw.status', '1')->whereTime('paytime', 'yesterday')->count(); // 昨日成功提现笔数
+            $yestoday_withdraw = $query->with(['user'])->where($where)->where('withdraw.status', '1')->whereTime('paytime', 'yesterday')->sum('withdraw.money'); // 昨日提现金额
+            $yestoday_withdraw_num = $query->with(['user'])->where($where)->whereTime('withdraw.createtime', 'yesterday')->count(); // 昨日提现笔数
+            $yestoday_success_withdraw = $query->with(['user'])->where($where)->where('withdraw.status', '1')->whereTime('paytime', 'yesterday')->count(); // 昨日成功提现笔数
 
 
             // $total_withdraw = 0; // 总提现金额
