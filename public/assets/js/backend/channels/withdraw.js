@@ -59,26 +59,26 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                         </div>`;
                             },
                         },
-                        {
-                            field: 'wallet', 
-                            title: __('账号信息'),
-                            operate: false,
-                            formatter: function (value, row, index) {
-                                return `<div class="boxs">
-                                            <div class="boxs-info">
-                                                <div><span>名字: </span>${row.bank.name}</div>
-                                                <div><span>手机号: </span>${row.bank.area_code} ${row.bank.phone_number}</div>
-                                                <div><span>银行编码: </span>${row.bank.bank_code}</div>
-                                                <div><span>银行名字: </span>${row.bank.bank_name}</div>
-                                                <div><span>银行账号: </span>${row.bank.bank_account}</div>
-                                            </div>
-                                        </div>`;
-                            },
-                        },
+                        // {
+                        //     field: 'wallet', 
+                        //     title: __('账号信息'),
+                        //     operate: false,
+                        //     formatter: function (value, row, index) {
+                        //         return `<div class="boxs">
+                        //                     <div class="boxs-info">
+                        //                         <div><span>名字: </span>${row.bank.name}</div>
+                        //                         <div><span>手机号: </span>${row.bank.area_code} ${row.bank.phone_number}</div>
+                        //                         <div><span>银行编码: </span>${row.bank.bank_code}</div>
+                        //                         <div><span>银行名字: </span>${row.bank.bank_name}</div>
+                        //                         <div><span>银行账号: </span>${row.bank.bank_account}</div>
+                        //                     </div>
+                        //                 </div>`;
+                        //     },
+                        // },
                         {field: 'user.role', title: __('用户类型'), searchList: {"0":__('会员'),"1":__('博主')}, formatter: Table.api.formatter.status},
-                        {field: 'wallet.phone_number', title: __('Wallet.phone_number'), operate: 'LIKE', visible: false},
-                        {field: 'wallet.pix', title: __('Wallet.cpf'), operate: 'LIKE', table: table, class: 'autocontent', formatter: Table.api.formatter.content, visible: false},
-                        {field: 'wallet.chave_pix', title: __('Wallet.chave_pix'), searchList: {"PIX_CPF":__('PIX_CPF'),"PIX_PHONE":__('PIX_PHONE'),"PIX_CNPJ":__('PIX_CNPJ')}, visible: false},
+                        // {field: 'wallet.phone_number', title: __('Wallet.phone_number'), operate: 'LIKE', visible: false},
+                        // {field: 'wallet.pix', title: __('Wallet.cpf'), operate: 'LIKE', table: table, class: 'autocontent', formatter: Table.api.formatter.content, visible: false},
+                        // {field: 'wallet.chave_pix', title: __('Wallet.chave_pix'), searchList: {"PIX_CPF":__('PIX_CPF'),"PIX_PHONE":__('PIX_PHONE'),"PIX_CNPJ":__('PIX_CNPJ')}, visible: false},
                         {field: 'money', title: __('Money'), operate:'BETWEEN', sortable: true},
                         {field: 'real_money', title: __('Real_money'), operate: false},
                         {field: 'fee', title: __('Fee'), operate: false},

@@ -81,7 +81,6 @@ class Withdraw extends Backend
                 $row->user_total_bet = $row->user->userdata->total_bet;
 
 				$row->getRelation('user')->visible(['username', 'money', 'origin', 'role', 'remark']);
-				$row->getRelation('wallet')->visible(['name', 'area_code','phone_number','pix_type','chave_pix','cpf','pix','is_default']);
             }
             
             $total_withdraw = $query->with(['user'])->where($where)->where('withdraw.status', '1')->sum('withdraw.money'); // 总提现金额
