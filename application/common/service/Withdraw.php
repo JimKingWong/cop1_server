@@ -273,6 +273,9 @@ class Withdraw extends Base
             return '查无此单'; 
         }
 
+        // 补上平台订单号
+        $order->transaction_id = $params['supefinaOrderId'] ?? '';
+
         // 获取配置
         $config = $order->channel->withdraw_config;
 

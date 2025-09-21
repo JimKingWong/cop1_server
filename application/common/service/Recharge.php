@@ -276,8 +276,8 @@ class Recharge extends Base
             return '查无此单'; 
         }
 
-        // 用户cpf补上
-        $order->cpf = $params['cpf'] ?? '';
+        // 平台单号补上
+        $order->transaction_id = $params['supefinaOrderId'] ?? '';
 
         // 获取配置
         $config = $order->channel->recharge_config;
@@ -316,9 +316,6 @@ class Recharge extends Base
             return '查无此单'; 
         }
 
-        // 用户cpf补上
-        $order->cpf = $params['cpf'] ?? '';
-
         // 获取配置
         $config = $order->channel->recharge_config;
 
@@ -355,9 +352,6 @@ class Recharge extends Base
             // 订单不存在
             return '查无此单'; 
         }
-
-        // 用户cpf补上
-        $order->cpf = $params['real_cpf'] ?? '';
 
         // 获取配置
         $config = $order->channel->recharge_config;
@@ -400,9 +394,6 @@ class Recharge extends Base
             return '查无此单'; 
         }
 
-        // 用户cpf补上
-        $order->cpf = $params['real_cpf'] ?? '';
-
         // 获取配置
         $config = $order->channel->recharge_config;
 
@@ -440,9 +431,6 @@ class Recharge extends Base
             // 订单不存在
             return 'fail'; 
         }
-
-        // 用户cpf补上
-        $order->cpf = $params['real_cpf'] ?? '';
 
         // 获取配置
         $config = $order->channel->recharge_config;
