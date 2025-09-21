@@ -43,10 +43,12 @@ class Platform extends Base
             $this->error(__('请先选择游戏'));
         }
 
-        $language = $this->language;
-        if($language == 'spa'){
-            $language = 'es'; // 西班牙语
-        }
+        // $language = $this->language;
+        // if($language == 'spa'){
+        //     $language = 'es'; // 西班牙语
+        // }
+
+        $language = 'es'; // 西班牙语
 
         // 游戏id
         $game_id = $game->game_id;
