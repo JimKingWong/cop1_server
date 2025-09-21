@@ -64,7 +64,7 @@ class Platform extends Base
             "token"     => $token,
             "nick"      => $this->auth->nickname,
             "lang"      => $language,
-            "cid"       => 8,
+            "cid"       => $this->config['cid'],
         ];
         // dd($data);
         $urlParams = ['trace_id' => $trace_id];
