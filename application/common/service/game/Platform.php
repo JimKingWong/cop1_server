@@ -64,7 +64,7 @@ class Platform extends Base
             "token"     => $token,
             "nick"      => $this->auth->nickname,
             "lang"      => $language,
-            "cid"       => $this->config['cid'],
+            "cid"       => (int)$this->config['cid'],
         ];
         // dd($data);
         $urlParams = ['trace_id' => $trace_id];
@@ -81,8 +81,9 @@ class Platform extends Base
             ]
         ];
         $res = Http::post($apiUrl, $jsonData, $header);
-        // dd($res);
+        
         $res = json_decode($res, true);
+        // dd($res);
         // 5. 根据code值返回结果
         if($res['code'] != 0){
             $this->error(__('请求失败'));
