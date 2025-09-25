@@ -65,11 +65,11 @@ class UserBank extends Model
         }else{
             $account = [
                 [
-                    'type' => 0,
+                    'type' => '00',
                     'name' => __('活期账户'),
                 ],
                 [
-                    'type' => 1,
+                    'type' => '01',
                     'name' => __('储蓄账户'),
                 ],
             ];
