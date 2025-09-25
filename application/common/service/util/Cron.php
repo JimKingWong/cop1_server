@@ -555,16 +555,21 @@ class Cron
 
             // 客损
             $omg_user_lost = 0;
+            
             foreach($omgGroupSearch as $val){
                 $omg_user_lost += $val['bet_amount_sum'] - $val['win_amount_sum'];
 
                 $bet_amount += $val['bet_amount_sum'];
                 $win_amount += $val['win_amount_sum'];
             }
-            if($bet_amount == 0){
+
+            $omg_bet_amount = $bet_amount;
+            $omg_win_amount = $win_amount;
+
+            if($omg_bet_amount == 0){
                 $omg_rtp = 0;
             } else {
-                $omg_rtp = round($win_amount / $bet_amount * 100, 2);
+                $omg_rtp = round($omg_win_amount / $omg_bet_amount * 100, 2);
             }
 
             // pg游戏数据
@@ -683,7 +688,7 @@ class Cron
             //     $pg_linshi_rtp = round($pg_linshi_win_amount / $pg_linshi_bet_amount * 100, 2);
             // }
 
-            echo 'OMG下注 ' . $bet_amount . ' 派彩 ' . $win_amount . ' 客损 ' . $omg_user_lost . "\n";
+            echo 'OMG下注 ' . $omg_bet_amount . ' 派彩 ' . $omg_win_amount . ' 客损 ' . $omg_user_lost . "\n";
             echo 'PG下注 ' . $pg_bet_amount . ' 派彩 ' . $pg_win_amount . ' 客损 ' . $pg_user_lost . "\n";
             echo 'PP下注 ' . $pp_bet_amount . ' 派彩 ' . $pp_win_amount . ' 客损 ' . $pp_user_lost . "\n";
             echo 'JILI下注 ' . $jili_bet_amount . ' 派彩 ' . $jili_win_amount . ' 客损 ' . $jili_user_lost . "\n";
@@ -751,7 +756,7 @@ class Cron
 
             $str = "==={$today}=== \n";
             $str .= "===HMS共推台-数据报表=== \n";
-            $str .= "OMG游戏: 下注 $bet_amount 派彩  $win_amount 客损 $omg_user_lost RTP: $omg_rtp%\n";
+            $str .= "OMG游戏: 下注 $omg_bet_amount 派彩  $omg_win_amount 客损 $omg_user_lost RTP: $omg_rtp%\n";
             $str .= "PG游戏: 下注 $pg_bet_amount  派彩 $pg_win_amount 客损 $pg_user_lost RTP: $pg_rtp%\n";
             $str .= "TADA游戏: 下注 $tada_bet_amount 派彩  $tada_win_amount 客损 $tada_user_lost RTP: $tada_rtp%\n";
             $str .= "JILI游戏: 下注 $jili_bet_amount 派彩  $jili_win_amount 客损 $jili_user_lost RTP: $jili_rtp%\n";
