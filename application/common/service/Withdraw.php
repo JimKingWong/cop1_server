@@ -83,7 +83,7 @@ class Withdraw extends Base
         // 钱包信息
         $user_bank = \app\common\model\UserBank::where('user_id', $user->id)->where('id', $user_bank_id)->find();
         if(!$user_bank){
-            $this->error(__('请先绑定银行卡'));
+            $this->error(__('请先添加个人银行信息'));
         }
 
         // 查询相同CPF账号的用户

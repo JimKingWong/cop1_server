@@ -211,4 +211,16 @@ return [
     '充值赠送' => 'Recarga de regalo',
     '签到奖励' => 'Recompensas por iniciar sesión',
 
+    '请先添加个人银行信息' => 'Por favor, agregue primero su información bancaria personal',
+    '身份证（CC/TI）' => 'CC/TI (Seleccione el tipo de identificación)',
+    '外国人身份证（CE）' => 'CE (Colombia Foreigner ID)',
+    '税号' => 'NIT（Número de Identificación Tributaria）',
+    '护照' => 'COLOMBIA_PASSPORT_ID(Passport)',
+    '离境证' => 'COLOMBIA_EXIT_ID(Exit Certificate)',
+    '军官证' => 'COLOMBIA_OFFICER_ID(Officer ID)',
+    '其他' => 'COLOMBIA_OTHER_ID(Other ID)',
+
+    '活期账户' => 'Cuenta corriente',
+    '储蓄账户' => 'Cuenta de ahorros',
+
 ];

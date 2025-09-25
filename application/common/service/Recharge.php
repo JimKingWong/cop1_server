@@ -201,7 +201,7 @@ class Recharge extends Base
 
         $user_bank = \app\common\model\UserBank::where('user_id', $user->id)->find();
         if(!$user_bank){
-            $this->error(__('请先绑定银行卡'));
+            $this->error(__('请先添加个人银行信息'));
         }
 
         // 获取站点信息
