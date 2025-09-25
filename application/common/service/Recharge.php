@@ -201,7 +201,7 @@ class Recharge extends Base
 
         $user_bank = \app\common\model\UserBank::where('user_id', $user->id)->find();
         if(!$user_bank){
-            $this->error(__('请先添加个人银行信息'));
+            // $this->error(__('请先添加个人银行信息'));
         }
 
         // 获取站点信息
@@ -224,12 +224,12 @@ class Recharge extends Base
             'user_id'             => $user->id,
             'channel_id'          => $channel_id,
             'channel_code'        => $channel_code,
-            'user_bank_id'        => $user_bank->id,
-            'name'                => $user_bank->name,
-            'email'               => $user_bank->email,    
-            'phone_number'        => $user_bank->phone_number,
-            'identityType'        => $user_bank->identityType,
-            'identityNo'          => $user_bank->identityNo,  
+            'user_bank_id'        => $user_bank->id ?? 0,
+            'name'                => $user_bank->name ?? '',
+            'email'               => $user_bank->email ?? '',    
+            'phone_number'        => $user_bank->phone_number ?? '',
+            'identityType'        => $user_bank->identityType ?? '',
+            'identityNo'          => $user_bank->identityNo ?? '',  
             'recharge_config_id'  => $recharge_config_id,
             'order_no'            => $order_no,
             'money'               => $money,
