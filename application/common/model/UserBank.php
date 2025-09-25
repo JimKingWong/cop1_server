@@ -32,19 +32,19 @@ class UserBank extends Model
         } else {
             $cert = [
                 [
-                    'type' => '00',
+                    'type' => 0,
                     'name' => __('身份证（CC/TI）'),
                 ],
                 [
-                    'type' => '01',
+                    'type' => 1,
                     'name' => __('外国人身份证（CE）'),
                 ],
                 [
-                    'type' => '02',
+                    'type' => 2,
                     'name' => __('税号'),
                 ],
                 [
-                    'type' => '03',
+                    'type' => 3,
                     'name' => __('护照'),
                 ],
             ];
@@ -65,11 +65,11 @@ class UserBank extends Model
         }else{
             $account = [
                 [
-                    'type' => '00',
+                    'type' => 0,
                     'name' => __('活期账户'),
                 ],
                 [
-                    'type' => '01',
+                    'type' => 1,
                     'name' => __('储蓄账户'),
                 ],
             ];
