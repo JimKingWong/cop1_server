@@ -222,7 +222,7 @@ class Withdraw extends Base
 
         $arr = [__('审核中'), __('提现成功'), __('拒绝'), __('提现失败'), __('异常')];
 
-        $fields = "id,order_no,wallet_id,money,real_money,fee,status,paytime,remark,createtime";
+        $fields = "id,order_no,money,real_money,fee,status,paytime,remark,createtime";
         $where['user_id'] = $user->id;
         $list = $this->model->where($where)->field($fields)->order('id desc')->select();
 
